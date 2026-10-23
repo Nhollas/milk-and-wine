@@ -2,7 +2,7 @@
 
 Reminds members about overdue loans, once a day, through the organisation's Notifications API.
 
-| Scope | |
+| Scope |  |
 | --- | --- |
 | **Owns** | Finding overdue loans, asking for a reminder to be sent, and recording that it was. |
 | **Depends on** | Loan records written by [loans](../loans/spec.md); the [Notifications API](../../../docs/external/notifications-api.md), which resolves the member's address and sends the email. |

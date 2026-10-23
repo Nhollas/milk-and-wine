@@ -2,15 +2,11 @@
 
 ## Context
 
-Specs land on `main` before their code, so several MRs can deliver one change and the team can
-review behaviour first. Readers then need to know which rows are built. A status field kept by
-hand would drift from the code.
+Specs land on `main` before their code, so several MRs can deliver one change and the team can review behaviour first. Readers then need to know which rows are built. A status field kept by hand would drift from the code.
 
 ## Decision
 
-A row is delivered when an active test at its Verified level names it, and proposed otherwise.
-`spec:status` reads test source rather than test results. CI runs every test on every merge, so
-a test that exists on `main` is a passing test.
+A row is delivered when an active test at its Verified level names it, and proposed otherwise. `spec:status` reads test source rather than test results. CI runs every test on every merge, so a test that exists on `main` is a passing test.
 
 ## Consequences
 

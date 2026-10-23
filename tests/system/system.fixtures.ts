@@ -10,6 +10,6 @@ export const test = base.extend("library", ({}, { onCleanup }) => {
     catalogueClient: createCatalogueClient(CATALOGUE_URL),
     notificationsClient: createNotificationsClient(NOTIFY_URL),
   });
-  onCleanup(library.close);
+  onCleanup(() => library.close());
   return library;
 });

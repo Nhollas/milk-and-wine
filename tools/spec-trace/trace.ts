@@ -4,7 +4,13 @@ import { readTestsAtLevels, type TestAtLevel } from "./tests.ts";
 
 export type Status = "delivered" | "proposed" | "sign-off";
 
-export type RowStatus = { subject: string; id: string; verified: string; status: Status; proof: string };
+export type RowStatus = {
+  subject: string;
+  id: string;
+  verified: string;
+  status: Status;
+  proof: string;
+};
 
 export type Trace = { subjects: Subject[]; rows: RowStatus[]; problems: Problem[] };
 
@@ -13,7 +19,9 @@ export function trace(repository: Repository): Trace {
   const tests = readTestsAtLevels(repository);
   return {
     subjects,
-    rows: subjects.flatMap((subject) => subject.rows.map((row) => statusOfRow(subject.name, row, tests))),
+    rows: subjects.flatMap((subject) =>
+      subject.rows.map((row) => statusOfRow(subject.name, row, tests)),
+    ),
     problems: [...problems, ...testProblems(subjects, tests)],
   };
 }
@@ -21,7 +29,12 @@ export function trace(repository: Repository): Trace {
 export function regressions(base: Trace, current: Trace): Problem[] {
   return current.rows
     .filter((row) => row.status === "proposed")
-    .filter((row) => base.rows.some((before) => before.subject === row.subject && before.id === row.id && before.status === "delivered"))
+    .filter((row) =>
+      base.rows.some(
+        (before) =>
+          before.subject === row.subject && before.id === row.id && before.status === "delivered",
+      ),
+    )
     .map((row) => ({
       code: "regression",
       location: `${row.subject} ${row.id}`,
@@ -53,10 +66,12 @@ function statusOfRow(subject: string, row: Row, tests: TestAtLevel[]): RowStatus
   if (delivering) return withStatus("delivered", `${delivering.path} › "${delivering.title}"`);
 
   const todoOrSkipped = testsAtRowLevel[0];
-  if (todoOrSkipped) return withStatus("proposed", `${todoOrSkipped.mode} in ${todoOrSkipped.path}`);
+  if (todoOrSkipped)
+    return withStatus("proposed", `${todoOrSkipped.mode} in ${todoOrSkipped.path}`);
 
   const atWrongLevel = testsNamingRow[0];
-  if (atWrongLevel) return withStatus("proposed", `wrong level: ${atWrongLevel.level} in ${atWrongLevel.path}`);
+  if (atWrongLevel)
+    return withStatus("proposed", `wrong level: ${atWrongLevel.level} in ${atWrongLevel.path}`);
 
   return withStatus("proposed", "nothing yet");
 }
@@ -66,13 +81,23 @@ function testProblems(subjects: Subject[], tests: TestAtLevel[]): Problem[] {
     const location = `${test.path}:${test.line}`;
     const subject = subjects.find((candidate) => candidate.name === test.subject);
     if (!subject) {
-      return [{ code: "unknown-subject", location, message: `no spec folder is named ${test.subject}` }];
+      return [
+        { code: "unknown-subject", location, message: `no spec folder is named ${test.subject}` },
+      ];
     }
     if (!test.id) {
-      return [{ code: "untagged-test", location, message: `"${test.title}" names no row of ${test.subject}` }];
+      return [
+        {
+          code: "untagged-test",
+          location,
+          message: `"${test.title}" names no row of ${test.subject}`,
+        },
+      ];
     }
     if (!subject.rows.some((row) => row.id === test.id)) {
-      return [{ code: "unknown-id", location, message: `${test.id} is not a row of ${test.subject}` }];
+      return [
+        { code: "unknown-id", location, message: `${test.id} is not a row of ${test.subject}` },
+      ];
     }
     return [];
   });

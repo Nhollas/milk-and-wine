@@ -1,7 +1,15 @@
 import { http, HttpResponse, delay } from "msw";
 import { expect, test } from "vitest";
-import { CatalogueUnavailable, createCatalogueClient, DEFAULT_RETRY_POLICY } from "./catalogue-client.ts";
-import { CATALOGUE_URL, COPY_PATH, copyResponse } from "../../tests/support/catalogue-api.handlers.ts";
+import {
+  CatalogueUnavailable,
+  createCatalogueClient,
+  DEFAULT_RETRY_POLICY,
+} from "./catalogue-client.ts";
+import {
+  CATALOGUE_URL,
+  COPY_PATH,
+  copyResponse,
+} from "../../tests/support/catalogue-api.handlers.ts";
 import { httpInterceptor } from "../../tests/support/http-interceptor.ts";
 
 const catalogueClient = createCatalogueClient(CATALOGUE_URL);
@@ -84,7 +92,10 @@ test("B3: abandons an attempt after two seconds and tries again", async () => {
     http.get(COPY_PATH, () => delay("infinite"), { once: true }),
     http.get(COPY_PATH, () => copyResponse("copy-1", "available")),
   );
-  const impatientCatalogueClient = createCatalogueClient(CATALOGUE_URL, { ...DEFAULT_RETRY_POLICY, attemptTimeoutMs: 50 });
+  const impatientCatalogueClient = createCatalogueClient(CATALOGUE_URL, {
+    ...DEFAULT_RETRY_POLICY,
+    attemptTimeoutMs: 50,
+  });
   const started = performance.now();
 
   expect((await impatientCatalogueClient.getCopy("copy-1")).kind).toBe("found");

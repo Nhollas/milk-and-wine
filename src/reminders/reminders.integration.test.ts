@@ -8,7 +8,8 @@ const notificationsClient = createNotificationsClient(NOTIFY_URL);
 const reminder = { memberId: "member-1", loanId: "loan-1", dueOn: "2026-03-16" };
 
 test("B5: posts a loan-overdue notification and accepts any 2xx answer", async () => {
-  const requests: { method: string; path: string; contentType: string | null; body: unknown }[] = [];
+  const requests: { method: string; path: string; contentType: string | null; body: unknown }[] =
+    [];
   const statuses = [200, 202, 204];
   httpInterceptor.use(
     http.post(NOTIFICATIONS_PATH, async ({ request }) => {
@@ -29,12 +30,18 @@ test("B5: posts a loan-overdue notification and accepts any 2xx answer", async (
     method: "POST",
     path: "/notifications",
     contentType: "application/json",
-    body: { memberId: "member-1", template: "loan-overdue", data: { loanId: "loan-1", dueOn: "2026-03-16" } },
+    body: {
+      memberId: "member-1",
+      template: "loan-overdue",
+      data: { loanId: "loan-1", dueOn: "2026-03-16" },
+    },
   });
 });
 
 test("B5: treats any other answer as refused", async () => {
   httpInterceptor.use(http.post(NOTIFICATIONS_PATH, () => new HttpResponse(null, { status: 400 })));
 
-  await expect(notificationsClient.sendOverdueReminder(reminder)).rejects.toThrow(NotificationRefused);
+  await expect(notificationsClient.sendOverdueReminder(reminder)).rejects.toThrow(
+    NotificationRefused,
+  );
 });

@@ -21,7 +21,8 @@ export function workingTree(root: string): Repository {
 }
 
 export function gitRevision(root: string, ref: string): Repository {
-  const git = (...args: string[]) => execFileSync("git", args, { cwd: root, encoding: "utf8", maxBuffer: 64 * 1024 * 1024 });
+  const git = (...args: string[]) =>
+    execFileSync("git", args, { cwd: root, encoding: "utf8", maxBuffer: 64 * 1024 * 1024 });
   return {
     filePaths() {
       return git("ls-tree", "-r", "--name-only", ref).split("\n").filter(Boolean);

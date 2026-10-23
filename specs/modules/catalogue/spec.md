@@ -2,7 +2,7 @@
 
 Asks the library's Catalogue API whether a copy exists and can be lent, for [loans](../loans/spec.md).
 
-| Scope | |
+| Scope |  |
 | --- | --- |
 | **Owns** | The request to the Catalogue API, reading its response, and retrying when it is unavailable. |
 | **Depends on** | The [Catalogue API](../../../docs/external/catalogue-api.md), which the catalogue team runs. |

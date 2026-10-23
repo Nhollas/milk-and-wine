@@ -1,7 +1,7 @@
 import type { Repository } from "./repository.ts";
 import { isTestLevel, type TestLevel } from "./specs.ts";
 
-export type TestMode = "active" | "todo" | "skipped";
+type TestMode = "active" | "todo" | "skipped";
 
 export type TestAtLevel = {
   subject: string;
@@ -13,14 +13,15 @@ export type TestAtLevel = {
   mode: TestMode;
 };
 
-const TEST_FILE_NAME = /(?:^|\/)([^/]+)\.test\.ts$/;
-const TEST_CALL = /\b(?:test|it)((?:\.(?:only|skip|todo|fails|concurrent|sequential))*)\s*\(\s*(["'`])((?:\\.|(?!\2)[^\\])*)\2/g;
-const ROW_ID = /^(B\d+):/;
+const TEST_FILE_NAME = /(?:^|\/)([^/]+)\.test\.ts$/u;
+const TEST_CALL =
+  /\b(?:test|it)((?:\.(?:only|skip|todo|fails|concurrent|sequential))*)\s*\(\s*(["'`])((?:\\.|(?!\2)[^\\])*)\2/gu;
+const ROW_ID = /^(B\d+):/u;
 
 export function readTestsAtLevels(repository: Repository): TestAtLevel[] {
   return repository
     .filePaths()
-    .sort()
+    .toSorted()
     .flatMap((path) => {
       const fileName = TEST_FILE_NAME.exec(path)?.[1];
       if (!fileName) return [];
@@ -32,7 +33,10 @@ export function readTestsAtLevels(repository: Repository): TestAtLevel[] {
     });
 }
 
-function testsIn(source: string, file: Pick<TestAtLevel, "subject" | "level" | "path">): TestAtLevel[] {
+function testsIn(
+  source: string,
+  file: Pick<TestAtLevel, "subject" | "level" | "path">,
+): TestAtLevel[] {
   return [...source.matchAll(TEST_CALL)].map((match) => {
     const modifiers = match[1] ?? "";
     const title = match[3] ?? "";
@@ -41,7 +45,11 @@ function testsIn(source: string, file: Pick<TestAtLevel, "subject" | "level" | "
       line: source.slice(0, match.index).split("\n").length,
       title,
       id: ROW_ID.exec(title)?.[1],
-      mode: modifiers.includes(".todo") ? "todo" : modifiers.includes(".skip") ? "skipped" : "active",
+      mode: modifiers.includes(".todo")
+        ? "todo"
+        : modifiers.includes(".skip")
+          ? "skipped"
+          : "active",
     };
   });
 }

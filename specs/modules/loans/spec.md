@@ -2,7 +2,7 @@
 
 Lends copies to members and takes them back, over HTTP, for the library's front-desk and member apps.
 
-| Scope | |
+| Scope |  |
 | --- | --- |
 | **Owns** | The loans HTTP API, loan records, due dates, and refusing a copy that can't be lent. |
 | **Depends on** | [Catalogue](../catalogue/spec.md) to learn whether a copy exists and can be lent. |

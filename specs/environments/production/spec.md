@@ -2,7 +2,7 @@
 
 The deployed loans service and its daily reminders sweep, as members reach them.
 
-| Scope | |
+| Scope |  |
 | --- | --- |
 | **Owns** | What must hold once the container image is deployed: reachability, configuration and schedule. |
 | **Depends on** | [Loans](../../modules/loans/spec.md), [reminders](../../modules/reminders/spec.md), and the platform's container hosting and scheduler. |

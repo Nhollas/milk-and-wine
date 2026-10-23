@@ -1,8 +1,6 @@
 # Change template
 
-Copy to `changes/<change>/spec.md`. A change spec wraps the rows a piece of work adds, changes or
-removes, then is deleted in the MR that delivers its last row. It never owns a requirement: rows
-live in `specs/`. See [spec-driven development](../SPEC-DRIVEN-DEVELOPMENT.md).
+Copy to `changes/<change>/spec.md`. A change spec wraps the rows a piece of work adds, changes or removes, then is deleted in the MR that delivers its last row. It never owns a requirement: rows live in `specs/`. See [spec-driven development](../SPEC-DRIVEN-DEVELOPMENT.md).
 
 Mark rows `+` added, `~` changed or `−` removed.
 
@@ -10,11 +8,11 @@ Mark rows `+` added, `~` changed or `−` removed.
 
 # <Change name>
 
-| Change | |
-| --- | --- |
-| **Jira** | <KEY-123> |
-| **Rows** | <subject> B4+ B2~ · <subject> B7− |
-| **Status** | `pnpm spec:status <subject>` |
+| Change     |                                   |
+| ---------- | --------------------------------- |
+| **Jira**   | <KEY-123>                         |
+| **Rows**   | <subject> B4+ B2~ · <subject> B7− |
+| **Status** | `pnpm spec:status <subject>`      |
 
 ## Why
 
@@ -22,9 +20,9 @@ Mark rows `+` added, `~` changed or `−` removed.
 
 ## Delivery
 
-| MR | Delivers | Notes |
-| --- | --- | --- |
-| 1 | <Rows, as proposed> | <Lands the spec for review before code> |
+| MR  | Delivers            | Notes                                   |
+| --- | ------------------- | --------------------------------------- |
+| 1   | <Rows, as proposed> | <Lands the spec for review before code> |
 
 ## Change-only checks
 

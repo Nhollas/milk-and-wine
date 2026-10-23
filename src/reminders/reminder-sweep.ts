@@ -13,7 +13,12 @@ export type ReminderSweepOptions = {
 
 export type SweepSummary = { sent: number; failed: number };
 
-export function createReminderSweep({ db, notificationsClient, clock, logger }: ReminderSweepOptions) {
+export function createReminderSweep({
+  db,
+  notificationsClient,
+  clock,
+  logger,
+}: ReminderSweepOptions) {
   const store = createReminderStore(db);
 
   return async function sweep(): Promise<SweepSummary> {

@@ -1,7 +1,7 @@
 import { posix } from "node:path";
 import type { Repository } from "./repository.ts";
 
-export const TEST_LEVELS = ["service", "integration", "system", "smoke"] as const;
+const TEST_LEVELS = ["service", "integration", "system", "smoke"] as const;
 
 export type TestLevel = (typeof TEST_LEVELS)[number];
 
@@ -16,9 +16,9 @@ export type Subject = { name: string; path: string; rows: Row[] };
 
 export type Problem = { code: string; location: string; message: string };
 
-const SPEC_PATH = /^specs\/(?:.+\/)?([^/]+)\/spec\.md$/;
+const SPEC_PATH = /^specs\/(?:.+\/)?([^/]+)\/spec\.md$/u;
 const ROW_HEADER = ["id", "given", "when", "then", "verified"];
-const MARKDOWN_LINK = /\[[^\]]*\]\(([^)]+)\)/;
+const MARKDOWN_LINK = /\[[^\]]*\]\(([^)]+)\)/u;
 
 export function subjectOfSpecPath(path: string): string | undefined {
   return SPEC_PATH.exec(path)?.[1];
@@ -32,7 +32,7 @@ export function readSubjects(repository: Repository): { subjects: Subject[]; pro
   const subjects: Subject[] = [];
   const problems: Problem[] = [];
 
-  for (const path of repository.filePaths().sort()) {
+  for (const path of repository.filePaths().toSorted()) {
     const name = subjectOfSpecPath(path);
     if (!name) continue;
     const rows: Row[] = [];
@@ -41,11 +41,19 @@ export function readSubjects(repository: Repository): { subjects: Subject[]; pro
       const location = `${path}:${line}`;
       const verified = parseVerified(verifiedCell, path);
       if (!verified) {
-        problems.push({ code: "invalid-verified", location, message: `${id} has Verified "${verifiedCell}"` });
+        problems.push({
+          code: "invalid-verified",
+          location,
+          message: `${id} has Verified "${verifiedCell}"`,
+        });
         continue;
       }
       if (rows.some((row) => row.id === id)) {
-        problems.push({ code: "duplicate-id", location, message: `${id} appears more than once in ${name}` });
+        problems.push({
+          code: "duplicate-id",
+          location,
+          message: `${id} appears more than once in ${name}`,
+        });
         continue;
       }
       rows.push({ id, verified });
@@ -73,7 +81,7 @@ function* rowLines(markdown: string): Generator<{ cells: string[]; line: number 
       inRowTable = true;
       continue;
     }
-    if (!inRowTable || cells.every((cell) => /^:?-+:?$/.test(cell))) continue;
+    if (!inRowTable || cells.every((cell) => /^:?-+:?$/u.test(cell))) continue;
     yield { cells, line: index + 1 };
   }
 }
@@ -81,16 +89,16 @@ function* rowLines(markdown: string): Generator<{ cells: string[]; line: number 
 function splitCells(line: string): string[] {
   return line
     .trim()
-    .replace(/^\|/, "")
-    .replace(/(?<!\\)\|$/, "")
-    .split(/(?<!\\)\|/)
+    .replace(/^\|/u, "")
+    .replace(/(?<!\\)\|$/u, "")
+    .split(/(?<!\\)\|/u)
     .map((cell) => cell.trim());
 }
 
 function parseVerified(cell: string, specPath: string): Verified | undefined {
   const text = cell.replaceAll("`", "").trim();
   if (isTestLevel(text)) return { kind: "test", level: text };
-  const match = /^(dependency|manual)\s+(.+)$/.exec(text);
+  const match = /^(dependency|manual)\s+(.+)$/u.exec(text);
   if (!match) return undefined;
   const [, kind, target = ""] = match;
   const link = resolveLink(MARKDOWN_LINK.exec(target)?.[1] ?? target, specPath);
@@ -98,5 +106,5 @@ function parseVerified(cell: string, specPath: string): Verified | undefined {
 }
 
 function resolveLink(link: string, specPath: string): string {
-  return /^[a-z]+:/i.test(link) ? link : posix.join(posix.dirname(specPath), link);
+  return /^[a-z]+:/iu.test(link) ? link : posix.join(posix.dirname(specPath), link);
 }

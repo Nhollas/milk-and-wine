@@ -6,7 +6,7 @@ import { test as base } from "vitest";
 
 export const test = base.extend("repo", ({}, { onCleanup }) => {
   const repo = openFixtureRepo();
-  onCleanup(repo.remove);
+  onCleanup(() => repo.remove());
   return repo;
 });
 
@@ -28,7 +28,16 @@ function openFixtureRepo() {
     commit(message: string) {
       git("init", "-q", "-b", "main");
       git("add", "-A");
-      git("-c", "user.name=Fixture", "-c", "user.email=fixture@example.com", "commit", "-q", "-m", message);
+      git(
+        "-c",
+        "user.name=Fixture",
+        "-c",
+        "user.email=fixture@example.com",
+        "commit",
+        "-q",
+        "-m",
+        message,
+      );
     },
     remove() {
       rmSync(root, { recursive: true, force: true });
@@ -56,7 +65,10 @@ function specMarkdown(rows: SpecRow[]): string {
     "",
     "| ID | Given | When | Then | Verified |",
     "| --- | --- | --- | --- | --- |",
-    ...rows.map(([id, verified, then = "Something happens"]) => `| ${id} | A widget exists | It is used | ${then} | ${verified} |`),
+    ...rows.map(
+      ([id, verified, then = "Something happens"]) =>
+        `| ${id} | A widget exists | It is used | ${then} | ${verified} |`,
+    ),
     "",
   ].join("\n");
 }
@@ -66,7 +78,9 @@ function testSource(tests: FixtureTest[]): string {
     `import { test } from "vitest";`,
     "",
     ...tests.map(({ title, modifier }) =>
-      modifier === "todo" ? `test.todo(${JSON.stringify(title)});` : `test${modifier ? `.${modifier}` : ""}(${JSON.stringify(title)}, () => {});`,
+      modifier === "todo"
+        ? `test.todo(${JSON.stringify(title)});`
+        : `test${modifier ? `.${modifier}` : ""}(${JSON.stringify(title)}, () => {});`,
     ),
     "",
   ].join("\n");

@@ -24,7 +24,7 @@ export default defineConfig({
         test: {
           name: { label: "unit", color: "white" },
           include: testFolders.map((folder) => `${folder}/**/*.test.ts`),
-          exclude: [...configDefaults.exclude, ...levels.flatMap(testsAt)],
+          exclude: [...configDefaults.exclude, ...levels.flatMap((level) => testsAt(level))],
           ...interceptedHttp,
         },
       },

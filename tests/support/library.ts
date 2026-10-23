@@ -5,14 +5,20 @@ import { createLoansApp } from "../../src/loans/loans-app.ts";
 import type { NotificationsClient } from "../../src/reminders/notifications-client.ts";
 import { createReminderSweep } from "../../src/reminders/reminder-sweep.ts";
 
-export type Library = ReturnType<typeof openLibrary>;
+export type LibraryDependencies = {
+  catalogueClient: CatalogueClient;
+  notificationsClient: NotificationsClient;
+};
 
-export type LibraryDependencies = { catalogueClient: CatalogueClient; notificationsClient: NotificationsClient };
-
-export function openLibrary({ catalogueClient, notificationsClient }: LibraryDependencies, today = "2026-03-02") {
+export function openLibrary(
+  { catalogueClient, notificationsClient }: LibraryDependencies,
+  today = "2026-03-02",
+) {
   let now = new Date(`${today}T10:00:00Z`);
   const logs: LogEntry[] = [];
-  const logger = createLogger((entry) => logs.push(entry));
+  const logger = createLogger((entry) => {
+    logs.push(entry);
+  });
   const db = openDatabase(":memory:");
   const clock = () => now;
   const app = createLoansApp({ db, catalogueClient, clock });
@@ -39,7 +45,9 @@ export function openLibrary({ catalogueClient, notificationsClient }: LibraryDep
       return (db.prepare("SELECT COUNT(*) AS count FROM loans").get() as { count: number }).count;
     },
     remindersRecorded() {
-      return db.prepare("SELECT loan_id AS loanId, sent_on AS sentOn FROM reminders ORDER BY loan_id").all();
+      return db
+        .prepare("SELECT loan_id AS loanId, sent_on AS sentOn FROM reminders ORDER BY loan_id")
+        .all();
     },
     async returnLoan(loanId: string) {
       return sendJson("POST", `/loans/${loanId}/return`);

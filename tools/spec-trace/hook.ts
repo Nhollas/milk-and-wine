@@ -22,11 +22,14 @@ export function runHook(input: string, root: string): string {
     "",
     status.output,
   ].join("\n");
-  return JSON.stringify({ hookSpecificOutput: { hookEventName: "PostToolUse", additionalContext } });
+  return JSON.stringify({
+    hookSpecificOutput: { hookEventName: "PostToolUse", additionalContext },
+  });
 }
 
 if (import.meta.main) {
   const input = readFileSync(0, "utf8");
-  const root = process.env["CLAUDE_PROJECT_DIR"] ?? (JSON.parse(input) as HookInput).cwd ?? process.cwd();
+  const root =
+    process.env["CLAUDE_PROJECT_DIR"] ?? (JSON.parse(input) as HookInput).cwd ?? process.cwd();
   process.stdout.write(runHook(input, root));
 }

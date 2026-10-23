@@ -14,7 +14,8 @@ export function createNotificationsClient(baseUrl: string): NotificationsClient 
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ memberId, template: "loan-overdue", data: { loanId, dueOn } }),
       });
-      if (!response.ok) throw new NotificationRefused(`Notifications API answered ${response.status}`);
+      if (!response.ok)
+        throw new NotificationRefused(`Notifications API answered ${response.status}`);
     },
   };
 }

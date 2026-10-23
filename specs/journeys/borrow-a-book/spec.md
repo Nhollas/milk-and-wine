@@ -2,7 +2,7 @@
 
 A member borrows a copy, is reminded if it's late, and brings it back for the next member.
 
-| Scope | |
+| Scope |  |
 | --- | --- |
 | **Owns** | The member's experience across lending, reminding and returning. |
 | **Depends on** | [Loans](../../modules/loans/spec.md), [catalogue](../../modules/catalogue/spec.md), [reminders](../../modules/reminders/spec.md). |

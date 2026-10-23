@@ -1,11 +1,8 @@
 # SDD example: library loans
 
-A deliberately small service, built to show [spec-driven development](SPEC-DRIVEN-DEVELOPMENT.md)
-end to end. Members borrow copies, get reminded when they're late, and bring them back.
+A deliberately small service, built to show [spec-driven development](SPEC-DRIVEN-DEVELOPMENT.md) end to end. Members borrow copies, get reminded when they're late, and bring them back.
 
-The point is the process, not the app. Every kind of subject has a spec, every row is proven by
-a named test or a declared check, and one change is half-delivered so you can see what proposed
-rows look like.
+The point is the process, not the app. Every kind of subject has a spec, every row is proven by a named test or a declared check, and one change is half-delivered so you can see what proposed rows look like.
 
 ## Try it
 
@@ -25,8 +22,7 @@ pnpm spec:status loans
 pnpm check
 ```
 
-`pnpm check` runs the typecheck, the tests and `spec:check`. In Claude Code, open any
-`specs/**/spec.md` and the read hook adds its status to the agent's context.
+`pnpm check` runs oxlint (lint and typecheck), the format check, knip, the tests and `spec:check`. In Claude Code, open any `specs/**/spec.md` and the read hook adds its status to the agent's context.
 
 ## Where things are
 

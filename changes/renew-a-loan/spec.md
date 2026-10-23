@@ -1,6 +1,6 @@
 # Renew a loan
 
-| Change | |
+| Change |  |
 | --- | --- |
 | **Jira** | LIB-42 |
 | **Rows** | [loans](../../specs/modules/loans/spec.md#renewing-a-loan) B8+ B9+ · [borrow a book](../../specs/journeys/borrow-a-book/spec.md#renewing) B4+ |
@@ -8,8 +8,7 @@
 
 ## Why
 
-Members ask the front desk to extend loans by phone. Letting them renew through the member app
-removes most of those calls. Two renewals cap how long one member can keep a copy.
+Members ask the front desk to extend loans by phone. Letting them renew through the member app removes most of those calls. Two renewals cap how long one member can keep a copy.
 
 ## Delivery
 

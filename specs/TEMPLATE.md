@@ -1,15 +1,10 @@
 # Spec template
 
-Copy to `specs/<kind>/<subject>/spec.md`, where `<kind>` is `journeys`, `modules`,
-`environments` or `tools`. A subject is anything whose behaviour we promise and can observe at a
-boundary, and its folder name must be unique. See [spec-driven development](../SPEC-DRIVEN-DEVELOPMENT.md).
+Copy to `specs/<kind>/<subject>/spec.md`, where `<kind>` is `journeys`, `modules`, `environments` or `tools`. A subject is anything whose behaviour we promise and can observe at a boundary, and its folder name must be unique. See [spec-driven development](../SPEC-DRIVEN-DEVELOPMENT.md).
 
-**Rows.** One decidable behaviour per row. IDs are plain (`B1`, B for behaviour), stable, and never
-reused. **Given** is the state already true, **When** is the one event, **Then** is what an
-observer at the boundary sees, including after a failure.
+**Rows.** One decidable behaviour per row. IDs are plain (`B1`, B for behaviour), stable, and never reused. **Given** is the state already true, **When** is the one event, **Then** is what an observer at the boundary sees, including after a failure.
 
-**Verified** names what proves the row. A row is proposed until that proof exists
-([ADR 0001](../docs/adr/0001-status-is-computed-from-tests.md)).
+**Verified** names what proves the row. A row is proposed until that proof exists ([ADR 0001](../docs/adr/0001-status-is-computed-from-tests.md)).
 
 | Verified | Proven by | Delivered when |
 | --- | --- | --- |
@@ -28,11 +23,11 @@ A row with no test yet gets a `test.todo("B<n>: …")` so the gap is visible in 
 
 <One sentence: what it does and for whom.>
 
-| Scope | |
-| --- | --- |
-| **Owns** | <Responsibilities.> |
-| **Depends on** | <Links to other subjects' specs.> |
-| **Excluded** | <Plausible scope misunderstandings only.> |
+| Scope          |                                           |
+| -------------- | ----------------------------------------- |
+| **Owns**       | <Responsibilities.>                       |
+| **Depends on** | <Links to other subjects' specs.>         |
+| **Excluded**   | <Plausible scope misunderstandings only.> |
 
 ## Behaviour
 

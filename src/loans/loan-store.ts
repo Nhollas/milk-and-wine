@@ -9,8 +9,6 @@ export type Loan = {
   returnedOn: string | null;
 };
 
-export type LoanStore = ReturnType<typeof createLoanStore>;
-
 export class CopyOnLoan extends Error {}
 
 const SQLITE_CONSTRAINT_UNIQUE = 2067;
@@ -27,7 +25,10 @@ type LoanRecord = {
 export function createLoanStore(db: DatabaseSync) {
   return {
     hasOpenLoan(copyId: string): boolean {
-      return db.prepare("SELECT 1 FROM loans WHERE copy_id = ? AND returned_on IS NULL").get(copyId) !== undefined;
+      return (
+        db.prepare("SELECT 1 FROM loans WHERE copy_id = ? AND returned_on IS NULL").get(copyId) !==
+        undefined
+      );
     },
 
     insert(loan: Loan): void {
@@ -42,15 +43,19 @@ export function createLoanStore(db: DatabaseSync) {
     },
 
     find(loanId: string): Loan | undefined {
-      const record = db.prepare("SELECT * FROM loans WHERE loan_id = ?").get(loanId) as LoanRecord | undefined;
-      return record && {
-        loanId: record.loan_id,
-        memberId: record.member_id,
-        copyId: record.copy_id,
-        lentOn: record.lent_on,
-        dueOn: record.due_on,
-        returnedOn: record.returned_on,
-      };
+      const record = db.prepare("SELECT * FROM loans WHERE loan_id = ?").get(loanId) as
+        | LoanRecord
+        | undefined;
+      return (
+        record && {
+          loanId: record.loan_id,
+          memberId: record.member_id,
+          copyId: record.copy_id,
+          lentOn: record.lent_on,
+          dueOn: record.due_on,
+          returnedOn: record.returned_on,
+        }
+      );
     },
 
     markReturned(loanId: string, returnedOn: string): void {

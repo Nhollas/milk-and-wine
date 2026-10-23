@@ -1,4 +1,4 @@
 saveExact: true
-engineStrict: true
 allowBuilds:
+  node: true
   msw: false

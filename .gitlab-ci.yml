@@ -16,10 +16,20 @@ stages:
   - deploy
   - smoke
 
-typecheck:
+lint:
   stage: test
   script:
-    - pnpm typecheck
+    - pnpm lint
+
+format:
+  stage: test
+  script:
+    - pnpm format:check
+
+knip:
+  stage: test
+  script:
+    - pnpm knip
 
 test:
   stage: test

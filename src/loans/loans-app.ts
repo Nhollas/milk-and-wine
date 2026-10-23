@@ -36,7 +36,8 @@ export function createLoansApp({ db, catalogueClient, clock }: LoansAppOptions):
     try {
       lookup = await catalogueClient.getCopy(copyId);
     } catch (error) {
-      if (error instanceof CatalogueUnavailable) return c.json({ error: "catalogue-unavailable" }, 503);
+      if (error instanceof CatalogueUnavailable)
+        return c.json({ error: "catalogue-unavailable" }, 503);
       throw error;
     }
     if (lookup.kind === "not-found") return c.json({ error: "copy-not-found" }, 404);

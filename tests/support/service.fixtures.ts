@@ -8,6 +8,6 @@ export const test = base
   .extend("notificationsClient", () => fakeNotificationsClient())
   .extend("library", ({ catalogueClient, notificationsClient }, { onCleanup }) => {
     const library = openLibrary({ catalogueClient, notificationsClient });
-    onCleanup(library.close);
+    onCleanup(() => library.close());
     return library;
   });

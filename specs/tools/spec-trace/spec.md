@@ -1,9 +1,8 @@
 # Spec trace
 
-Works out which spec rows are delivered or proposed, and fails CI when specs and tests disagree,
-for engineers, reviewers and agents.
+Works out which spec rows are delivered or proposed, and fails CI when specs and tests disagree, for engineers, reviewers and agents.
 
-| Scope | |
+| Scope |  |
 | --- | --- |
 | **Owns** | Reading spec rows and test titles, computing each row's status, `spec:status`, `spec:check`, and the Claude Code read hook. |
 | **Depends on** | Git, for `--base`. [ADR 0001](../../../docs/adr/0001-status-is-computed-from-tests.md) and [ADR 0002](../../../docs/adr/0002-test-file-names-carry-subject-and-level.md) explain the rules. |
@@ -49,10 +48,8 @@ for engineers, reviewers and agents.
 
 ## Limitations
 
-- Status trusts CI. A test counts when it exists and isn't marked `todo` or `skip`; CI running
-  the suite on every merge is what makes it a passing test.
-- Only literal test titles are read. A title built with a template expression or `test.each`
-  can't name a row.
+- Status trusts CI. A test counts when it exists and isn't marked `todo` or `skip`; CI running the suite on every merge is what makes it a passing test.
+- Only literal test titles are read. A title built with a template expression or `test.each` can't name a row.
 
 ## Open questions
 

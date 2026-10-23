@@ -1,11 +1,8 @@
 # Spec-driven development
 
-How specs, changes and tests fit together in this repository. Specs exist so people and agents
-agree on behaviour before it's built, and keep agreeing after. If a person can't skim one, it has
-failed at its main job.
+How specs, changes and tests fit together in this repository. Specs exist so people and agents agree on behaviour before it's built, and keep agreeing after. If a person can't skim one, it has failed at its main job.
 
-Start a spec from the [template](specs/TEMPLATE.md) and a change from the
-[change template](changes/TEMPLATE.md).
+Start a spec from the [template](specs/TEMPLATE.md) and a change from the [change template](changes/TEMPLATE.md).
 
 ## 1. Milk and wine
 
@@ -26,8 +23,7 @@ Start a spec from the [template](specs/TEMPLATE.md) and a change from the
      learnings move out first                   ages well only if pruned
 ```
 
-A change spec never owns a requirement. It points at rows, carries the Jira key, and goes away.
-Behaviour specs keep only what's needed now: existing code is evidence, not a reason to keep a row.
+A change spec never owns a requirement. It points at rows, carries the Jira key, and goes away. Behaviour specs keep only what's needed now: existing code is evidence, not a reason to keep a row.
 
 ## 2. Anatomy of a row
 
@@ -59,8 +55,7 @@ One row, one decision. Jira links, test links and gap reports all assume it.
    └──▶ B1   lends an available copy
 ```
 
-That's why [loans](specs/modules/loans/spec.md) lists B10 first: it was split out later, and IDs
-never move.
+That's why [loans](specs/modules/loans/spec.md) lists B10 first: it was split out later, and IDs never move.
 
 ## 3. Anything with a boundary can be a subject
 
@@ -75,8 +70,7 @@ never move.
   example    borrow-a-book B3        loans B2                production B1
 ```
 
-A row is a promise someone checks. The subject decides where you observe it and how it's proven.
-Deployment is rows on an environment, not an exception to the process.
+A row is a promise someone checks. The subject decides where you observe it and how it's proven. Deployment is rows on an environment, not an exception to the process.
 
 ## 4. Status is computed, never typed
 
@@ -97,8 +91,7 @@ Deployment is rows on an environment, not an exception to the process.
   ▓ delivered: an active test at the row's Verified level names it
 ```
 
-Specs land ahead of code, so the team reviews behaviour early and several MRs can deliver one
-change. See [ADR 0001](docs/adr/0001-status-is-computed-from-tests.md).
+Specs land ahead of code, so the team reviews behaviour early and several MRs can deliver one change. See [ADR 0001](docs/adr/0001-status-is-computed-from-tests.md).
 
 ## 5. Names the tooling reads
 
@@ -114,8 +107,7 @@ change. See [ADR 0001](docs/adr/0001-status-is-computed-from-tests.md).
          └─ the row it proves, then what it checks
 ```
 
-IDs are plain, so the file name says which subject's `B2` a test means
-([ADR 0002](docs/adr/0002-test-file-names-carry-subject-and-level.md)).
+IDs are plain, so the file name says which subject's `B2` a test means ([ADR 0002](docs/adr/0002-test-file-names-carry-subject-and-level.md)).
 
 ## 6. Proof has to reach the boundary
 
@@ -131,8 +123,7 @@ IDs are plain, so the file name says which subject's `B2` a test means
               service level, so it delivers B1
 ```
 
-A row describes what's observable at its subject's boundary, so only a test at the row's level
-can deliver it. Unit tests are still welcome; they just don't count.
+A row describes what's observable at its subject's boundary, so only a test at the row's level can deliver it. Unit tests are still welcome; they just don't count.
 
 ## 7. The gaps are the backlog
 
@@ -164,10 +155,7 @@ can deliver it. Unit tests are still welcome; they just don't count.
                        └────────────────┘
 ```
 
-`spec:check` fails CI on an unknown ID or subject, an untagged test at a delivering level, a
-duplicate ID, an unrecognised Verified value, or, in an MR, a delivered row becoming proposed.
-It never fails on a proposed row. Its own rules are a spec:
-[spec-trace](specs/tools/spec-trace/spec.md).
+`spec:check` fails CI on an unknown ID or subject, an untagged test at a delivering level, a duplicate ID, an unrecognised Verified value, or, in an MR, a delivered row becoming proposed. It never fails on a proposed row. Its own rules are a spec: [spec-trace](specs/tools/spec-trace/spec.md).
 
 ## 9. Following the thread
 

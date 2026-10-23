@@ -14,7 +14,11 @@ export function createReminderStore(db: DatabaseSync) {
            ORDER BY due_on, loan_id`,
         )
         .all(today, today) as OverdueRecord[];
-      return records.map((record) => ({ loanId: record.loan_id, memberId: record.member_id, dueOn: record.due_on }));
+      return records.map((record) => ({
+        loanId: record.loan_id,
+        memberId: record.member_id,
+        dueOn: record.due_on,
+      }));
     },
 
     recordSent(loanId: string, sentOn: string): void {

@@ -1,6 +1,6 @@
-export type LogLevel = "info" | "warn" | "error";
+type LogLevel = "info" | "warn" | "error";
 
-export type LogFields = Record<string, unknown>;
+type LogFields = Record<string, unknown>;
 
 export type LogEntry = { level: LogLevel; event: string; fields: LogFields };
 
@@ -15,5 +15,7 @@ export function createLogger(write: (entry: LogEntry) => void): Logger {
 }
 
 export const logger = createLogger(({ level, event, fields }) => {
-  process.stdout.write(`${JSON.stringify({ time: new Date().toISOString(), level, event, ...fields })}\n`);
+  process.stdout.write(
+    `${JSON.stringify({ time: new Date().toISOString(), level, event, ...fields })}\n`,
+  );
 });
