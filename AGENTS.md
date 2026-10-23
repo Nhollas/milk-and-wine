@@ -1,6 +1,6 @@
 # Agents
 
-This repository demonstrates [spec-driven development](SPEC-DRIVEN-DEVELOPMENT.md). Specs say what we promise; tests prove it; code delivers it.
+This repository demonstrates [spec-driven development](SPEC-DRIVEN-DEVELOPMENT.md). Specs say what we promise; tests prove it; code delivers it. Before changing the process itself, read [INTENT.md](INTENT.md).
 
 ## Specs
 

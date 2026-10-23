@@ -2,7 +2,7 @@
 
 A deliberately small service, built to show [spec-driven development](SPEC-DRIVEN-DEVELOPMENT.md) end to end. Members borrow copies, get reminded when they're late, and bring them back.
 
-The point is the process, not the app. Every kind of subject has a spec, every row is proven by a named test or a declared check, and one change is half-delivered so you can see what proposed rows look like.
+The point is the process, not the app. Every kind of subject has a spec, every row is proven by a named test or a declared check, and one change is half-delivered so you can see what proposed rows look like. [INTENT.md](INTENT.md) explains why the repository exists and what it is testing.
 
 ## Try it
 
