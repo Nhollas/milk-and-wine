@@ -155,7 +155,7 @@ A row describes what's observable at its subject's boundary, so only a test at t
                        └────────────────┘
 ```
 
-`spec:check` fails CI on an unknown ID or subject, an untagged test at a delivering level, a duplicate ID, an unrecognised Verified value, or, in an MR, a delivered row becoming proposed. It never fails on a proposed row. Its own rules are a spec: [spec-trace](specs/tools/spec-trace/spec.md).
+`spec:check` fails CI when specs and tests disagree, and never on a proposed row. Its own rules are a spec: [spec-trace](specs/tools/spec-trace/spec.md).
 
 ## 9. Following the thread
 

@@ -10,15 +10,15 @@ The words for the library this service runs, and for the spec-driven process tha
 
 **Loan**: One member holding one copy, from the day it's lent until the day it's returned. A loan is open until it's returned.
 
-**Due date**: The day a loan should be returned by: 14 days after it was lent.
+**Due date**: The day a loan should be returned by, set when it's lent ([loans B1](specs/modules/loans/spec.md)).
 
 **Overdue**: An open loan whose due date has passed. _Avoid_: Late
 
 **Withdrawn**: A copy the catalogue says can no longer be lent.
 
-**Reminder**: A notification to a member that a loan is overdue. At most one per loan per day.
+**Reminder**: A notification to a member that a loan is overdue.
 
-**Renewal**: Moving an open loan's due date 14 days later, at most twice. Proposed in [LIB-42](changes/renew-a-loan/spec.md). _Avoid_: Extension
+**Renewal**: Moving an open loan's due date later. _Avoid_: Extension
 
 ## Specs
 
