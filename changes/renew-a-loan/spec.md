@@ -32,7 +32,7 @@ removes most of those calls. Two renewals cap how long one member can keep a cop
 ## Before deleting this folder
 
 - [ ] Decisions with lasting trade-offs → an ADR in `docs/adr/`
-- [ ] New domain terms → [CONTEXT.md](../../CONTEXT.md)
+- [ ] New domain terms → [GLOSSARY.md](../../GLOSSARY.md)
 - [ ] Reasons a row can't explain itself → that row's **Why** note
 - [ ] Limitations and unknowns found → the spec's Limitations or Open questions
 - [ ] Lessons about the process → the templates

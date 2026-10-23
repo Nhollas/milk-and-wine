@@ -33,6 +33,7 @@ pnpm check
 | Path | What it shows |
 | --- | --- |
 | [SPEC-DRIVEN-DEVELOPMENT.md](SPEC-DRIVEN-DEVELOPMENT.md) | The process, mostly as diagrams |
+| [GLOSSARY.md](GLOSSARY.md) | The terms specs, code and conversation share |
 | [SPEC-TEMPLATE.md](SPEC-TEMPLATE.md), [CHANGE-TEMPLATE.md](CHANGE-TEMPLATE.md) | Where every spec and change starts |
 | [specs/journeys/borrow-a-book](specs/journeys/borrow-a-book/spec.md) | A journey across modules, proven by system tests |
 | [specs/modules/loans](specs/modules/loans/spec.md) | A module with service rows, a dependency row, out-of-order IDs and proposed rows |

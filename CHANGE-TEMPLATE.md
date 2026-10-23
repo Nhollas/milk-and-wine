@@ -37,7 +37,7 @@ Mark rows `+` added, `~` changed or `−` removed.
 ## Before deleting this folder
 
 - [ ] Decisions with lasting trade-offs → an ADR in `docs/adr/`
-- [ ] New domain terms → `CONTEXT.md`
+- [ ] New domain terms → `GLOSSARY.md`
 - [ ] Reasons a row can't explain itself → that row's **Why** note
 - [ ] Limitations and unknowns found → the spec's Limitations or Open questions
 - [ ] Lessons about the process → the templates

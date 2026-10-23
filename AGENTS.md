@@ -14,7 +14,7 @@ we promise; tests prove it; code delivers it.
   `test.todo`. Unit tests use files without a level and name no rows.
 - Change behaviour by changing its row in the same MR as the code. If code and a row disagree,
   say so; don't quietly edit either to match.
-- Use the terms in [CONTEXT.md](CONTEXT.md). Start specs from [SPEC-TEMPLATE.md](SPEC-TEMPLATE.md)
+- Use the terms in [GLOSSARY.md](GLOSSARY.md). Start specs from [SPEC-TEMPLATE.md](SPEC-TEMPLATE.md)
   and changes from [CHANGE-TEMPLATE.md](CHANGE-TEMPLATE.md).
 
 ## Code

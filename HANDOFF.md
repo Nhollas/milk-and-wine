@@ -26,7 +26,7 @@ neutral, standalone reference. **We are not retrofitting agent-graph.**
 | How status is computed, and why file names carry subject and level | [docs/adr/](docs/adr) |
 | The tooling's rules | [specs/tools/spec-trace/spec.md](specs/tools/spec-trace/spec.md) |
 | An in-flight change (MR 1 of 3 done) | [changes/renew-a-loan/spec.md](changes/renew-a-loan/spec.md) |
-| Agent rules and glossary | [AGENTS.md](AGENTS.md), [CONTEXT.md](CONTEXT.md) |
+| Agent rules and glossary | [AGENTS.md](AGENTS.md), [GLOSSARY.md](GLOSSARY.md) |
 | Layout and commands | [README.md](README.md) |
 
 ## State
@@ -92,7 +92,7 @@ neutral, standalone reference. **We are not retrofitting agent-graph.**
 ## Suggested skills
 
 - `grilling`: to stress-test open threads 2–4 before deciding.
-- `domain-modeling`: when terms in CONTEXT.md change or an ADR is added.
+- `domain-modeling`: when terms in GLOSSARY.md change or an ADR is added.
 - `mattpocock-skills:writing-for-agents`: when editing AGENTS.md or the templates.
 - `tdd`: when delivering LIB-42's rows (start from the existing `test.todo` entries).
 - `mattpocock-skills:code-review`: to review a delivered change against its spec rows.
