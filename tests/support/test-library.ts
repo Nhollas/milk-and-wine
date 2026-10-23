@@ -7,7 +7,7 @@ import { NOTIFY_URL } from "./fake-notifications.ts";
 
 export type LogEntry = { level: LogLevel; event: string; fields: Record<string, unknown> };
 
-export function createLibrary(today = "2026-03-02") {
+export function createTestLibrary(today = "2026-03-02") {
   let now = new Date(`${today}T10:00:00Z`);
   const logs: LogEntry[] = [];
   const log: Log = (level, event, fields = {}) => logs.push({ level, event, fields });

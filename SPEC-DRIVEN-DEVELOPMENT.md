@@ -4,8 +4,8 @@ How specs, changes and tests fit together in this repository. Specs exist so peo
 agree on behaviour before it's built, and keep agreeing after. If a person can't skim one, it has
 failed at its main job.
 
-Start a spec from the [template](SPEC-TEMPLATE.md) and a change from the
-[change template](CHANGE-TEMPLATE.md).
+Start a spec from the [template](specs/TEMPLATE.md) and a change from the
+[change template](changes/TEMPLATE.md).
 
 ## 1. Milk and wine
 

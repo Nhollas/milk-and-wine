@@ -1,9 +1,9 @@
 import { serve } from "@hono/node-server";
 import { z } from "zod";
-import { systemClock } from "./clock.ts";
-import { openDatabase } from "./database.ts";
-import { stdoutLog } from "./log.ts";
-import { createLoansApp } from "./loans/loans-app.ts";
+import { systemClock } from "../clock.ts";
+import { openDatabase } from "../database.ts";
+import { stdoutLog } from "../log.ts";
+import { createLoansApp } from "./loans-app.ts";
 
 const env = z
   .object({

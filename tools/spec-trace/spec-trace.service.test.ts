@@ -2,7 +2,7 @@ import { expect, test } from "vitest";
 import { runCheck } from "./check.ts";
 import { runHook } from "./hook.ts";
 import { runStatus } from "./status.ts";
-import { commitAll, fixtureRepository, specFile, testFile, writeFiles } from "./test-support.ts";
+import { commitAll, fixtureRepository, specFile, testFile, writeFiles } from "./fixtures.ts";
 
 const WIDGETS_SPEC = "specs/modules/widgets/spec.md";
 const WIDGETS_TESTS = "src/widgets/widgets.service.test.ts";

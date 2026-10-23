@@ -12,10 +12,13 @@ we promise; tests prove it; code delivers it.
 - To deliver a row, write a test at the row's Verified level, in
   `<subject>[.<part>].<level>.test.ts`, whose title starts with the row ID. Replace the row's
   `test.todo`. Unit tests use files without a level and name no rows.
+- A subject's tests sit beside its code (`src/loans/`, `tools/spec-trace/`). Journeys and
+  environments have no code of their own, so their tests go in `tests/<level>/`. Test helpers
+  that more than one folder uses go in `tests/support/`.
 - Change behaviour by changing its row in the same MR as the code. If code and a row disagree,
   say so; don't quietly edit either to match.
-- Use the terms in [GLOSSARY.md](GLOSSARY.md). Start specs from [SPEC-TEMPLATE.md](SPEC-TEMPLATE.md)
-  and changes from [CHANGE-TEMPLATE.md](CHANGE-TEMPLATE.md).
+- Use the terms in [GLOSSARY.md](GLOSSARY.md). Start specs from [specs/TEMPLATE.md](specs/TEMPLATE.md)
+  and changes from [changes/TEMPLATE.md](changes/TEMPLATE.md).
 
 ## Code
 

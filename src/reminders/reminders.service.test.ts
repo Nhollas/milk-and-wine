@@ -1,11 +1,11 @@
 import { expect, test } from "vitest";
 import { fakeCatalogue } from "../../tests/support/fake-catalogue.ts";
 import { fakeNotifications } from "../../tests/support/fake-notifications.ts";
-import { createLibrary } from "../../tests/support/library.ts";
+import { createTestLibrary } from "../../tests/support/test-library.ts";
 
 async function libraryWithLoans(copies: string[], lentOn = "2026-03-02") {
   fakeCatalogue(Object.fromEntries(copies.map((copyId) => [copyId, "available" as const])));
-  const library = createLibrary(lentOn);
+  const library = createTestLibrary(lentOn);
   const loanIds: string[] = [];
   for (const [index, copyId] of copies.entries()) {
     const { body } = await library.lend(`member-${index + 1}`, copyId);
@@ -14,7 +14,7 @@ async function libraryWithLoans(copies: string[], lentOn = "2026-03-02") {
   return { library, loanIds };
 }
 
-function remindersRecorded(library: ReturnType<typeof createLibrary>) {
+function remindersRecorded(library: ReturnType<typeof createTestLibrary>) {
   return library.db.prepare("SELECT loan_id AS loanId, sent_on AS sentOn FROM reminders ORDER BY loan_id").all();
 }
 

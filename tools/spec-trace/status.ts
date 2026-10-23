@@ -1,7 +1,6 @@
+import { runFromCommandLine, type CommandResult } from "./command.ts";
 import { workingTree } from "./repository.ts";
 import { countByStatus, trace, type RowStatus } from "./trace.ts";
-
-export type CommandResult = { exitCode: number; output: string };
 
 export function runStatus(args: string[], root: string): CommandResult {
   const asJson = args.includes("--json");
@@ -31,8 +30,4 @@ export function formatSubject(name: string, rows: RowStatus[]): string {
   return `${heading}\n\n${lines.map((line) => ` ${line}`.trimEnd()).join("\n")}\n`;
 }
 
-if (import.meta.main) {
-  const { exitCode, output } = runStatus(process.argv.slice(2), process.cwd());
-  process.stdout.write(output);
-  process.exitCode = exitCode;
-}
+if (import.meta.main) runFromCommandLine(runStatus);

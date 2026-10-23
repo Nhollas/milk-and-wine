@@ -4,8 +4,8 @@
   "description": "A small library-loans service that demonstrates spec-driven development.",
   "type": "module",
   "scripts": {
-    "start": "node --disable-warning=ExperimentalWarning src/main.ts",
-    "reminders": "node --disable-warning=ExperimentalWarning src/reminders/main.ts",
+    "start:loans": "node --disable-warning=ExperimentalWarning src/loans/main.ts",
+    "start:reminders": "node --disable-warning=ExperimentalWarning src/reminders/main.ts",
     "typecheck": "tsc",
     "test": "vitest run",
     "test:smoke": "vitest run --config vitest.smoke.config.ts",

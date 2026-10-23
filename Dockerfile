@@ -6,4 +6,4 @@ RUN pnpm install --frozen-lockfile --prod
 COPY src ./src
 ENV NODE_OPTIONS=--disable-warning=ExperimentalWarning
 EXPOSE 3000
-CMD ["node", "src/main.ts"]
+CMD ["node", "src/loans/main.ts"]

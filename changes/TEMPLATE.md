@@ -2,7 +2,7 @@
 
 Copy to `changes/<change>/spec.md`. A change spec wraps the rows a piece of work adds, changes or
 removes, then is deleted in the MR that delivers its last row. It never owns a requirement: rows
-live in `specs/`. See [spec-driven development](SPEC-DRIVEN-DEVELOPMENT.md).
+live in `specs/`. See [spec-driven development](../SPEC-DRIVEN-DEVELOPMENT.md).
 
 Mark rows `+` added, `~` changed or `−` removed.
 

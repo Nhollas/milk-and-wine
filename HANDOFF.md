@@ -21,8 +21,8 @@ neutral, standalone reference. **We are not retrofitting agent-graph.**
 | What | Where |
 | --- | --- |
 | The process, with diagrams and what we rejected | [SPEC-DRIVEN-DEVELOPMENT.md](SPEC-DRIVEN-DEVELOPMENT.md) |
-| Row format and Verified values | [SPEC-TEMPLATE.md](SPEC-TEMPLATE.md) |
-| Change spec format and the "before deleting" checklist | [CHANGE-TEMPLATE.md](CHANGE-TEMPLATE.md) |
+| Row format and Verified values | [specs/TEMPLATE.md](specs/TEMPLATE.md) |
+| Change spec format and the "before deleting" checklist | [changes/TEMPLATE.md](changes/TEMPLATE.md) |
 | How status is computed, and why file names carry subject and level | [docs/adr/](docs/adr) |
 | The tooling's rules | [specs/tools/spec-trace/spec.md](specs/tools/spec-trace/spec.md) |
 | An in-flight change (MR 1 of 3 done) | [changes/renew-a-loan/spec.md](changes/renew-a-loan/spec.md) |

@@ -1,5 +1,5 @@
+import { runFromCommandLine, type CommandResult } from "./command.ts";
 import { gitRevision, workingTree } from "./repository.ts";
-import type { CommandResult } from "./status.ts";
 import { countByStatus, regressions, trace } from "./trace.ts";
 
 export function runCheck(args: string[], root: string): CommandResult {
@@ -18,8 +18,4 @@ export function runCheck(args: string[], root: string): CommandResult {
   return { exitCode: 1, output: `${lines.join("\n")}\n\nspec:check failed · ${problems.length} errors · ${summary}\n` };
 }
 
-if (import.meta.main) {
-  const { exitCode, output } = runCheck(process.argv.slice(2), process.cwd());
-  process.stdout.write(output);
-  process.exitCode = exitCode;
-}
+if (import.meta.main) runFromCommandLine(runCheck);

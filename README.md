@@ -34,7 +34,7 @@ pnpm check
 | --- | --- |
 | [SPEC-DRIVEN-DEVELOPMENT.md](SPEC-DRIVEN-DEVELOPMENT.md) | The process, mostly as diagrams |
 | [GLOSSARY.md](GLOSSARY.md) | The terms specs, code and conversation share |
-| [SPEC-TEMPLATE.md](SPEC-TEMPLATE.md), [CHANGE-TEMPLATE.md](CHANGE-TEMPLATE.md) | Where every spec and change starts |
+| [specs/TEMPLATE.md](specs/TEMPLATE.md), [changes/TEMPLATE.md](changes/TEMPLATE.md) | Where every spec and change starts |
 | [specs/journeys/borrow-a-book](specs/journeys/borrow-a-book/spec.md) | A journey across modules, proven by system tests |
 | [specs/modules/loans](specs/modules/loans/spec.md) | A module with service rows, a dependency row, out-of-order IDs and proposed rows |
 | [specs/modules/catalogue](specs/modules/catalogue/spec.md) | An external API client with boundary rows |
@@ -42,6 +42,8 @@ pnpm check
 | [specs/environments/production](specs/environments/production/spec.md) | Deployment as rows: smoke tests and a manual runbook check |
 | [specs/tools/spec-trace](specs/tools/spec-trace/spec.md) | The tooling's own rules, proven the same way |
 | [changes/renew-a-loan](changes/renew-a-loan/spec.md) | A change after its first MR: rows landed, code not yet |
+| `src/<module>/`, `tools/<tool>/` | Code, with its subject's tests beside it |
+| `tests/system/`, `tests/smoke/` | Tests for journeys and environments, which have no code of their own |
 | [docs/adr](docs/adr) | Why status is computed, and why file names carry subject and level |
 | [.claude/settings.json](.claude/settings.json) | The read hook for agents |
 | [.gitlab-ci.yml](.gitlab-ci.yml) | `spec:check` in CI, with `--base` in merge requests |
@@ -49,9 +51,9 @@ pnpm check
 ## Running the service
 
 ```bash
-DATABASE_PATH=loans.db CATALOGUE_URL=https://catalogue.example pnpm start
+DATABASE_PATH=loans.db CATALOGUE_URL=https://catalogue.example pnpm start:loans
 ```
 
 ```bash
-DATABASE_PATH=loans.db NOTIFY_URL=https://notifications.example pnpm reminders
+DATABASE_PATH=loans.db NOTIFY_URL=https://notifications.example pnpm start:reminders
 ```
