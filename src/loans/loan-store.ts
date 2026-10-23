@@ -1,26 +1,29 @@
 import type { DatabaseSync } from "node:sqlite";
+import { z } from "zod";
 
-export type Loan = {
-  loanId: string;
-  memberId: string;
-  copyId: string;
-  lentOn: string;
-  dueOn: string;
-  returnedOn: string | null;
-};
+export type Loan = z.output<typeof loanRecord>;
 
 export class CopyOnLoan extends Error {}
 
 const SQLITE_CONSTRAINT_UNIQUE = 2067;
 
-type LoanRecord = {
-  loan_id: string;
-  member_id: string;
-  copy_id: string;
-  lent_on: string;
-  due_on: string;
-  returned_on: string | null;
-};
+const loanRecord = z
+  .object({
+    loan_id: z.string(),
+    member_id: z.string(),
+    copy_id: z.string(),
+    lent_on: z.iso.date(),
+    due_on: z.iso.date(),
+    returned_on: z.iso.date().nullable(),
+  })
+  .transform((record) => ({
+    loanId: record.loan_id,
+    memberId: record.member_id,
+    copyId: record.copy_id,
+    lentOn: record.lent_on,
+    dueOn: record.due_on,
+    returnedOn: record.returned_on,
+  }));
 
 export function createLoanStore(db: DatabaseSync) {
   return {
@@ -43,19 +46,8 @@ export function createLoanStore(db: DatabaseSync) {
     },
 
     find(loanId: string): Loan | undefined {
-      const record = db.prepare("SELECT * FROM loans WHERE loan_id = ?").get(loanId) as
-        | LoanRecord
-        | undefined;
-      return (
-        record && {
-          loanId: record.loan_id,
-          memberId: record.member_id,
-          copyId: record.copy_id,
-          lentOn: record.lent_on,
-          dueOn: record.due_on,
-          returnedOn: record.returned_on,
-        }
-      );
+      const row = db.prepare("SELECT * FROM loans WHERE loan_id = ?").get(loanId);
+      return row && loanRecord.parse(row);
     },
 
     markReturned(loanId: string, returnedOn: string): void {
