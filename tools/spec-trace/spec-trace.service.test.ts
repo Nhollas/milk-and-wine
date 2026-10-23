@@ -15,14 +15,14 @@ test("B1: reads each row of a spec table as a row of the subject its folder name
   const root = fixtureRepository({
     [WIDGETS_SPEC]: specFile([
       ["B1", "service", "Answers `a \\| b`"],
-      ["B7", "`boundary`"],
+      ["B7", "`integration`"],
       ["B2", "dependency [Widget store](https://example.com/store)"],
     ]),
   });
 
   expect(statusRows(root).map(({ id, verified }) => ({ id, verified }))).toEqual([
     { id: "B1", verified: "service" },
-    { id: "B7", verified: "boundary" },
+    { id: "B7", verified: "integration" },
     { id: "B2", verified: "dependency" },
   ]);
 });
@@ -61,14 +61,14 @@ test("B3: delivers a row only through an active test at its Verified level", () 
       { title: "B2: is planned", modifier: "todo" },
       { title: "B3: is parked", modifier: "skip" },
     ]),
-    "src/widgets/widgets.boundary.test.ts": testFile([{ title: "B4: is tested at the wrong level" }]),
+    "src/widgets/widgets.integration.test.ts": testFile([{ title: "B4: is tested at the wrong level" }]),
   });
 
   expect(statusRows(root).map(({ id, status, proof }) => `${id} ${status} ${proof}`)).toEqual([
     `B1 delivered ${WIDGETS_TESTS} › "B1: is built"`,
     `B2 proposed todo in ${WIDGETS_TESTS}`,
     `B3 proposed skipped in ${WIDGETS_TESTS}`,
-    "B4 proposed wrong level: boundary in src/widgets/widgets.boundary.test.ts",
+    "B4 proposed wrong level: integration in src/widgets/widgets.integration.test.ts",
     "B5 proposed nothing yet",
   ]);
 });

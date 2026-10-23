@@ -16,7 +16,7 @@ for engineers, reviewers and agents.
 | ID | Given | When | Then | Verified |
 | --- | --- | --- | --- | --- |
 | B1 | A `specs/**/spec.md` has a table headed `ID \| Given \| When \| Then \| Verified` | Spec trace reads the repository | Each row belongs to the subject named by the spec's folder, with its Verified value | service |
-| B2 | A test file is named `<subject>[.<part>].<level>.test.ts`, and `<level>` is `service`, `boundary`, `system` or `smoke` | A test title in it starts with `B<n>:` | The test names row `B<n>` of that subject. Files named without a level are exempt | service |
+| B2 | A test file is named `<subject>[.<part>].<level>.test.ts`, and `<level>` is `service`, `integration`, `system` or `smoke` | A test title in it starts with `B<n>:` | The test names row `B<n>` of that subject. Files named without a level are exempt | service |
 
 ### Computing status
 

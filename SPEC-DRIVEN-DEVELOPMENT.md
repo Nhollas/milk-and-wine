@@ -41,7 +41,7 @@ Behaviour specs keep only what's needed now: existing code is evidence, not a re
  └─────┴────────────────────┴──────────────────┴──────────────────────┴────────────┘
     ▲     ▲                    ▲                  ▲                      ▲
     │     │                    │                  │                      └ what proves it:
-    │     │                    │                  │                        service · boundary · system
+    │     │                    │                  │                        service · integration · system
     │     │                    │                  │                        smoke · dependency · manual
     │     │                    │                  └ what an observer at the boundary sees
     │     │                    └ the one event that sets it off
@@ -71,7 +71,7 @@ never move.
                     ▼                       ▼                       ▼
   folder     specs/journeys/         specs/modules/          specs/environments/
   boundary   the member              the module's edges      the deployed system
-  proof      system test             service, boundary       smoke, manual
+  proof      system test             service, integration    smoke, manual
   example    borrow-a-book B3        loans B2                production B1
 ```
 
@@ -105,7 +105,7 @@ change. See [ADR 0001](docs/adr/0001-status-is-computed-from-tests.md).
 ```
   src/loans/loans.http.service.test.ts
             └─┬─┘ └┬─┘ └──┬──┘
-              │    │      └─ level: service · boundary · system · smoke, or none
+              │    │      └─ level: service · integration · system · smoke, or none
               │    └─ part: optional, to split a subject's tests
               └─ subject: the name of a folder under specs/
 

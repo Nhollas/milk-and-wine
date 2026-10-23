@@ -8,7 +8,7 @@ its own `B5`, so a test's title can't say which subject it means.
 ## Decision
 
 A test file is named `<subject>[.<part>].<level>.test.ts`. The subject is the spec's folder name,
-and the level is `service`, `boundary`, `system` or `smoke`. A test title starts with the row ID.
+and the level is `service`, `integration`, `system` or `smoke`. A test title starts with the row ID.
 Files without a level are unit tests and name no rows.
 
 ## Consequences

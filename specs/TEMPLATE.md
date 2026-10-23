@@ -14,7 +14,7 @@ observer at the boundary sees, including after a failure.
 | Verified | Proven by | Delivered when |
 | --- | --- | --- |
 | `service` | A test in `<subject>[.<part>].service.test.ts` whose title starts with the ID | The test is active |
-| `boundary` | The same, in a `.boundary.test.ts` file | The test is active |
+| `integration` | The same, in a `.integration.test.ts` file, against a stand-in for a system we don't own | The test is active |
 | `system` | The same, in a `.system.test.ts` file | The test is active |
 | `smoke` | The same, in a `.smoke.test.ts` file run against a deployed environment | The test is active |
 | `dependency <link>` | A guarantee from something we don't own | Declared |

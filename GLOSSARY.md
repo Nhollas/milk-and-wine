@@ -63,8 +63,13 @@ One promise in a behaviour spec, with an ID, Given, When, Then and Verified.
 _Avoid_: Acceptance criterion, AC, requirement, scenario
 
 **Level**:
-The kind of test a row's Verified can name: service, boundary, system or smoke. A test file's
+The kind of test a row's Verified can name: service, integration, system or smoke. A test file's
 name carries its level.
+
+**Integration test**:
+A narrow integration test: our code that talks to a system we don't own, tested against a
+stand-in for that system. It never reaches the real system or checks that its owners agree.
+_Avoid_: Contract test, boundary test
 
 **Unit test**:
 A test in a file with no level. It is welcome but never proves a row.

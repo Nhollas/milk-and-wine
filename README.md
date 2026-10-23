@@ -37,8 +37,8 @@ pnpm check
 | [specs/TEMPLATE.md](specs/TEMPLATE.md), [changes/TEMPLATE.md](changes/TEMPLATE.md) | Where every spec and change starts |
 | [specs/journeys/borrow-a-book](specs/journeys/borrow-a-book/spec.md) | A journey across modules, proven by system tests |
 | [specs/modules/loans](specs/modules/loans/spec.md) | A module with service rows, a dependency row, out-of-order IDs and proposed rows |
-| [specs/modules/catalogue](specs/modules/catalogue/spec.md) | An external API client with boundary rows |
-| [specs/modules/reminders](specs/modules/reminders/spec.md) | A scheduled job with service and boundary rows |
+| [specs/modules/catalogue](specs/modules/catalogue/spec.md) | An external API client with integration rows |
+| [specs/modules/reminders](specs/modules/reminders/spec.md) | A scheduled job with service and integration rows |
 | [specs/environments/production](specs/environments/production/spec.md) | Deployment as rows: smoke tests and a manual runbook check |
 | [specs/tools/spec-trace](specs/tools/spec-trace/spec.md) | The tooling's own rules, proven the same way |
 | [changes/renew-a-loan](changes/renew-a-loan/spec.md) | A change after its first MR: rows landed, code not yet |
