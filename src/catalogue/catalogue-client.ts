@@ -2,11 +2,12 @@ import { setTimeout } from "node:timers/promises";
 import { z } from "zod";
 import { endpoint } from "../http.ts";
 
-export class CatalogueUnavailable extends Error {}
-
 type Copy = { copyId: string; title: string; available: boolean };
 
-type CopyLookup = { kind: "found"; copy: Copy } | { kind: "not-found" };
+type CopyLookup =
+  | { kind: "found"; copy: Copy }
+  | { kind: "not-found" }
+  | { kind: "unavailable"; reason: string };
 
 export type CatalogueClient = { getCopy(copyId: string): Promise<CopyLookup> };
 
@@ -39,16 +40,18 @@ export function createCatalogueClient(
         }).catch(() => undefined);
 
         if (response?.status === 404) return { kind: "not-found" };
-        if (response?.ok === true) return { kind: "found", copy: await readCopy(response) };
+        if (response?.ok === true) return copyLookup(response);
         if (response && response.status < 500) {
-          throw new CatalogueUnavailable(
-            `Catalogue API answered ${response.status} for copy ${copyId}`,
-          );
+          return {
+            kind: "unavailable",
+            reason: `Catalogue API answered ${response.status} for copy ${copyId}`,
+          };
         }
         if (attempt === attempts) {
-          throw new CatalogueUnavailable(
-            `Catalogue API unavailable after ${attempts} attempts for copy ${copyId}`,
-          );
+          return {
+            kind: "unavailable",
+            reason: `Catalogue API unavailable after ${attempts} attempts for copy ${copyId}`,
+          };
         }
         await setTimeout(retryDelayMs);
       }
@@ -56,13 +59,16 @@ export function createCatalogueClient(
   };
 }
 
-async function readCopy(response: Response): Promise<Copy> {
+async function copyLookup(response: Response): Promise<CopyLookup> {
   const parsed = copyResponseSchema.safeParse(await response.json().catch(() => undefined));
   if (!parsed.success)
-    throw new CatalogueUnavailable("Catalogue API answered with an unreadable copy");
+    return { kind: "unavailable", reason: "Catalogue API answered with an unreadable copy" };
   return {
-    copyId: parsed.data.id,
-    title: parsed.data.title,
-    available: parsed.data.state === "available",
+    kind: "found",
+    copy: {
+      copyId: parsed.data.id,
+      title: parsed.data.title,
+      available: parsed.data.state === "available",
+    },
   };
 }

@@ -3,7 +3,7 @@ import { z } from "zod";
 
 export type Loan = z.output<typeof loanRecord>;
 
-export class CopyOnLoan extends Error {}
+type LoanInsert = { kind: "inserted" } | { kind: "copy-on-loan" };
 
 const SQLITE_CONSTRAINT_UNIQUE = 2067;
 
@@ -34,15 +34,16 @@ export function createLoanStore(db: DatabaseSync) {
       );
     },
 
-    insert(loan: Loan): void {
+    insert(loan: Loan): LoanInsert {
       try {
         db.prepare(
           "INSERT INTO loans (loan_id, member_id, copy_id, lent_on, due_on, returned_on) VALUES (?, ?, ?, ?, ?, ?)",
         ).run(loan.loanId, loan.memberId, loan.copyId, loan.lentOn, loan.dueOn, loan.returnedOn);
       } catch (error) {
-        if (isUniqueViolation(error)) throw new CopyOnLoan(loan.copyId);
+        if (isUniqueViolation(error)) return { kind: "copy-on-loan" };
         throw error;
       }
+      return { kind: "inserted" };
     },
 
     find(loanId: string): Loan | undefined {

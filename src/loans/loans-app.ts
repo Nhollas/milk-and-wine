@@ -2,9 +2,9 @@ import { randomUUID } from "node:crypto";
 import type { DatabaseSync } from "node:sqlite";
 import { Hono } from "hono";
 import { z } from "zod";
-import { type CatalogueClient, CatalogueUnavailable } from "../catalogue/catalogue-client.ts";
+import type { CatalogueClient } from "../catalogue/catalogue-client.ts";
 import { addDays, type Clock, utcDate } from "../clock.ts";
-import { CopyOnLoan, createLoanStore, type Loan } from "./loan-store.ts";
+import { createLoanStore, type Loan } from "./loan-store.ts";
 
 const LOAN_DAYS = 14;
 
@@ -32,14 +32,8 @@ export function createLoansApp({ db, catalogueClient, clock }: LoansAppOptions):
 
     if (store.hasOpenLoan(copyId)) return c.json({ error: "copy-on-loan" }, 409);
 
-    let lookup;
-    try {
-      lookup = await catalogueClient.getCopy(copyId);
-    } catch (error) {
-      if (error instanceof CatalogueUnavailable)
-        return c.json({ error: "catalogue-unavailable" }, 503);
-      throw error;
-    }
+    const lookup = await catalogueClient.getCopy(copyId);
+    if (lookup.kind === "unavailable") return c.json({ error: "catalogue-unavailable" }, 503);
     if (lookup.kind === "not-found") return c.json({ error: "copy-not-found" }, 404);
     if (!lookup.copy.available) return c.json({ error: "copy-withdrawn" }, 422);
 
@@ -52,12 +46,7 @@ export function createLoansApp({ db, catalogueClient, clock }: LoansAppOptions):
       dueOn: addDays(lentOn, LOAN_DAYS),
       returnedOn: null,
     };
-    try {
-      store.insert(loan);
-    } catch (error) {
-      if (error instanceof CopyOnLoan) return c.json({ error: "copy-on-loan" }, 409);
-      throw error;
-    }
+    if (store.insert(loan).kind === "copy-on-loan") return c.json({ error: "copy-on-loan" }, 409);
     return c.json(
       { loanId: loan.loanId, memberId, copyId, lentOn: loan.lentOn, dueOn: loan.dueOn },
       201,

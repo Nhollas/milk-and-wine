@@ -26,11 +26,10 @@ export function createReminderSweep({
     const summary: SweepSummary = { sent: 0, failed: 0 };
 
     for (const reminder of store.remindersDue(today)) {
-      try {
-        await notificationsClient.sendOverdueReminder(reminder);
-      } catch (error) {
+      const delivery = await notificationsClient.sendOverdueReminder(reminder);
+      if (delivery.kind === "refused") {
         summary.failed++;
-        logger.warn("reminder.failed", { loanId: reminder.loanId, error: String(error) });
+        logger.warn("reminder.failed", { loanId: reminder.loanId, error: delivery.reason });
         continue;
       }
       store.recordSent(reminder.loanId, today);

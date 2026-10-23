@@ -23,7 +23,7 @@ Reminds members about overdue loans, once a day, through the organisation's Noti
 
 | ID | Given | When | Then | Verified |
 | --- | --- | --- | --- | --- |
-| B5 | A reminder is due | The sweep sends it | Sends `POST {NOTIFY_URL}/notifications` with JSON `{ "memberId", "template": "loan-overdue", "data": { "loanId", "dueOn" } }`; any `2xx` counts as accepted | integration |
+| B5 | A reminder is due | The sweep sends it | Sends `POST {NOTIFY_URL}/notifications` with JSON `{ "memberId", "template": "loan-overdue", "data": { "loanId", "dueOn" } }`; any `2xx` counts as accepted, and any other answer or a failed connection as refused | integration |
 
 **Why**
 

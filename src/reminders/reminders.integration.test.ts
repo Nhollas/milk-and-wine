@@ -1,6 +1,6 @@
 import { http, HttpResponse } from "msw";
 import { expect, test } from "vitest";
-import { createNotificationsClient, NotificationRefused } from "./notifications-client.ts";
+import { createNotificationsClient } from "./notifications-client.ts";
 import { NOTIFICATIONS_PATH, NOTIFY_URL } from "../../tests/support/notifications-api.handlers.ts";
 import { httpInterceptor } from "../../tests/support/http-interceptor.ts";
 
@@ -23,7 +23,11 @@ test("B5: posts a loan-overdue notification and accepts any 2xx answer", async (
     }),
   );
 
-  for (const _ of statuses) await notificationsClient.sendOverdueReminder(reminder);
+  const deliveries = [];
+  for (const _ of statuses)
+    deliveries.push(await notificationsClient.sendOverdueReminder(reminder));
+
+  expect(deliveries.map((delivery) => delivery.kind)).toEqual(["accepted", "accepted", "accepted"]);
 
   expect(requests).toHaveLength(3);
   expect(requests[0]).toEqual({
@@ -41,7 +45,11 @@ test("B5: posts a loan-overdue notification and accepts any 2xx answer", async (
 test("B5: treats any other answer as refused", async () => {
   httpInterceptor.use(http.post(NOTIFICATIONS_PATH, () => new HttpResponse(null, { status: 400 })));
 
-  await expect(notificationsClient.sendOverdueReminder(reminder)).rejects.toThrow(
-    NotificationRefused,
-  );
+  expect((await notificationsClient.sendOverdueReminder(reminder)).kind).toBe("refused");
+});
+
+test("B5: treats a failed connection as refused", async () => {
+  httpInterceptor.use(http.post(NOTIFICATIONS_PATH, () => HttpResponse.error()));
+
+  expect((await notificationsClient.sendOverdueReminder(reminder)).kind).toBe("refused");
 });

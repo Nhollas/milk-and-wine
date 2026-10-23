@@ -1,7 +1,4 @@
-import {
-  type CatalogueClient,
-  CatalogueUnavailable,
-} from "../../src/catalogue/catalogue-client.ts";
+import type { CatalogueClient } from "../../src/catalogue/catalogue-client.ts";
 
 type CopyState = "available" | "withdrawn";
 
@@ -13,7 +10,7 @@ export function fakeCatalogueClient() {
   const catalogueClient: CatalogueClient = {
     async getCopy(copyId) {
       lookups.push(copyId);
-      if (unavailable) throw new CatalogueUnavailable("Fake catalogue is unavailable");
+      if (unavailable) return { kind: "unavailable", reason: "Fake catalogue is unavailable" };
       const state = copies.get(copyId);
       if (!state) return { kind: "not-found" };
       return {

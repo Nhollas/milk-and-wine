@@ -1,10 +1,6 @@
 import { http, HttpResponse, delay } from "msw";
 import { expect, test } from "vitest";
-import {
-  CatalogueUnavailable,
-  createCatalogueClient,
-  DEFAULT_RETRY_POLICY,
-} from "./catalogue-client.ts";
+import { createCatalogueClient, DEFAULT_RETRY_POLICY } from "./catalogue-client.ts";
 import {
   CATALOGUE_URL,
   COPY_PATH,
@@ -59,7 +55,7 @@ test("B3: gives up after three attempts while the catalogue keeps failing", asyn
     }),
   );
 
-  await expect(catalogueClient.getCopy("copy-1")).rejects.toThrow(CatalogueUnavailable);
+  expect((await catalogueClient.getCopy("copy-1")).kind).toBe("unavailable");
 });
 
 test("B3: still answers when the third attempt succeeds", async () => {
@@ -84,7 +80,7 @@ test("B3: gives up after three attempts while the connection fails", async () =>
     }),
   );
 
-  await expect(catalogueClient.getCopy("copy-1")).rejects.toThrow(CatalogueUnavailable);
+  expect((await catalogueClient.getCopy("copy-1")).kind).toBe("unavailable");
 });
 
 test("B3: abandons an attempt after two seconds and tries again", async () => {
@@ -111,7 +107,7 @@ test("B4: refuses an unreadable answer without retrying", async () => {
     }),
   );
 
-  await expect(catalogueClient.getCopy("copy-1")).rejects.toThrow(CatalogueUnavailable);
+  expect((await catalogueClient.getCopy("copy-1")).kind).toBe("unavailable");
 });
 
 test("B4: refuses an unexpected client error without retrying", async () => {
@@ -122,5 +118,5 @@ test("B4: refuses an unexpected client error without retrying", async () => {
     }),
   );
 
-  await expect(catalogueClient.getCopy("copy-1")).rejects.toThrow(CatalogueUnavailable);
+  expect((await catalogueClient.getCopy("copy-1")).kind).toBe("unavailable");
 });

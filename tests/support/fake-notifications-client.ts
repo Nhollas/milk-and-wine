@@ -1,7 +1,6 @@
-import {
-  type NotificationsClient,
-  NotificationRefused,
-  type OverdueReminder,
+import type {
+  NotificationsClient,
+  OverdueReminder,
 } from "../../src/reminders/notifications-client.ts";
 
 export function fakeNotificationsClient() {
@@ -11,8 +10,9 @@ export function fakeNotificationsClient() {
   const notificationsClient: NotificationsClient = {
     async sendOverdueReminder(reminder) {
       if (refusedLoanIds.has(reminder.loanId))
-        throw new NotificationRefused(`Fake refused loan ${reminder.loanId}`);
+        return { kind: "refused", reason: `Fake refused loan ${reminder.loanId}` };
       sent.push(reminder);
+      return { kind: "accepted" };
     },
   };
 
