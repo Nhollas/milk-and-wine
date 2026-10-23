@@ -7,8 +7,8 @@
     "start:loans": "node src/loans/main.ts",
     "start:reminders": "node src/reminders/main.ts",
     "typecheck": "tsc",
-    "test": "vitest run",
-    "test:smoke": "vitest run --config vitest.smoke.config.ts",
+    "test": "vitest run --project '!smoke'",
+    "test:smoke": "vitest run --project smoke",
     "spec:status": "node tools/spec-trace/status.ts",
     "spec:check": "node tools/spec-trace/check.ts",
     "check": "pnpm typecheck && pnpm test && pnpm spec:check"

@@ -1,17 +1,17 @@
 import { http, HttpResponse } from "msw";
 import { expect, test } from "vitest";
 import { createNotificationsClient, NotificationRefused } from "./notifications-client.ts";
-import { NOTIFY_URL } from "../../tests/support/fake-notifications.ts";
-import { network } from "../../tests/support/network.ts";
+import { NOTIFICATIONS_PATH, NOTIFY_URL } from "../../tests/support/notifications-api.handlers.ts";
+import { httpInterceptor } from "../../tests/support/http-interceptor.ts";
 
-const notifications = createNotificationsClient(NOTIFY_URL);
+const notificationsClient = createNotificationsClient(NOTIFY_URL);
 const reminder = { memberId: "member-1", loanId: "loan-1", dueOn: "2026-03-16" };
 
 test("B5: posts a loan-overdue notification and accepts any 2xx answer", async () => {
   const requests: { method: string; path: string; contentType: string | null; body: unknown }[] = [];
   const statuses = [200, 202, 204];
-  network.use(
-    http.post(`${NOTIFY_URL}/notifications`, async ({ request }) => {
+  httpInterceptor.use(
+    http.post(NOTIFICATIONS_PATH, async ({ request }) => {
       requests.push({
         method: request.method,
         path: new URL(request.url).pathname,
@@ -22,7 +22,7 @@ test("B5: posts a loan-overdue notification and accepts any 2xx answer", async (
     }),
   );
 
-  for (const _ of statuses) await notifications.sendOverdueReminder(reminder);
+  for (const _ of statuses) await notificationsClient.sendOverdueReminder(reminder);
 
   expect(requests).toHaveLength(3);
   expect(requests[0]).toEqual({
@@ -34,7 +34,7 @@ test("B5: posts a loan-overdue notification and accepts any 2xx answer", async (
 });
 
 test("B5: treats any other answer as refused", async () => {
-  network.use(http.post(`${NOTIFY_URL}/notifications`, () => new HttpResponse(null, { status: 400 })));
+  httpInterceptor.use(http.post(NOTIFICATIONS_PATH, () => new HttpResponse(null, { status: 400 })));
 
-  await expect(notifications.sendOverdueReminder(reminder)).rejects.toThrow(NotificationRefused);
+  await expect(notificationsClient.sendOverdueReminder(reminder)).rejects.toThrow(NotificationRefused);
 });

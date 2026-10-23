@@ -4,9 +4,9 @@ export class NotificationRefused extends Error {}
 
 export type OverdueReminder = { memberId: string; loanId: string; dueOn: string };
 
-export type Notifications = { sendOverdueReminder(reminder: OverdueReminder): Promise<void> };
+export type NotificationsClient = { sendOverdueReminder(reminder: OverdueReminder): Promise<void> };
 
-export function createNotificationsClient(baseUrl: string): Notifications {
+export function createNotificationsClient(baseUrl: string): NotificationsClient {
   return {
     async sendOverdueReminder({ memberId, loanId, dueOn }) {
       const response = await fetch(endpoint(baseUrl, "notifications"), {

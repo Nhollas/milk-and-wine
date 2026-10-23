@@ -1,7 +1,8 @@
 import { z } from "zod";
 import { systemClock } from "../clock.ts";
 import { openDatabase } from "../database.ts";
-import { stdoutLog } from "../log.ts";
+import { logger } from "../log.ts";
+import { createNotificationsClient } from "./notifications-client.ts";
 import { createReminderSweep } from "./reminder-sweep.ts";
 
 const env = z
@@ -13,9 +14,9 @@ const env = z
 
 const sweep = createReminderSweep({
   db: openDatabase(env.DATABASE_PATH),
-  notifyUrl: env.NOTIFY_URL,
+  notificationsClient: createNotificationsClient(env.NOTIFY_URL),
   clock: systemClock,
-  log: stdoutLog,
+  logger,
 });
 
 await sweep();

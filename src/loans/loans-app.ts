@@ -2,7 +2,7 @@ import { randomUUID } from "node:crypto";
 import type { DatabaseSync } from "node:sqlite";
 import { Hono } from "hono";
 import { z } from "zod";
-import { CatalogueUnavailable, createCatalogueClient } from "../catalogue/catalogue-client.ts";
+import { type CatalogueClient, CatalogueUnavailable } from "../catalogue/catalogue-client.ts";
 import { addDays, type Clock, utcDate } from "../clock.ts";
 import { CopyOnLoan, createLoanStore, type Loan } from "./loan-store.ts";
 
@@ -15,13 +15,12 @@ const lendRequestSchema = z.object({
 
 export type LoansAppOptions = {
   db: DatabaseSync;
-  catalogueUrl: string;
+  catalogueClient: CatalogueClient;
   clock: Clock;
 };
 
-export function createLoansApp({ db, catalogueUrl, clock }: LoansAppOptions): Hono {
+export function createLoansApp({ db, catalogueClient, clock }: LoansAppOptions): Hono {
   const store = createLoanStore(db);
-  const catalogue = createCatalogueClient(catalogueUrl);
   const app = new Hono();
 
   app.get("/health", (c) => c.json({ status: "ok" }));
@@ -35,7 +34,7 @@ export function createLoansApp({ db, catalogueUrl, clock }: LoansAppOptions): Ho
 
     let lookup;
     try {
-      lookup = await catalogue.getCopy(copyId);
+      lookup = await catalogueClient.getCopy(copyId);
     } catch (error) {
       if (error instanceof CatalogueUnavailable) return c.json({ error: "catalogue-unavailable" }, 503);
       throw error;

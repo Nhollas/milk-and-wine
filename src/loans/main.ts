@@ -1,8 +1,9 @@
 import { serve } from "@hono/node-server";
 import { z } from "zod";
+import { createCatalogueClient } from "../catalogue/catalogue-client.ts";
 import { systemClock } from "../clock.ts";
 import { openDatabase } from "../database.ts";
-import { stdoutLog } from "../log.ts";
+import { logger } from "../log.ts";
 import { createLoansApp } from "./loans-app.ts";
 
 const env = z
@@ -15,8 +16,8 @@ const env = z
 
 const app = createLoansApp({
   db: openDatabase(env.DATABASE_PATH),
-  catalogueUrl: env.CATALOGUE_URL,
+  catalogueClient: createCatalogueClient(env.CATALOGUE_URL),
   clock: systemClock,
 });
 
-serve({ fetch: app.fetch, port: env.PORT }, ({ port }) => stdoutLog("info", "loans.listening", { port }));
+serve({ fetch: app.fetch, port: env.PORT }, ({ port }) => logger.info("loans.listening", { port }));

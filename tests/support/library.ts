@@ -1,30 +1,45 @@
+import type { CatalogueClient } from "../../src/catalogue/catalogue-client.ts";
 import { openDatabase } from "../../src/database.ts";
-import type { Log, LogLevel } from "../../src/log.ts";
+import { createLogger, type LogEntry } from "../../src/log.ts";
 import { createLoansApp } from "../../src/loans/loans-app.ts";
+import type { NotificationsClient } from "../../src/reminders/notifications-client.ts";
 import { createReminderSweep } from "../../src/reminders/reminder-sweep.ts";
-import { CATALOGUE_URL } from "./fake-catalogue.ts";
-import { NOTIFY_URL } from "./fake-notifications.ts";
 
-export type LogEntry = { level: LogLevel; event: string; fields: Record<string, unknown> };
+export type Library = ReturnType<typeof openLibrary>;
 
-export function createTestLibrary(today = "2026-03-02") {
+export type LibraryDependencies = { catalogueClient: CatalogueClient; notificationsClient: NotificationsClient };
+
+export function openLibrary({ catalogueClient, notificationsClient }: LibraryDependencies, today = "2026-03-02") {
   let now = new Date(`${today}T10:00:00Z`);
   const logs: LogEntry[] = [];
-  const log: Log = (level, event, fields = {}) => logs.push({ level, event, fields });
+  const logger = createLogger((entry) => logs.push(entry));
   const db = openDatabase(":memory:");
   const clock = () => now;
-  const app = createLoansApp({ db, catalogueUrl: CATALOGUE_URL, clock });
-  const sweep = createReminderSweep({ db, notifyUrl: NOTIFY_URL, clock, log });
+  const app = createLoansApp({ db, catalogueClient, clock });
+  const sweep = createReminderSweep({ db, notificationsClient, clock, logger });
 
   return {
     db,
     logs,
     sweep,
+    close() {
+      if (db.isOpen) db.close();
+    },
     setToday(date: string) {
       now = new Date(`${date}T10:00:00Z`);
     },
     async lend(memberId: unknown, copyId: unknown) {
       return sendJson("POST", "/loans", { memberId, copyId });
+    },
+    async lendForLoanId(memberId: string, copyId: string) {
+      const { body } = await sendJson("POST", "/loans", { memberId, copyId });
+      return String(body["loanId"]);
+    },
+    loanCount() {
+      return (db.prepare("SELECT COUNT(*) AS count FROM loans").get() as { count: number }).count;
+    },
+    remindersRecorded() {
+      return db.prepare("SELECT loan_id AS loanId, sent_on AS sentOn FROM reminders ORDER BY loan_id").all();
     },
     async returnLoan(loanId: string) {
       return sendJson("POST", `/loans/${loanId}/return`);

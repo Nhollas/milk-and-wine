@@ -8,11 +8,11 @@ export type Copy = { copyId: string; title: string; available: boolean };
 
 export type CopyLookup = { kind: "found"; copy: Copy } | { kind: "not-found" };
 
-export type Catalogue = { getCopy(copyId: string): Promise<CopyLookup> };
+export type CatalogueClient = { getCopy(copyId: string): Promise<CopyLookup> };
 
-const ATTEMPTS = 3;
-const ATTEMPT_TIMEOUT_MS = 2_000;
-const RETRY_DELAY_MS = 100;
+export type RetryPolicy = { attempts: number; attemptTimeoutMs: number; retryDelayMs: number };
+
+export const DEFAULT_RETRY_POLICY: RetryPolicy = { attempts: 3, attemptTimeoutMs: 2_000, retryDelayMs: 100 };
 
 const copyResponseSchema = z.object({
   id: z.string(),
@@ -20,14 +20,15 @@ const copyResponseSchema = z.object({
   state: z.enum(["available", "withdrawn"]),
 });
 
-export function createCatalogueClient(baseUrl: string): Catalogue {
+export function createCatalogueClient(baseUrl: string, retryPolicy = DEFAULT_RETRY_POLICY): CatalogueClient {
+  const { attempts, attemptTimeoutMs, retryDelayMs } = retryPolicy;
   return {
     async getCopy(copyId) {
       const url = endpoint(baseUrl, `copies/${encodeURIComponent(copyId)}`);
       for (let attempt = 1; ; attempt++) {
         const response = await fetch(url, {
           headers: { accept: "application/json" },
-          signal: AbortSignal.timeout(ATTEMPT_TIMEOUT_MS),
+          signal: AbortSignal.timeout(attemptTimeoutMs),
         }).catch(() => undefined);
 
         if (response?.status === 404) return { kind: "not-found" };
@@ -35,10 +36,10 @@ export function createCatalogueClient(baseUrl: string): Catalogue {
         if (response && response.status < 500) {
           throw new CatalogueUnavailable(`Catalogue API answered ${response.status} for copy ${copyId}`);
         }
-        if (attempt === ATTEMPTS) {
-          throw new CatalogueUnavailable(`Catalogue API unavailable after ${ATTEMPTS} attempts for copy ${copyId}`);
+        if (attempt === attempts) {
+          throw new CatalogueUnavailable(`Catalogue API unavailable after ${attempts} attempts for copy ${copyId}`);
         }
-        await setTimeout(RETRY_DELAY_MS);
+        await setTimeout(retryDelayMs);
       }
     },
   };
