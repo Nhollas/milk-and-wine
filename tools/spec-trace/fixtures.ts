@@ -5,7 +5,7 @@ import { dirname, join } from "node:path";
 
 export type FixtureTest = { title: string; modifier?: "todo" | "skip" };
 
-export function fixtureRepository(files: Record<string, string>): string {
+export function fixtureRoot(files: Record<string, string>): string {
   const root = mkdtempSync(join(tmpdir(), "spec-trace-"));
   writeFiles(root, files);
   return root;

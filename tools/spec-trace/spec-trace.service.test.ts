@@ -2,7 +2,7 @@ import { expect, test } from "vitest";
 import { runCheck } from "./check.ts";
 import { runHook } from "./hook.ts";
 import { runStatus } from "./status.ts";
-import { commitAll, fixtureRepository, specFile, testFile, writeFiles } from "./fixtures.ts";
+import { commitAll, fixtureRoot, specFile, testFile, writeFiles } from "./fixtures.ts";
 
 const WIDGETS_SPEC = "specs/modules/widgets/spec.md";
 const WIDGETS_TESTS = "src/widgets/widgets.service.test.ts";
@@ -12,7 +12,7 @@ function statusRows(root: string, subject = "widgets") {
 }
 
 test("B1: reads each row of a spec table as a row of the subject its folder names", () => {
-  const root = fixtureRepository({
+  const root = fixtureRoot({
     [WIDGETS_SPEC]: specFile([
       ["B1", "service", "Answers `a \\| b`"],
       ["B7", "`integration`"],
@@ -28,7 +28,7 @@ test("B1: reads each row of a spec table as a row of the subject its folder name
 });
 
 test("B2: attributes a test to a row by its file's subject and level, and ignores files without a level", () => {
-  const root = fixtureRepository({
+  const root = fixtureRoot({
     [WIDGETS_SPEC]: specFile([["B1", "service"]]),
     "src/widgets/widgets.http.service.test.ts": testFile([{ title: "B1: answers" }]),
     "src/widgets/widgets.test.ts": testFile([{ title: "parses a widget" }]),
@@ -48,7 +48,7 @@ test("B2: attributes a test to a row by its file's subject and level, and ignore
 });
 
 test("B3: delivers a row only through an active test at its Verified level", () => {
-  const root = fixtureRepository({
+  const root = fixtureRoot({
     [WIDGETS_SPEC]: specFile([
       ["B1", "service"],
       ["B2", "service"],
@@ -74,7 +74,7 @@ test("B3: delivers a row only through an active test at its Verified level", () 
 });
 
 test("B4: delivers a dependency row and lists a manual row for sign-off, with the link as proof", () => {
-  const root = fixtureRepository({
+  const root = fixtureRoot({
     [WIDGETS_SPEC]: specFile([
       ["B1", "dependency [Widget store](https://example.com/store)"],
       ["B2", "manual [runbook](../../../docs/runbooks/widgets.md)"],
@@ -88,7 +88,7 @@ test("B4: delivers a dependency row and lists a manual row for sign-off, with th
 });
 
 test("B5: prints each row's status for one subject or every subject, as text or JSON", () => {
-  const root = fixtureRepository({
+  const root = fixtureRoot({
     [WIDGETS_SPEC]: specFile([
       ["B1", "service"],
       ["B2", "service"],
@@ -116,13 +116,13 @@ test("B5: prints each row's status for one subject or every subject, as text or 
 });
 
 test("B6: refuses a subject no spec folder is named after", () => {
-  const root = fixtureRepository({ [WIDGETS_SPEC]: specFile([["B1", "service"]]) });
+  const root = fixtureRoot({ [WIDGETS_SPEC]: specFile([["B1", "service"]]) });
 
   expect(runStatus(["gadgets"], root)).toEqual({ exitCode: 1, output: "unknown subject: gadgets\n" });
 });
 
 test("B7: fails on a repeated ID or a Verified value it doesn't recognise", () => {
-  const root = fixtureRepository({
+  const root = fixtureRoot({
     [WIDGETS_SPEC]: specFile([
       ["B1", "service"],
       ["B1", "service"],
@@ -138,7 +138,7 @@ test("B7: fails on a repeated ID or a Verified value it doesn't recognise", () =
 });
 
 test("B8: fails on a test naming an unknown row or subject, or naming no row", () => {
-  const root = fixtureRepository({
+  const root = fixtureRoot({
     [WIDGETS_SPEC]: specFile([["B1", "service"]]),
     [WIDGETS_TESTS]: testFile([{ title: "B1: is built" }, { title: "B9: is not specified" }, { title: "does something" }]),
     "src/gadgets/gadgets.service.test.ts": testFile([{ title: "B1: has no spec" }]),
@@ -153,7 +153,7 @@ test("B8: fails on a test naming an unknown row or subject, or naming no row", (
 });
 
 test("B9: passes with proposed rows and reports how many rows are in each status", () => {
-  const root = fixtureRepository({
+  const root = fixtureRoot({
     [WIDGETS_SPEC]: specFile([
       ["B1", "service"],
       ["B2", "service"],
@@ -169,7 +169,7 @@ test("B9: passes with proposed rows and reports how many rows are in each status
 });
 
 test("B10: fails when a row delivered on the base revision is proposed now, but not when it was deleted", () => {
-  const root = fixtureRepository({
+  const root = fixtureRoot({
     [WIDGETS_SPEC]: specFile([
       ["B1", "service"],
       ["B2", "service"],
@@ -190,19 +190,19 @@ test("B10: fails when a row delivered on the base revision is proposed now, but 
 });
 
 test("B11: adds a spec's status to Claude Code's context after reading it, and nothing for other files", () => {
-  const root = fixtureRepository({
+  const root = fixtureRoot({
     [WIDGETS_SPEC]: specFile([["B1", "service"]]),
     [WIDGETS_TESTS]: testFile([{ title: "B1: is planned", modifier: "todo" }]),
   });
-  const read = (filePath: string) => runHook(JSON.stringify({ tool_name: "Read", tool_input: { file_path: filePath } }), root);
+  const hookOutputAfterReading = (filePath: string) => runHook(JSON.stringify({ tool_name: "Read", tool_input: { file_path: filePath } }), root);
 
-  const output = JSON.parse(read(`${root}/${WIDGETS_SPEC}`)) as {
+  const output = JSON.parse(hookOutputAfterReading(`${root}/${WIDGETS_SPEC}`)) as {
     hookSpecificOutput: { hookEventName: string; additionalContext: string };
   };
 
   expect(output.hookSpecificOutput.hookEventName).toBe("PostToolUse");
   expect(output.hookSpecificOutput.additionalContext).toContain("A proposed row describes behaviour that is not built yet");
   expect(output.hookSpecificOutput.additionalContext).toContain(` B1  service   proposed  todo in ${WIDGETS_TESTS}`);
-  expect(read(`${root}/${WIDGETS_TESTS}`)).toBe("");
+  expect(hookOutputAfterReading(`${root}/${WIDGETS_TESTS}`)).toBe("");
   expect(runHook(JSON.stringify({ tool_name: "Edit", tool_input: { file_path: `${root}/${WIDGETS_SPEC}` } }), root)).toBe("");
 });

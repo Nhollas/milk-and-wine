@@ -14,7 +14,7 @@ const ATTEMPTS = 3;
 const ATTEMPT_TIMEOUT_MS = 2_000;
 const RETRY_DELAY_MS = 100;
 
-const copyResponse = z.object({
+const copyResponseSchema = z.object({
   id: z.string(),
   title: z.string(),
   state: z.enum(["available", "withdrawn"]),
@@ -45,7 +45,7 @@ export function createCatalogueClient(baseUrl: string): Catalogue {
 }
 
 async function readCopy(response: Response): Promise<Copy> {
-  const body = copyResponse.safeParse(await response.json().catch(() => undefined));
-  if (!body.success) throw new CatalogueUnavailable("Catalogue API answered with an unreadable copy");
-  return { copyId: body.data.id, title: body.data.title, available: body.data.state === "available" };
+  const parsed = copyResponseSchema.safeParse(await response.json().catch(() => undefined));
+  if (!parsed.success) throw new CatalogueUnavailable("Catalogue API answered with an unreadable copy");
+  return { copyId: parsed.data.id, title: parsed.data.title, available: parsed.data.state === "available" };
 }

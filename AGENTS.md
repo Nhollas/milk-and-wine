@@ -23,4 +23,7 @@ we promise; tests prove it; code delivers it.
 ## Code
 
 - No inline comments. Rename or restructure instead, or link the spec or ADR that explains it.
+- Name things for what they return or hold, so a reader can predict it without opening them:
+  `filesUnder(directory)`, `rowLines(markdown)`, `remindersDue(today)`. If no plain name fits, the
+  code is doing two jobs: split it.
 - Run `pnpm check` (typecheck, tests, `spec:check`) before handing work back.

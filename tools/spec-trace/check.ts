@@ -13,8 +13,8 @@ export function runCheck(args: string[], root: string): CommandResult {
 
   if (problems.length === 0) return { exitCode: 0, output: `spec:check passed · ${summary}\n` };
 
-  const width = Math.max(...problems.map((problem) => problem.code.length));
-  const lines = problems.map((problem) => `error  ${problem.code.padEnd(width)}  ${problem.where}  ${problem.message}`);
+  const codeWidth = Math.max(...problems.map((problem) => problem.code.length));
+  const lines = problems.map((problem) => `error  ${problem.code.padEnd(codeWidth)}  ${problem.location}  ${problem.message}`);
   return { exitCode: 1, output: `${lines.join("\n")}\n\nspec:check failed · ${problems.length} errors · ${summary}\n` };
 }
 

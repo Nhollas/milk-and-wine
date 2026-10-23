@@ -15,7 +15,7 @@ export class CopyOnLoan extends Error {}
 
 const SQLITE_CONSTRAINT_UNIQUE = 2067;
 
-type LoanRow = {
+type LoanRecord = {
   loan_id: string;
   member_id: string;
   copy_id: string;
@@ -42,14 +42,14 @@ export function createLoanStore(db: DatabaseSync) {
     },
 
     find(loanId: string): Loan | undefined {
-      const row = db.prepare("SELECT * FROM loans WHERE loan_id = ?").get(loanId) as LoanRow | undefined;
-      return row && {
-        loanId: row.loan_id,
-        memberId: row.member_id,
-        copyId: row.copy_id,
-        lentOn: row.lent_on,
-        dueOn: row.due_on,
-        returnedOn: row.returned_on,
+      const record = db.prepare("SELECT * FROM loans WHERE loan_id = ?").get(loanId) as LoanRecord | undefined;
+      return record && {
+        loanId: record.loan_id,
+        memberId: record.member_id,
+        copyId: record.copy_id,
+        lentOn: record.lent_on,
+        dueOn: record.due_on,
+        returnedOn: record.returned_on,
       };
     },
 

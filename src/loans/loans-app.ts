@@ -8,7 +8,7 @@ import { CopyOnLoan, createLoanStore, type Loan } from "./loan-store.ts";
 
 const LOAN_DAYS = 14;
 
-const lendRequest = z.object({
+const lendRequestSchema = z.object({
   memberId: z.string().min(1),
   copyId: z.string().min(1),
 });
@@ -27,9 +27,9 @@ export function createLoansApp({ db, catalogueUrl, clock }: LoansAppOptions): Ho
   app.get("/health", (c) => c.json({ status: "ok" }));
 
   app.post("/loans", async (c) => {
-    const request = lendRequest.safeParse(await c.req.json().catch(() => undefined));
-    if (!request.success) return c.json({ error: "invalid-request" }, 400);
-    const { memberId, copyId } = request.data;
+    const parsed = lendRequestSchema.safeParse(await c.req.json().catch(() => undefined));
+    if (!parsed.success) return c.json({ error: "invalid-request" }, 400);
+    const { memberId, copyId } = parsed.data;
 
     if (store.hasOpenLoan(copyId)) return c.json({ error: "copy-on-loan" }, 409);
 

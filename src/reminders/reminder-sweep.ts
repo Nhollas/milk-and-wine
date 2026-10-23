@@ -21,7 +21,7 @@ export function createReminderSweep({ db, notifyUrl, clock, log }: ReminderSweep
     const today = utcDate(clock());
     const summary: SweepSummary = { sent: 0, failed: 0 };
 
-    for (const reminder of store.overdueWithoutReminder(today)) {
+    for (const reminder of store.remindersDue(today)) {
       try {
         await notifications.sendOverdueReminder(reminder);
       } catch (error) {
@@ -29,7 +29,7 @@ export function createReminderSweep({ db, notifyUrl, clock, log }: ReminderSweep
         log("warn", "reminder.failed", { loanId: reminder.loanId, error: String(error) });
         continue;
       }
-      store.record(reminder.loanId, today);
+      store.recordSent(reminder.loanId, today);
       summary.sent++;
     }
 

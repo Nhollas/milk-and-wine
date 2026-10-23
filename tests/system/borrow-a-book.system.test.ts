@@ -7,12 +7,12 @@ test("B1: a member borrows an available copy, due in 14 days, and no one else ca
   fakeCatalogue({ "copy-1": "available" });
   const library = createTestLibrary("2026-03-02");
 
-  const loan = await library.lend("ada", "copy-1");
-  const second = await library.lend("grace", "copy-1");
+  const lent = await library.lend("ada", "copy-1");
+  const refused = await library.lend("grace", "copy-1");
 
-  expect(loan.status).toBe(201);
-  expect(loan.body["dueOn"]).toBe("2026-03-16");
-  expect(second.status).toBe(409);
+  expect(lent.status).toBe(201);
+  expect(lent.body["dueOn"]).toBe("2026-03-16");
+  expect(refused.status).toBe(409);
 });
 
 test("B2: once a member returns a copy, the next member can borrow it", async () => {

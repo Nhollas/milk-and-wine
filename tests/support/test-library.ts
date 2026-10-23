@@ -24,10 +24,10 @@ export function createTestLibrary(today = "2026-03-02") {
       now = new Date(`${date}T10:00:00Z`);
     },
     async lend(memberId: unknown, copyId: unknown) {
-      return send("POST", "/loans", { memberId, copyId });
+      return sendJson("POST", "/loans", { memberId, copyId });
     },
     async returnLoan(loanId: string) {
-      return send("POST", `/loans/${loanId}/return`);
+      return sendJson("POST", `/loans/${loanId}/return`);
     },
     async request(method: string, path: string, body?: string) {
       const response = await app.request(path, body === undefined ? { method } : { method, body });
@@ -35,7 +35,7 @@ export function createTestLibrary(today = "2026-03-02") {
     },
   };
 
-  async function send(method: string, path: string, body?: unknown) {
+  async function sendJson(method: string, path: string, body?: unknown) {
     const response = await app.request(path, {
       method,
       headers: { "content-type": "application/json" },

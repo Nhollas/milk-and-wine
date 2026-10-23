@@ -3,7 +3,7 @@ import { isTestLevel, type TestLevel } from "./specs.ts";
 
 export type TestMode = "active" | "todo" | "skipped";
 
-export type NamedTest = {
+export type TestAtLevel = {
   subject: string;
   level: TestLevel;
   path: string;
@@ -13,16 +13,16 @@ export type NamedTest = {
   mode: TestMode;
 };
 
-const TEST_FILE = /(?:^|\/)([^/]+)\.test\.ts$/;
+const TEST_FILE_NAME = /(?:^|\/)([^/]+)\.test\.ts$/;
 const TEST_CALL = /\b(?:test|it)((?:\.(?:only|skip|todo|fails|concurrent|sequential))*)\s*\(\s*(["'`])((?:\\.|(?!\2)[^\\])*)\2/g;
 const ROW_ID = /^(B\d+):/;
 
-export function readTests(repository: Repository): NamedTest[] {
+export function readTestsAtLevels(repository: Repository): TestAtLevel[] {
   return repository
-    .list()
+    .filePaths()
     .sort()
     .flatMap((path) => {
-      const fileName = TEST_FILE.exec(path)?.[1];
+      const fileName = TEST_FILE_NAME.exec(path)?.[1];
       if (!fileName) return [];
       const parts = fileName.split(".");
       const subject = parts[0] ?? "";
@@ -32,7 +32,7 @@ export function readTests(repository: Repository): NamedTest[] {
     });
 }
 
-function testsIn(source: string, file: Pick<NamedTest, "subject" | "level" | "path">): NamedTest[] {
+function testsIn(source: string, file: Pick<TestAtLevel, "subject" | "level" | "path">): TestAtLevel[] {
   return [...source.matchAll(TEST_CALL)].map((match) => {
     const modifiers = match[1] ?? "";
     const title = match[3] ?? "";

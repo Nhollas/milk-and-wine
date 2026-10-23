@@ -14,7 +14,7 @@ export type Row = { id: string; verified: Verified };
 
 export type Subject = { name: string; path: string; rows: Row[] };
 
-export type Problem = { code: string; where: string; message: string };
+export type Problem = { code: string; location: string; message: string };
 
 const SPEC_PATH = /^specs\/(?:.+\/)?([^/]+)\/spec\.md$/;
 const ROW_HEADER = ["id", "given", "when", "then", "verified"];
@@ -32,20 +32,20 @@ export function readSubjects(repository: Repository): { subjects: Subject[]; pro
   const subjects: Subject[] = [];
   const problems: Problem[] = [];
 
-  for (const path of repository.list().sort()) {
+  for (const path of repository.filePaths().sort()) {
     const name = subjectOfSpecPath(path);
     if (!name) continue;
     const rows: Row[] = [];
-    for (const { cells, line } of rowCells(repository.read(path))) {
+    for (const { cells, line } of rowLines(repository.read(path))) {
       const [id = "", , , , verifiedCell = ""] = cells;
-      const where = `${path}:${line}`;
+      const location = `${path}:${line}`;
       const verified = parseVerified(verifiedCell, path);
       if (!verified) {
-        problems.push({ code: "invalid-verified", where, message: `${id} has Verified "${verifiedCell}"` });
+        problems.push({ code: "invalid-verified", location, message: `${id} has Verified "${verifiedCell}"` });
         continue;
       }
       if (rows.some((row) => row.id === id)) {
-        problems.push({ code: "duplicate-id", where, message: `${id} appears more than once in ${name}` });
+        problems.push({ code: "duplicate-id", location, message: `${id} appears more than once in ${name}` });
         continue;
       }
       rows.push({ id, verified });
@@ -56,11 +56,11 @@ export function readSubjects(repository: Repository): { subjects: Subject[]; pro
   return { subjects, problems };
 }
 
-export function describeVerified(verified: Verified): string {
+export function verifiedLabel(verified: Verified): string {
   return verified.kind === "test" ? verified.level : verified.kind;
 }
 
-function* rowCells(markdown: string): Generator<{ cells: string[]; line: number }> {
+function* rowLines(markdown: string): Generator<{ cells: string[]; line: number }> {
   const lines = markdown.split("\n");
   let inRowTable = false;
   for (const [index, text] of lines.entries()) {
