@@ -7,6 +7,5 @@ export default defineConfig({
     setupFiles: ["tests/support/network-setup.ts"],
     allowOnly: false,
     testTimeout: 10_000,
-    execArgv: ["--disable-warning=ExperimentalWarning"],
   },
 });
