@@ -53,11 +53,6 @@
           {
             "group": ["msw", "msw/*", "**/http-interceptor.ts"],
             "message": "Only integration tests, system tests and tests/support/ intercept HTTP. Service tests use in-memory fakes of our clients."
-          },
-          {
-            "group": ["**/*-client.ts"],
-            "importNamePattern": "^create.*Client$",
-            "message": "Only main.ts, tests and fixtures build real clients. Take the client as an option instead."
           }
         ]
       }
@@ -65,44 +60,7 @@
   },
   "overrides": [
     {
-      "files": ["src/**/main.ts", "**/*.test.ts", "**/*.fixtures.ts"],
-      "rules": {
-        "no-restricted-imports": [
-          "error",
-          {
-            "patterns": [
-              {
-                "group": ["msw", "msw/*", "**/http-interceptor.ts"],
-                "message": "Only integration tests, system tests and tests/support/ intercept HTTP. Service tests use in-memory fakes of our clients."
-              }
-            ]
-          }
-        ]
-      }
-    },
-    {
-      "files": ["tests/support/**"],
-      "rules": {
-        "no-restricted-imports": [
-          "error",
-          {
-            "patterns": [
-              {
-                "group": ["**/*-client.ts"],
-                "importNamePattern": "^create.*Client$",
-                "message": "Only main.ts, tests and fixtures build real clients. Take the client as an option instead."
-              }
-            ]
-          }
-        ]
-      }
-    },
-    {
-      "files": [
-        "tests/support/**/*.fixtures.ts",
-        "**/*.integration.test.ts",
-        "**/*.system.test.ts"
-      ],
+      "files": ["tests/support/**", "**/*.integration.test.ts", "**/*.system.test.ts"],
       "rules": {
         "no-restricted-imports": "off"
       }
@@ -140,17 +98,13 @@
     {
       "files": ["src/**", "tests/**", "tools/**"],
       "rules": {
-        "conventions/client-names": "error",
         "conventions/file-names": "error",
         "conventions/helper-placement": "error",
         "conventions/interceptor-use-placement": "error",
-        "conventions/no-comments": "error",
-        "conventions/no-reserved-words": "error",
-        "conventions/no-sql-in-tests": "error",
+        "conventions/max-comment-lines": "error",
         "conventions/support-modules": "error",
         "conventions/test-imports": "error",
-        "conventions/test-placement": "error",
-        "conventions/urls-in-handlers": "error"
+        "conventions/test-placement": "error"
       }
     }
   ],

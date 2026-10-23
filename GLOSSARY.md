@@ -40,6 +40,10 @@ The words for the library this service runs, and for the spec-driven process tha
 
 **Unit test**: A test in a file with no level. It is welcome but never proves a row.
 
+**Fake**: A small working implementation of one of our clients, such as `fakeCatalogueClient()`, used in service tests. _Avoid_: Mock, stub
+
+**Handler**: An MSW request handler that stands in for an external API's endpoint, used in integration and system tests. _Avoid_: Mock, fake
+
 **Proof**: What a row's Verified says makes it true: a test at its level that names it, a dependency's guarantee, or a runbook step. _Avoid_: Evidence, coverage
 
 **Proposed**: A row whose proof doesn't exist yet. It describes behaviour that isn't built. _Avoid_: Pending, todo

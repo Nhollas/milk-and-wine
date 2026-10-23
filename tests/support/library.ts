@@ -10,11 +10,8 @@ export type LibraryDependencies = {
   notificationsClient: NotificationsClient;
 };
 
-export function openLibrary(
-  { catalogueClient, notificationsClient }: LibraryDependencies,
-  today = "2026-03-02",
-) {
-  let now = new Date(`${today}T10:00:00Z`);
+export function openLibrary({ catalogueClient, notificationsClient }: LibraryDependencies) {
+  let now = new Date("2026-03-02T10:00:00Z");
   const logs: LogEntry[] = [];
   const logger = createLogger((entry) => {
     logs.push(entry);

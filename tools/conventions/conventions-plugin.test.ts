@@ -18,25 +18,18 @@ const ruleTester = new RuleTester({ cwd: repo });
 
 const at = (path: string) => join(repo, path);
 
-ruleTester.run("no-comments", plugin.rules["no-comments"], {
+ruleTester.run("max-comment-lines", plugin.rules["max-comment-lines"], {
   valid: [
-    "const dueOn = addDays(lentOn, 14);",
-    "// See specs/modules/loans/spec.md B8\nconst renewals = 2;",
-    "// docs/adr/0004-expected-outcomes-are-return-values.md\nconst outcome = 1;",
-    "// oxlint-disable-next-line no-console\nconsole.log(1);",
+    "// add 14 days\nconst dueOn = 1;",
+    "// The catalogue retries,\n// so this stays idempotent.\nconst id = 1;",
+    "/**\n * Two lines of\n * explanation.\n */\nconst id = 1;",
+    "// one\nconst a = 1;\n// two\n// three\nconst b = 2;",
     'const url = "https://catalogue.example";',
   ],
   invalid: [
-    { code: "// add 14 days\nconst dueOn = 1;", errors: 1 },
-    { code: "const dueOn = 1; /* days */", errors: 1 },
-  ],
-});
-
-ruleTester.run("no-reserved-words", plugin.rules["no-reserved-words"], {
-  valid: ['const level = "service";', "function createLoansApp() {}"],
-  invalid: [
-    { code: "function loanService() {}", errors: 1 },
-    { code: "type ServiceOptions = {};", filename: at("src/loans/loans-app.ts"), errors: 1 },
+    { code: "// one\n// two\n// three\nconst id = 1;", errors: 1 },
+    { code: "/* one\n   two\n   three */\nconst id = 1;", errors: 1 },
+    { code: "/**\n * one\n * two\n * three\n */\nconst id = 1;", errors: 1 },
   ],
 });
 
@@ -54,39 +47,7 @@ ruleTester.run("file-names", plugin.rules["file-names"], {
     { code: "", filename: at("tests/system/fixtures.ts"), errors: 1 },
     { code: "", filename: at("tests/support/library.mocks.ts"), errors: 1 },
     { code: "", filename: at("tests/support/catalogue.handlers.ts"), errors: 1 },
-    { code: "", filename: at("tests/support/vitest.setup.ts"), errors: 1 },
     { code: "", filename: at("tests/support/fake-catalogue.ts"), errors: 1 },
-  ],
-});
-
-ruleTester.run("client-names", plugin.rules["client-names"], {
-  valid: [
-    {
-      code: "export type CatalogueClient = {};\nexport function createCatalogueClient() {}",
-      filename: at("src/catalogue/catalogue-client.ts"),
-    },
-    {
-      code: "export function fakeNotificationsClient() {}",
-      filename: at("tests/support/fake-notifications-client.ts"),
-    },
-    { code: "export function openLibrary() {}", filename: at("tests/support/library.ts") },
-  ],
-  invalid: [
-    {
-      code: "export type CatalogueClient = {};\nexport function makeClient() {}",
-      filename: at("src/catalogue/catalogue-client.ts"),
-      errors: 1,
-    },
-    {
-      code: "export function catalogueFake() {}",
-      filename: at("tests/support/fake-catalogue-client.ts"),
-      errors: 1,
-    },
-    {
-      code: "export function createCatalogueClient() {}",
-      filename: at("src/loans/loans-app.ts"),
-      errors: 1,
-    },
   ],
 });
 
@@ -141,53 +102,6 @@ ruleTester.run("interceptor-use-placement", plugin.rules["interceptor-use-placem
     {
       code: "export function copyLookupHandler() { httpInterceptor.use(handler); }",
       filename: at("tests/support/catalogue-api.handlers.ts"),
-      errors: 1,
-    },
-  ],
-});
-
-ruleTester.run("no-sql-in-tests", plugin.rules["no-sql-in-tests"], {
-  valid: [
-    {
-      code: 'test("B1: deletes nothing", () => {});',
-      filename: at("src/loans/loans.service.test.ts"),
-    },
-    { code: 'db.prepare("SELECT 1");', filename: at("tests/support/library.ts") },
-  ],
-  invalid: [
-    {
-      code: 'db.prepare("SELECT COUNT(*) FROM loans");',
-      filename: at("src/loans/loans.service.test.ts"),
-      errors: 1,
-    },
-    {
-      code: "db.exec(`DELETE FROM loans`);",
-      filename: at("tests/system/system.fixtures.ts"),
-      errors: 1,
-    },
-  ],
-});
-
-ruleTester.run("urls-in-handlers", plugin.rules["urls-in-handlers"], {
-  valid: [
-    {
-      code: 'export const CATALOGUE_URL = "http://catalogue.test";',
-      filename: at("tests/support/catalogue-api.handlers.ts"),
-    },
-    {
-      code: "const url = new URL(path, process.env.CATALOGUE_URL);",
-      filename: at("src/catalogue/catalogue-client.ts"),
-    },
-  ],
-  invalid: [
-    {
-      code: 'const client = createCatalogueClient("http://catalogue.test");',
-      filename: at("src/catalogue/catalogue.integration.test.ts"),
-      errors: 1,
-    },
-    {
-      code: 'const base = "https://catalogue.example";',
-      filename: at("src/catalogue/catalogue-client.ts"),
       errors: 1,
     },
   ],

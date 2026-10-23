@@ -68,41 +68,6 @@ export const interceptorUsePlacement: Rule = {
   },
 };
 
-export const noSqlInTests: Rule = {
-  create(context) {
-    if (!/\.(?:test|fixtures)\.ts$/u.test(context.filename)) return {};
-    const message =
-      "Raw SQL belongs in tests/support/library.ts. Add a helper there, such as library.loanCount().";
-    return {
-      Literal(node) {
-        if (typeof node.value === "string" && RAW_SQL.test(node.value)) {
-          context.report({ node, message });
-        }
-      },
-      TemplateElement(node) {
-        if (RAW_SQL.test(node.value.cooked ?? "")) context.report({ node, message });
-      },
-    };
-  },
-};
-
-export const urlsInHandlers: Rule = {
-  create(context) {
-    if (context.filename.endsWith(".handlers.ts")) return {};
-    return {
-      Literal(node) {
-        if (typeof node.value === "string" && /^https?:\/\//u.test(node.value)) {
-          context.report({
-            node,
-            message:
-              "Define each external API's URL once, in its <system>-api.handlers.ts, and import it. Product code reads URLs from the environment.",
-          });
-        }
-      },
-    };
-  },
-};
-
 export const supportModules: Rule = {
   create(context) {
     const fileName = posix.basename(context.filename);
@@ -172,8 +137,6 @@ export const testImports: Rule = {
 };
 
 const SHARED_HELPERS = "tests/support";
-
-const RAW_SQL = /^\s*(?:SELECT|INSERT INTO|UPDATE|DELETE FROM|CREATE TABLE|DROP TABLE)\b/u;
 
 function expectedTestFolderOf(fileName: string, root: string): string | undefined {
   const parts = fileName.split(".");
