@@ -54,11 +54,17 @@ test("B5: accepts a 204", async () => {
 test("B5: treats any other answer as refused", async () => {
   httpInterceptor.use(http.post(NOTIFICATIONS_PATH, () => new HttpResponse(null, { status: 400 })));
 
-  expect((await notificationsClient.sendOverdueReminder(reminder)).kind).toBe("refused");
+  expect(await notificationsClient.sendOverdueReminder(reminder)).toEqual({
+    kind: "refused",
+    reason: expect.stringContaining("400"),
+  });
 });
 
 test("B5: treats a failed connection as refused", async () => {
   httpInterceptor.use(http.post(NOTIFICATIONS_PATH, () => HttpResponse.error()));
 
-  expect((await notificationsClient.sendOverdueReminder(reminder)).kind).toBe("refused");
+  expect(await notificationsClient.sendOverdueReminder(reminder)).toEqual({
+    kind: "refused",
+    reason: expect.stringContaining("unreachable"),
+  });
 });

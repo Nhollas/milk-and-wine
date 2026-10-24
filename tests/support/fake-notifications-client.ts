@@ -5,12 +5,12 @@ import type {
 
 export function fakeNotificationsClient() {
   const sent: OverdueReminder[] = [];
-  const refusedLoanIds = new Set<string>();
+  const refusals = new Map<string, string>();
 
   const notificationsClient: NotificationsClient = {
     async sendOverdueReminder(reminder) {
-      if (refusedLoanIds.has(reminder.loanId))
-        return { kind: "refused", reason: `Fake refused loan ${reminder.loanId}` };
+      const reason = refusals.get(reminder.loanId);
+      if (reason !== undefined) return { kind: "refused", reason };
       sent.push(reminder);
       return { kind: "accepted" };
     },
@@ -19,8 +19,8 @@ export function fakeNotificationsClient() {
   return {
     ...notificationsClient,
     sent,
-    refuseFor(loanId: string) {
-      refusedLoanIds.add(loanId);
+    refuseFor(loanId: string, reason: string) {
+      refusals.set(loanId, reason);
     },
   };
 }

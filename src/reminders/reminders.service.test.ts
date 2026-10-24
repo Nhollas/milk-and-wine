@@ -98,7 +98,7 @@ test("B3: records nothing for a refused reminder and carries on with the other l
     postJson({ memberId: "member-2", copyId: "copy-2" }),
   );
   const { loanId: loan2 } = (await secondLendResponse.json()) as { loanId: string };
-  fakeNotifications.refuseFor(loan1);
+  fakeNotifications.refuseFor(loan1, "Notifications API answered 503");
   clock.setToday("2026-03-17");
 
   await sendOverdueReminders();
@@ -110,7 +110,7 @@ test("B3: records nothing for a refused reminder and carries on with the other l
   expect(logs).toContainEqual({
     level: "warn",
     event: "reminder.failed",
-    fields: { loanId: loan1, error: expect.any(String) },
+    fields: { loanId: loan1, error: "Notifications API answered 503" },
   });
 });
 
@@ -135,7 +135,7 @@ test("B4: logs how many reminders were sent and how many failed", async ({
     postJson({ memberId: "member-3", copyId: "copy-3" }),
   );
   const { loanId: loan3 } = (await thirdLendResponse.json()) as { loanId: string };
-  fakeNotifications.refuseFor(loan3);
+  fakeNotifications.refuseFor(loan3, "Notifications API answered 503");
   clock.setToday("2026-03-17");
 
   await sendOverdueReminders();
