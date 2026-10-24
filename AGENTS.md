@@ -1,3 +1,7 @@
+## Pre-launch
+
+- Nothing is released and nobody uses this yet. Make breaking changes outright: rename, remove and reshape in place, with no migrations, shims or backwards-compatible paths.
+
 ## Specs
 
 - Behaviour is specified in `specs/**/spec.md`. A row may be proposed: specced, not built. Check with `pnpm spec:status <subject>` before relying on one.
