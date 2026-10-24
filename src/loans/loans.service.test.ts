@@ -47,7 +47,11 @@ test("B1: lends an available copy, due 14 days after today", async ({
   });
 });
 
-test("B2: refuses a copy that is already on loan", async ({ app, fakeCatalogue, db }) => {
+test("B2: refuses a copy that is already on loan, asking the catalogue nothing", async ({
+  app,
+  fakeCatalogue,
+  db,
+}) => {
   fakeCatalogue.addCopies({ "copy-1": "available" });
   await app.request("/loans", postJson({ memberId: "member-1", copyId: "copy-1" }));
 
@@ -61,6 +65,7 @@ test("B2: refuses a copy that is already on loan", async ({ app, fakeCatalogue, 
   expect(db.prepare("SELECT member_id, copy_id FROM loans").all()).toEqual([
     { member_id: "member-1", copy_id: "copy-1" },
   ]);
+  expect(fakeCatalogue.lookups).toEqual(["copy-1"]);
 });
 
 test("B3: refuses a withdrawn copy", async ({ app, fakeCatalogue, db }) => {

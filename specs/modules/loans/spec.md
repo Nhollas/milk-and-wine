@@ -16,7 +16,7 @@ Lends copies to members and takes them back, over HTTP, for the library's front-
 | --- | --- | --- | --- | --- |
 | B10 | The body is not JSON, or lacks a non-empty `memberId` or `copyId` string | `POST /loans` arrives | Responds `400` with `{ "error": "invalid-request" }` and asks the catalogue nothing | service |
 | B1 | The catalogue lists the copy as available, and the copy has no open loan | `POST /loans` arrives with `memberId` and `copyId` | Responds `201` with the loan: `loanId`, `memberId`, `copyId`, `lentOn` (today, UTC) and `dueOn` (14 days later) | service |
-| B2 | The copy has an open loan | `POST /loans` arrives for that copy | Responds `409` with `{ "error": "copy-on-loan" }` and creates no loan | service |
+| B2 | The copy has an open loan | `POST /loans` arrives for that copy | Responds `409` with `{ "error": "copy-on-loan" }`, creates no loan and asks the catalogue nothing | service |
 | B12 | The copy has no open loan | Two `POST /loans` requests for that copy are processed at once | One responds `201`; the other responds `409` as in B2 | dependency [SQLite partial unique index](https://www.sqlite.org/partialindex.html) |
 | B3 | The catalogue lists the copy as withdrawn | `POST /loans` arrives for that copy | Responds `422` with `{ "error": "copy-withdrawn" }` and creates no loan | service |
 | B4 | The catalogue does not know the copy | `POST /loans` arrives for that copy | Responds `404` with `{ "error": "copy-not-found" }` and creates no loan | service |
@@ -24,6 +24,7 @@ Lends copies to members and takes them back, over HTTP, for the library's front-
 
 **Why**
 
+- **B2:** A copy on loan can be refused from our own records, so a catalogue outage or a withdrawal doesn't change the answer.
 - **B5:** We refuse rather than lend unchecked. A withdrawn copy lent out can't be found again.
 - **B12:** The database refuses a second open loan for a copy, so this holds across processes too.
 
