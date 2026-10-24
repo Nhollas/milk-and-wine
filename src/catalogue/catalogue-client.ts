@@ -4,10 +4,7 @@ import { endpoint } from "../http.ts";
 
 type Copy = { copyId: string; title: string; available: boolean };
 
-type CopyLookup =
-  | { kind: "found"; copy: Copy }
-  | { kind: "not-found" }
-  | { kind: "unavailable"; reason: string };
+type CopyLookup = { kind: "found"; copy: Copy } | { kind: "not-found" } | { kind: "unavailable" };
 
 export type CatalogueClient = { getCopy(copyId: string): Promise<CopyLookup> };
 
@@ -41,18 +38,8 @@ export function createCatalogueClient(
 
         if (response?.status === 404) return { kind: "not-found" };
         if (response?.ok === true) return copyLookup(response);
-        if (response && response.status < 500) {
-          return {
-            kind: "unavailable",
-            reason: `Catalogue API answered ${response.status} for copy ${copyId}`,
-          };
-        }
-        if (attempt === attempts) {
-          return {
-            kind: "unavailable",
-            reason: `Catalogue API unavailable after ${attempts} attempts for copy ${copyId}`,
-          };
-        }
+        if (response && response.status < 500) return { kind: "unavailable" };
+        if (attempt === attempts) return { kind: "unavailable" };
         await setTimeout(retryDelayMs);
       }
     },
@@ -61,8 +48,7 @@ export function createCatalogueClient(
 
 async function copyLookup(response: Response): Promise<CopyLookup> {
   const parsed = copyResponseSchema.safeParse(await response.json().catch(() => undefined));
-  if (!parsed.success)
-    return { kind: "unavailable", reason: "Catalogue API answered with an unreadable copy" };
+  if (!parsed.success) return { kind: "unavailable" };
   return {
     kind: "found",
     copy: {

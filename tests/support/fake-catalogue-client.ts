@@ -10,7 +10,7 @@ export function fakeCatalogueClient() {
   const catalogueClient: CatalogueClient = {
     async getCopy(copyId) {
       lookups.push(copyId);
-      if (unavailable) return { kind: "unavailable", reason: "Fake catalogue is unavailable" };
+      if (unavailable) return { kind: "unavailable" };
       const state = copies.get(copyId);
       if (!state) return { kind: "not-found" };
       return {
