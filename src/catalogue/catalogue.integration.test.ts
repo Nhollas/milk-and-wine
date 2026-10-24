@@ -70,7 +70,7 @@ test("B3: gives up after three attempts while the catalogue keeps failing", asyn
 test("B3: still answers when the third attempt succeeds", async () => {
   httpInterceptor.use(
     http.get(COPY_PATH, function* () {
-      yield new HttpResponse(null, { status: 503 });
+      yield new HttpResponse(null, { status: 500 });
       yield new HttpResponse(null, { status: 503 });
       return copyResponse("copy-1", "available");
     }),
