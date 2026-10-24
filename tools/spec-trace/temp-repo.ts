@@ -1,21 +1,21 @@
 import { execFileSync } from "node:child_process";
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempDisposableSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
-import { test as base } from "vitest";
 
-export const test = base.extend("repo", ({}, { onCleanup }) => {
-  const repo = openFixtureRepo();
-  onCleanup(() => repo.remove());
-  return repo;
-});
+export function createTempRepo() {
+  const dir = mkdtempDisposableSync(join(tmpdir(), "spec-trace-"));
+  const root = dir.path;
 
-type SpecRow = [id: string, verified: string, then?: string];
+  function write(path: string, content: string) {
+    const target = join(root, path);
+    mkdirSync(dirname(target), { recursive: true });
+    writeFileSync(target, content);
+  }
 
-type FixtureTest = { title: string; modifier?: "todo" | "skip" };
-
-function openFixtureRepo() {
-  const root = mkdtempSync(join(tmpdir(), "spec-trace-"));
+  function git(...args: string[]) {
+    execFileSync("git", args, { cwd: root, stdio: "ignore" });
+  }
 
   return {
     root,
@@ -39,21 +39,15 @@ function openFixtureRepo() {
         message,
       );
     },
-    remove() {
-      rmSync(root, { recursive: true, force: true });
+    [Symbol.dispose]() {
+      dir.remove();
     },
   };
-
-  function write(path: string, content: string) {
-    const target = join(root, path);
-    mkdirSync(dirname(target), { recursive: true });
-    writeFileSync(target, content);
-  }
-
-  function git(...args: string[]) {
-    execFileSync("git", args, { cwd: root, stdio: "ignore" });
-  }
 }
+
+type SpecRow = [id: string, verified: string, then?: string];
+
+type FixtureTest = { title: string; modifier?: "todo" | "skip" };
 
 function specMarkdown(rows: SpecRow[]): string {
   return [

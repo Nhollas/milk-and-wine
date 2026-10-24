@@ -1,8 +1,8 @@
-import { expect } from "vitest";
+import { expect, test } from "vitest";
 import { runCheck } from "./check.ts";
 import { runHook } from "./hook.ts";
-import { test } from "./repo.fixtures.ts";
 import { runStatus } from "./status.ts";
+import { createTempRepo } from "./temp-repo.ts";
 
 const WIDGETS_SPEC = "specs/modules/widgets/spec.md";
 const WIDGETS_TESTS = "src/widgets/widgets.service.test.ts";
@@ -16,7 +16,8 @@ function statusRows(root: string, subject = "widgets") {
   }[];
 }
 
-test("B1: reads each row of a spec table as a row of the subject its folder names", ({ repo }) => {
+test("B1: reads each row of a spec table as a row of the subject its folder names", () => {
+  using repo = createTempRepo();
   repo.writeSpec(WIDGETS_SPEC, [
     ["B1", "service", "Answers `a \\| b`"],
     ["B7", "`integration`"],
@@ -32,9 +33,8 @@ test("B1: reads each row of a spec table as a row of the subject its folder name
   ]);
 });
 
-test("B2: attributes a test to a row by its file's subject and level, and ignores files without a level", ({
-  repo,
-}) => {
+test("B2: attributes a test to a row by its file's subject and level, and ignores files without a level", () => {
+  using repo = createTempRepo();
   repo.writeSpec(WIDGETS_SPEC, [["B1", "service"]]);
   repo.writeTests("src/widgets/widgets.http.service.test.ts", [{ title: "B1: answers" }]);
   repo.writeTests("src/widgets/widgets.test.ts", [{ title: "parses a widget" }]);
@@ -54,7 +54,8 @@ test("B2: attributes a test to a row by its file's subject and level, and ignore
   expect(runCheck([], repo.root).exitCode).toBe(0);
 });
 
-test("B3: delivers a row only through an active test at its Verified level", ({ repo }) => {
+test("B3: delivers a row only through an active test at its Verified level", () => {
+  using repo = createTempRepo();
   repo.writeSpec(WIDGETS_SPEC, [
     ["B1", "service"],
     ["B2", "service"],
@@ -86,9 +87,8 @@ test("B3: delivers a row only through an active test at its Verified level", ({ 
   ]);
 });
 
-test("B4: delivers a dependency row and lists a manual row for sign-off, with the link as proof", ({
-  repo,
-}) => {
+test("B4: delivers a dependency row and lists a manual row for sign-off, with the link as proof", () => {
+  using repo = createTempRepo();
   repo.writeSpec(WIDGETS_SPEC, [
     ["B1", "dependency [Widget store](https://example.com/store)"],
     ["B2", "manual [runbook](../../../docs/runbooks/widgets.md)"],
@@ -102,9 +102,8 @@ test("B4: delivers a dependency row and lists a manual row for sign-off, with th
   ]);
 });
 
-test("B5: prints each row's status for one subject or every subject, as text or JSON", ({
-  repo,
-}) => {
+test("B5: prints each row's status for one subject or every subject, as text or JSON", () => {
+  using repo = createTempRepo();
   repo.writeSpec(WIDGETS_SPEC, [
     ["B1", "service"],
     ["B2", "service"],
@@ -140,7 +139,8 @@ test("B5: prints each row's status for one subject or every subject, as text or 
   ]);
 });
 
-test("B6: refuses a subject no spec folder is named after", ({ repo }) => {
+test("B6: refuses a subject no spec folder is named after", () => {
+  using repo = createTempRepo();
   repo.writeSpec(WIDGETS_SPEC, [["B1", "service"]]);
 
   expect(runStatus(["gadgets"], repo.root)).toEqual({
@@ -149,7 +149,8 @@ test("B6: refuses a subject no spec folder is named after", ({ repo }) => {
   });
 });
 
-test("B7: fails on a repeated ID or a Verified value it doesn't recognise", ({ repo }) => {
+test("B7: fails on a repeated ID or a Verified value it doesn't recognise", () => {
+  using repo = createTempRepo();
   repo.writeSpec(WIDGETS_SPEC, [
     ["B1", "service"],
     ["B1", "service"],
@@ -165,7 +166,8 @@ test("B7: fails on a repeated ID or a Verified value it doesn't recognise", ({ r
   expect(output).toContain(`invalid-verified  ${WIDGETS_SPEC}:11  B2 has Verified "unit"`);
 });
 
-test("B8: fails on a test naming an unknown row or subject, or naming no row", ({ repo }) => {
+test("B8: fails on a test naming an unknown row or subject, or naming no row", () => {
+  using repo = createTempRepo();
   repo.writeSpec(WIDGETS_SPEC, [["B1", "service"]]);
   repo.writeTests(WIDGETS_TESTS, [
     { title: "B1: is built" },
@@ -186,7 +188,8 @@ test("B8: fails on a test naming an unknown row or subject, or naming no row", (
   );
 });
 
-test("B9: passes with proposed rows and reports how many rows are in each status", ({ repo }) => {
+test("B9: passes with proposed rows and reports how many rows are in each status", () => {
+  using repo = createTempRepo();
   repo.writeSpec(WIDGETS_SPEC, [
     ["B1", "service"],
     ["B2", "service"],
@@ -203,9 +206,8 @@ test("B9: passes with proposed rows and reports how many rows are in each status
   });
 });
 
-test("B10: fails when a row delivered on the base revision is proposed now, but not when it was deleted", ({
-  repo,
-}) => {
+test("B10: fails when a row delivered on the base revision is proposed now, but not when it was deleted", () => {
+  using repo = createTempRepo();
   repo.writeSpec(WIDGETS_SPEC, [
     ["B1", "service"],
     ["B2", "service"],
@@ -224,9 +226,8 @@ test("B10: fails when a row delivered on the base revision is proposed now, but 
   expect(output).not.toContain("widgets B2");
 });
 
-test("B11: adds a spec's status to Claude Code's context after reading it, and nothing for other files", ({
-  repo,
-}) => {
+test("B11: adds a spec's status to Claude Code's context after reading it, and nothing for other files", () => {
+  using repo = createTempRepo();
   repo.writeSpec(WIDGETS_SPEC, [["B1", "service"]]);
   repo.writeTests(WIDGETS_TESTS, [{ title: "B1: is planned", modifier: "todo" }]);
 
