@@ -1,25 +1,23 @@
 import { expect, test } from "vitest";
+import { postJson } from "../support/json-requests.ts";
 
 const baseUrl = process.env["SMOKE_BASE_URL"] ?? "";
-const SMOKE_COPY = "SMOKE-1";
-
-async function call(method: string, path: string, body?: unknown) {
-  const response = await fetch(new URL(path, baseUrl), {
-    method,
-    headers: { "content-type": "application/json" },
-    ...(body === undefined ? {} : { body: JSON.stringify(body) }),
-  });
-  return { status: response.status, body: (await response.json()) as Record<string, unknown> };
-}
 
 test("B1: the deployed service reports healthy", async () => {
-  expect(await call("GET", "/health")).toEqual({ status: 200, body: { status: "ok" } });
+  const healthResponse = await fetch(new URL("/health", baseUrl));
+
+  expect(healthResponse.status).toBe(200);
+  expect(await healthResponse.json()).toEqual({ status: "ok" });
 });
 
 test("B2: the deployed service lends and takes back the smoke copy", async () => {
-  const lent = await call("POST", "/loans", { memberId: "smoke-test", copyId: SMOKE_COPY });
-  expect(lent.status).toBe(201);
+  const lendResponse = await fetch(
+    new URL("/loans", baseUrl),
+    postJson({ memberId: "smoke-test", copyId: "SMOKE-1" }),
+  );
+  const { loanId } = (await lendResponse.json()) as { loanId: string };
+  const returnResponse = await fetch(new URL(`/loans/${loanId}/return`, baseUrl), postJson());
 
-  const returned = await call("POST", `/loans/${String(lent.body["loanId"])}/return`);
-  expect(returned.status).toBe(200);
+  expect(lendResponse.status).toBe(201);
+  expect(returnResponse.status).toBe(200);
 });

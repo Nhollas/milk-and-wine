@@ -10,28 +10,37 @@ import { httpInterceptor } from "../../tests/support/http-interceptor.ts";
 
 const catalogueClient = createCatalogueClient(CATALOGUE_URL);
 
-test("B1: requests the copy by ID and reads whether it can be lent", async () => {
+test("B1: requests the copy by its encoded ID, as JSON, and reads an available copy", async () => {
   const requests: { path: string; accept: string | null }[] = [];
   httpInterceptor.use(
-    http.get(COPY_PATH, ({ request, params }) => {
+    http.get(COPY_PATH, ({ request }) => {
       requests.push({ path: new URL(request.url).pathname, accept: request.headers.get("accept") });
-      const state = params["copyId"] === "copy 1" ? "available" : "withdrawn";
-      return HttpResponse.json({ id: params["copyId"], title: "Middlemarch", state });
+      return HttpResponse.json({ id: "copy 1", title: "Middlemarch", state: "available" });
     }),
   );
 
-  expect(await catalogueClient.getCopy("copy 1")).toEqual({
+  const lookup = await catalogueClient.getCopy("copy 1");
+
+  expect(lookup).toEqual({
     kind: "found",
     copy: { copyId: "copy 1", title: "Middlemarch", available: true },
   });
-  expect(await catalogueClient.getCopy("copy-2")).toEqual({
+  expect(requests).toEqual([{ path: "/copies/copy%201", accept: "application/json" }]);
+});
+
+test("B1: reads a withdrawn copy as not available", async () => {
+  httpInterceptor.use(
+    http.get(COPY_PATH, () =>
+      HttpResponse.json({ id: "copy-2", title: "Middlemarch", state: "withdrawn" }),
+    ),
+  );
+
+  const lookup = await catalogueClient.getCopy("copy-2");
+
+  expect(lookup).toEqual({
     kind: "found",
     copy: { copyId: "copy-2", title: "Middlemarch", available: false },
   });
-  expect(requests).toEqual([
-    { path: "/copies/copy%201", accept: "application/json" },
-    { path: "/copies/copy-2", accept: "application/json" },
-  ]);
 });
 
 test("B2: reports an unknown copy without retrying", async () => {
@@ -92,10 +101,13 @@ test("B3: abandons an attempt after two seconds and tries again", async () => {
     ...DEFAULT_RETRY_POLICY,
     attemptTimeoutMs: 50,
   });
-  const started = performance.now();
+  const startedAt = performance.now();
 
-  expect((await impatientCatalogueClient.getCopy("copy-1")).kind).toBe("found");
-  expect(performance.now() - started).toBeGreaterThanOrEqual(50);
+  const lookup = await impatientCatalogueClient.getCopy("copy-1");
+  const finishedAt = performance.now();
+
+  expect(lookup.kind).toBe("found");
+  expect(finishedAt - startedAt).toBeGreaterThanOrEqual(50);
   expect(DEFAULT_RETRY_POLICY.attemptTimeoutMs).toBe(2_000);
 });
 

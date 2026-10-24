@@ -23,7 +23,9 @@ test("B1: reads each row of a spec table as a row of the subject its folder name
     ["B2", "dependency [Widget store](https://example.com/store)"],
   ]);
 
-  expect(statusRows(repo.root).map(({ id, verified }) => ({ id, verified }))).toEqual([
+  const rows = statusRows(repo.root);
+
+  expect(rows).toMatchObject([
     { id: "B1", verified: "service" },
     { id: "B7", verified: "integration" },
     { id: "B2", verified: "dependency" },
@@ -69,12 +71,18 @@ test("B3: delivers a row only through an active test at its Verified level", ({ 
     { title: "B4: is tested at the wrong level" },
   ]);
 
-  expect(statusRows(repo.root).map(({ id, status, proof }) => `${id} ${status} ${proof}`)).toEqual([
-    `B1 delivered ${WIDGETS_TESTS} › "B1: is built"`,
-    `B2 proposed todo in ${WIDGETS_TESTS}`,
-    `B3 proposed skipped in ${WIDGETS_TESTS}`,
-    "B4 proposed wrong level: integration in src/widgets/widgets.integration.test.ts",
-    "B5 proposed nothing yet",
+  const rows = statusRows(repo.root);
+
+  expect(rows).toMatchObject([
+    { id: "B1", status: "delivered", proof: `${WIDGETS_TESTS} › "B1: is built"` },
+    { id: "B2", status: "proposed", proof: `todo in ${WIDGETS_TESTS}` },
+    { id: "B3", status: "proposed", proof: `skipped in ${WIDGETS_TESTS}` },
+    {
+      id: "B4",
+      status: "proposed",
+      proof: "wrong level: integration in src/widgets/widgets.integration.test.ts",
+    },
+    { id: "B5", status: "proposed", proof: "nothing yet" },
   ]);
 });
 
@@ -86,9 +94,11 @@ test("B4: delivers a dependency row and lists a manual row for sign-off, with th
     ["B2", "manual [runbook](../../../docs/runbooks/widgets.md)"],
   ]);
 
-  expect(statusRows(repo.root).map(({ id, status, proof }) => `${id} ${status} ${proof}`)).toEqual([
-    "B1 delivered https://example.com/store",
-    "B2 sign-off docs/runbooks/widgets.md",
+  const rows = statusRows(repo.root);
+
+  expect(rows).toMatchObject([
+    { id: "B1", status: "delivered", proof: "https://example.com/store" },
+    { id: "B2", status: "sign-off", proof: "docs/runbooks/widgets.md" },
   ]);
 });
 
@@ -102,7 +112,11 @@ test("B5: prints each row's status for one subject or every subject, as text or 
   repo.writeSpec("specs/journeys/use-a-widget/spec.md", [["B1", "system"]]);
   repo.writeTests(WIDGETS_TESTS, [{ title: "B1: is built" }]);
 
-  expect(runStatus(["widgets"], repo.root)).toEqual({
+  const oneSubject = runStatus(["widgets"], repo.root);
+  const everySubject = runStatus([], repo.root);
+  const asJson = statusRows(repo.root, "use-a-widget");
+
+  expect(oneSubject).toEqual({
     exitCode: 0,
     output: [
       "widgets · 1 delivered · 1 proposed · 0 sign-off",
@@ -113,9 +127,9 @@ test("B5: prints each row's status for one subject or every subject, as text or 
       "",
     ].join("\n"),
   });
-  expect(runStatus([], repo.root).output).toContain("use-a-widget · 0 delivered · 1 proposed");
-  expect(runStatus([], repo.root).output).toContain("widgets · 1 delivered · 1 proposed");
-  expect(statusRows(repo.root, "use-a-widget")).toEqual([
+  expect(everySubject.output).toContain("use-a-widget · 0 delivered · 1 proposed");
+  expect(everySubject.output).toContain("widgets · 1 delivered · 1 proposed");
+  expect(asJson).toEqual([
     {
       subject: "use-a-widget",
       id: "B1",
@@ -215,28 +229,39 @@ test("B11: adds a spec's status to Claude Code's context after reading it, and n
 }) => {
   repo.writeSpec(WIDGETS_SPEC, [["B1", "service"]]);
   repo.writeTests(WIDGETS_TESTS, [{ title: "B1: is planned", modifier: "todo" }]);
-  const hookOutputAfterReading = (filePath: string) =>
-    runHook(JSON.stringify({ tool_name: "Read", tool_input: { file_path: filePath } }), repo.root);
 
-  const output = JSON.parse(hookOutputAfterReading(`${repo.root}/${WIDGETS_SPEC}`)) as {
+  const specReadOutput = runHook(
+    JSON.stringify({
+      tool_name: "Read",
+      tool_input: { file_path: `${repo.root}/${WIDGETS_SPEC}` },
+    }),
+    repo.root,
+  );
+  const testReadOutput = runHook(
+    JSON.stringify({
+      tool_name: "Read",
+      tool_input: { file_path: `${repo.root}/${WIDGETS_TESTS}` },
+    }),
+    repo.root,
+  );
+  const specEditOutput = runHook(
+    JSON.stringify({
+      tool_name: "Edit",
+      tool_input: { file_path: `${repo.root}/${WIDGETS_SPEC}` },
+    }),
+    repo.root,
+  );
+
+  const { hookSpecificOutput } = JSON.parse(specReadOutput) as {
     hookSpecificOutput: { hookEventName: string; additionalContext: string };
   };
-
-  expect(output.hookSpecificOutput.hookEventName).toBe("PostToolUse");
-  expect(output.hookSpecificOutput.additionalContext).toContain(
+  expect(hookSpecificOutput.hookEventName).toBe("PostToolUse");
+  expect(hookSpecificOutput.additionalContext).toContain(
     "A proposed row describes behaviour that is not built yet",
   );
-  expect(output.hookSpecificOutput.additionalContext).toContain(
+  expect(hookSpecificOutput.additionalContext).toContain(
     ` B1  service   proposed  todo in ${WIDGETS_TESTS}`,
   );
-  expect(hookOutputAfterReading(`${repo.root}/${WIDGETS_TESTS}`)).toBe("");
-  expect(
-    runHook(
-      JSON.stringify({
-        tool_name: "Edit",
-        tool_input: { file_path: `${repo.root}/${WIDGETS_SPEC}` },
-      }),
-      repo.root,
-    ),
-  ).toBe("");
+  expect(testReadOutput).toBe("");
+  expect(specEditOutput).toBe("");
 });

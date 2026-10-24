@@ -45,7 +45,7 @@ ruleTester.run("file-names", plugin.rules["file-names"], {
   invalid: [
     { code: "", filename: at("tests/support/helpers.ts"), errors: 1 },
     { code: "", filename: at("tests/system/fixtures.ts"), errors: 1 },
-    { code: "", filename: at("tests/support/library.mocks.ts"), errors: 1 },
+    { code: "", filename: at("tests/support/catalogue.mocks.ts"), errors: 1 },
     { code: "", filename: at("tests/support/catalogue.handlers.ts"), errors: 1 },
     { code: "", filename: at("tests/support/fake-catalogue.ts"), errors: 1 },
   ],
@@ -76,7 +76,7 @@ ruleTester.run("helper-placement", plugin.rules["helper-placement"], {
     },
     {
       code: 'import { createLoansApp } from "../../src/loans/loans-app.ts";',
-      filename: at("tests/support/library.ts"),
+      filename: at("tests/support/service.fixtures.ts"),
     },
   ],
   invalid: [
@@ -125,10 +125,10 @@ ruleTester.run("support-modules", plugin.rules["support-modules"], {
   invalid: [
     {
       code: 'import { test as base } from "vitest";\nexport const test = base;',
-      filename: at("tests/support/library.ts"),
+      filename: at("tests/support/test-clock.ts"),
       errors: 1,
     },
-    { code: 'import { http } from "msw";', filename: at("tests/support/library.ts"), errors: 1 },
+    { code: 'import { http } from "msw";', filename: at("tests/support/test-clock.ts"), errors: 1 },
     {
       code: "export const test = base;\nexport const CATALOGUE_URL = '';",
       filename: at("tests/system/system.fixtures.ts"),
@@ -156,7 +156,7 @@ ruleTester.run("test-imports", plugin.rules["test-imports"], {
       errors: 1,
     },
     {
-      code: 'import { test } from "../../tests/support/library.ts";',
+      code: 'import { test } from "../../tests/support/test-clock.ts";',
       filename: at("src/loans/loans.service.test.ts"),
       errors: 1,
     },

@@ -74,7 +74,7 @@ test("B2: sends nothing for loans already reminded today, returned, or not yet o
   await sendOverdueReminders();
   await sendOverdueReminders();
 
-  expect(fakeNotifications.sent.map((reminder) => reminder.loanId)).toEqual([loan1]);
+  expect(fakeNotifications.sent).toMatchObject([{ loanId: loan1 }]);
 });
 
 test("B3: records nothing for a refused reminder and carries on with the other loans", async ({
@@ -103,7 +103,7 @@ test("B3: records nothing for a refused reminder and carries on with the other l
 
   await sendOverdueReminders();
 
-  expect(fakeNotifications.sent.map((reminder) => reminder.loanId)).toEqual([loan2]);
+  expect(fakeNotifications.sent).toMatchObject([{ loanId: loan2 }]);
   expect(db.prepare("SELECT loan_id, sent_on FROM reminders").all()).toEqual([
     { loan_id: loan2, sent_on: "2026-03-17" },
   ]);
