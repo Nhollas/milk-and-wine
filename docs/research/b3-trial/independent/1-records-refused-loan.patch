@@ -1,0 +1,12 @@
+diff --git a/src/reminders/send-overdue-reminders.ts b/src/reminders/send-overdue-reminders.ts
+index a5fb0bc..7f22f39 100644
+--- a/src/reminders/send-overdue-reminders.ts
++++ b/src/reminders/send-overdue-reminders.ts
+@@ -28,6 +28,7 @@ export async function sendOverdueReminders({
+     if (delivery.kind === "refused") {
+       counts.failed++;
+       logger.warn("reminder.failed", { loanId: reminder.loanId, error: delivery.reason });
++      store.recordSent(reminder.loanId, today);
+       continue;
+     }
+     store.recordSent(reminder.loanId, today);

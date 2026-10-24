@@ -20,3 +20,11 @@ Run `docs/research/b3-trial/run.sh`. It applies each patch, runs only B3's test,
 The weakened test is [control/weaker-b3-test.patch](control/weaker-b3-test.patch): it checks only the log's level and event. It still passes, and so does `pnpm check`.
 
 Stryker also flags this weakening, as a surviving `{}` mutant on the log's fields, but only because no other test checks those fields, and its report names a line, not the promise. Neither approach finds a promise that the code and the test both leave out.
+
+## Rerun with independent bugs
+
+A fresh agent, shown only the row and `send-overdue-reminders.ts`, wrote the patches in [independent/](independent/). It split the Then into the same six promises and wrote near-identical bugs. Run them with `docs/research/b3-trial/run.sh docs/research/b3-trial/independent`.
+
+They got the same results as patches 1 to 5, but the rerun exposed a flaky result. B3's test catches "stops after a refusal" only some of the time: 12 of 20 runs. Both overdue loans are due on the same day, so `remindersDue` orders them by `loan_id`, a random UUID. When the refused loan happens to come last, `break` behaves like `continue` and the test passes. So B3's test proves "carries on with the other loans" only about half the time.
+
+Stryker never mutates the `continue`, so its report can't show this gap. Fixing it changes what a `B3:` test checks, so it is left for a person to decide.
