@@ -87,12 +87,13 @@ test("B3: records nothing for a refused reminder and carries on with the other l
   fakeNotifications,
 }) => {
   fakeCatalogue.addCopies({ "copy-1": "available", "copy-2": "available" });
-  clock.setToday("2026-03-02");
+  clock.setToday("2026-03-01");
   const firstLendResponse = await app.request(
     "/loans",
     postJson({ memberId: "member-1", copyId: "copy-1" }),
   );
   const { loanId: loan1 } = (await firstLendResponse.json()) as { loanId: string };
+  clock.setToday("2026-03-02");
   const secondLendResponse = await app.request(
     "/loans",
     postJson({ memberId: "member-2", copyId: "copy-2" }),
