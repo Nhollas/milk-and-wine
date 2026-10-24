@@ -45,10 +45,10 @@ test("B3: a member who keeps a copy past its due date gets one reminder that day
   await library.lend("ada", "copy-1");
 
   library.setToday("2026-03-16");
-  await library.sweep();
+  await library.sendOverdueReminders();
   library.setToday("2026-03-17");
-  await library.sweep();
-  await library.sweep();
+  await library.sendOverdueReminders();
+  await library.sendOverdueReminders();
 
   expect(notifications).toEqual([
     {

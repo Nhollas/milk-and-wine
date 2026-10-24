@@ -21,7 +21,7 @@ A member borrows a copy, is reminded if it's late, and brings it back for the ne
 
 | ID | Given | When | Then | Verified |
 | --- | --- | --- | --- | --- |
-| B3 | A member still has a copy the day after it was due | The daily sweep runs, twice that day | They are sent exactly one overdue reminder that day | system |
+| B3 | A member still has a copy the day after it was due | The daily reminders job runs, twice that day | They are sent exactly one overdue reminder that day | system |
 
 ### Renewing
 

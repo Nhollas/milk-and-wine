@@ -26,7 +26,7 @@ Members ask the front desk to extend loans by phone. Letting them renew through 
 ## Plan
 
 - Renewing changes `dueOn` in place. A loan keeps one row; there is no renewal history.
-- Reminders need no change: a renewed loan is no longer overdue, so the sweep skips it.
+- Reminders need no change: a renewed loan is no longer overdue, so the reminders job skips it.
 
 ## Before deleting this folder
 

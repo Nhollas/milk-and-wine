@@ -3,7 +3,7 @@ import { openDatabase } from "../../src/database.ts";
 import { createLogger, type LogEntry } from "../../src/log.ts";
 import { createLoansApp } from "../../src/loans/loans-app.ts";
 import type { NotificationsClient } from "../../src/reminders/notifications-client.ts";
-import { createReminderSweep } from "../../src/reminders/reminder-sweep.ts";
+import { sendOverdueReminders } from "../../src/reminders/send-overdue-reminders.ts";
 
 export type LibraryDependencies = {
   catalogueClient: CatalogueClient;
@@ -19,12 +19,11 @@ export function openLibrary({ catalogueClient, notificationsClient }: LibraryDep
   const db = openDatabase(":memory:");
   const clock = () => now;
   const app = createLoansApp({ db, catalogueClient, clock });
-  const sweep = createReminderSweep({ db, notificationsClient, clock, logger });
 
   return {
     db,
     logs,
-    sweep,
+    sendOverdueReminders: () => sendOverdueReminders({ db, notificationsClient, clock, logger }),
     close() {
       if (db.isOpen) db.close();
     },

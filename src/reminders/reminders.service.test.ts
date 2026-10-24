@@ -12,7 +12,7 @@ test("B1: asks for a reminder for each overdue loan and records it for today", a
   const loan2 = await library.lendForLoanId("member-2", "copy-2");
   library.setToday("2026-03-17");
 
-  await library.sweep();
+  await library.sendOverdueReminders();
 
   expect(notificationsClient.sent).toEqual(
     expect.arrayContaining([
@@ -42,8 +42,8 @@ test("B2: sends nothing for loans already reminded today, returned, or not yet o
   library.setToday("2026-03-17");
   await library.returnLoan(loan2);
 
-  await library.sweep();
-  await library.sweep();
+  await library.sendOverdueReminders();
+  await library.sendOverdueReminders();
 
   expect(notificationsClient.sent.map((reminder) => reminder.loanId)).toEqual([loan1]);
 });
@@ -60,7 +60,7 @@ test("B3: records nothing for a refused reminder and carries on with the other l
   notificationsClient.refuseFor(loan1);
   library.setToday("2026-03-17");
 
-  await library.sweep();
+  await library.sendOverdueReminders();
 
   expect(notificationsClient.sent.map((reminder) => reminder.loanId)).toEqual([loan2]);
   expect(library.remindersRecorded()).toEqual([{ loanId: loan2, sentOn: "2026-03-17" }]);
@@ -88,11 +88,11 @@ test("B4: logs how many reminders were sent and how many failed", async ({
   notificationsClient.refuseFor(loan3);
   library.setToday("2026-03-17");
 
-  await library.sweep();
+  await library.sendOverdueReminders();
 
   expect(library.logs.at(-1)).toEqual({
     level: "info",
-    event: "reminders.swept",
+    event: "reminders.finished",
     fields: { sent: 2, failed: 1 },
   });
 });

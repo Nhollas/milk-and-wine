@@ -12,5 +12,5 @@ An outcome a caller is expected to handle is part of the return type, as a union
 
 - A caller sees every outcome in the type it receives and can't forget one without the type checker noticing.
 - Modules export no error classes for callers to catch.
-- An unexpected exception is no longer swallowed by a broad `catch`: a sweep that hits a bug stops instead of counting it as a failed reminder.
+- An unexpected exception is no longer swallowed by a broad `catch`: a reminders run that hits a bug stops instead of counting it as a failed reminder.
 - A client that wraps `fetch` must turn connection failures into a value itself.

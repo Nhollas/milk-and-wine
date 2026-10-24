@@ -3,7 +3,7 @@ import { systemClock } from "../clock.ts";
 import { openDatabase } from "../database.ts";
 import { logger } from "../log.ts";
 import { createNotificationsClient } from "./notifications-client.ts";
-import { createReminderSweep } from "./reminder-sweep.ts";
+import { sendOverdueReminders } from "./send-overdue-reminders.ts";
 
 const env = z
   .object({
@@ -12,11 +12,9 @@ const env = z
   })
   .parse(process.env);
 
-const sweep = createReminderSweep({
+await sendOverdueReminders({
   db: openDatabase(env.DATABASE_PATH),
   notificationsClient: createNotificationsClient(env.NOTIFY_URL),
   clock: systemClock,
   logger,
 });
-
-await sweep();

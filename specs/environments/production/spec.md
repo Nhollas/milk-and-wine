@@ -1,6 +1,6 @@
 # Production
 
-The deployed loans service and its daily reminders sweep, as members reach them.
+The deployed loans service and its daily reminders job, as members reach them.
 
 | Scope |  |
 | --- | --- |
@@ -21,7 +21,7 @@ The deployed loans service and its daily reminders sweep, as members reach them.
 
 | ID | Given | When | Then | Verified |
 | --- | --- | --- | --- | --- |
-| B3 | The reminders job is deployed | It is 09:00 UTC | The sweep runs once that day against the same database as the service | manual [runbook](../../../docs/runbooks/reminders-schedule.md) |
+| B3 | The reminders job is deployed | It is 09:00 UTC | The reminders job runs once that day against the same database as the service | manual [runbook](../../../docs/runbooks/reminders-schedule.md) |
 
 ## Limitations
 
