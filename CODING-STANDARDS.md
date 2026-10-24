@@ -4,15 +4,19 @@ These are defaults, not laws. When a case genuinely doesn't fit, deviate and say
 
 ## Naming
 
-- Prefer the name the wider ecosystem already uses over one we invent, such as `logger` with `logger.info(...)`. A newcomer should recognise the name before opening the file.
-- Name things for what they return or hold, so a reader can predict it without opening them: a module that holds a thing gets a noun (`http-interceptor.ts`, `httpInterceptor`), a function gets what it returns (`filesUnder(directory)`, `copyLookupHandler(copies)`). If the only honest name needs "and" or a vague verb like `handle`, the code is doing two jobs: split it.
+- Use the name the ecosystem already uses (`logger.info(...)`, `app.request(...)`) over one we invent.
+- Name a value for what it holds and a function for what it returns or does (`httpInterceptor`, `filesUnder(directory)`, `sendOverdueReminders(...)`).
+- If the only honest name needs "and" or a vague verb like `handle`, split the code.
 
 ## Design
 
-- Design code to be tested. If a test needs heavy machinery, such as module mocks, real waits or global state, change the code, not the test.
+- If a test needs module mocks, real waits or global state, change the code, not the test.
 
 ## Tests
 
-- Reading a test top to bottom, it must be obvious which lines are setup and which call the code under test. Setup goes through a fixture object (`library.lendForLoanId(...)`, `catalogueClient.addCopies(...)`) or a call whose receiver names it as setup (`httpInterceptor.use(...)`). Bare function calls are the code under test.
-- No mystery guests: every value a test asserts on comes from the test itself, and the row's "given" is in the test body (the copies that exist, today's date, which sends are refused). Helpers may build values but must not make up any that the test later asserts.
-- Assert on observable behaviour (responses, return values, messages sent), not implementation (requests made, internal calls, call counts). A request counts as behaviour only when it's the outcome, such as a one-way notification. See MSW's [Avoid request assertions](https://mswjs.io/docs/best-practices/avoid-request-assertions).
+- Write out what a test sends and expects: method, path and body; status, response body and rows. Build neither from the code under test (route constants, response types, generated clients).
+- Write each case out, even when it repeats. A test has no loops or branches.
+- Order a test as setup, call, assertions, with a blank line between each. Setup goes through fixtures named for what they are (`fakeCatalogue.addCopies(...)`, `clock.setToday(...)`) or `httpInterceptor.use(...)`.
+- Name a response for the request that sent it, ending in `Response` (`secondLendResponse`, `notJsonResponse`).
+- Every value a test asserts on comes from the test body, including the row's Given. Helpers may build values but not invent ones the test asserts.
+- Assert on outcomes: responses, return values, messages sent, rows stored. Assert on a request only when it is the outcome, such as a one-way notification ([MSW: avoid request assertions](https://mswjs.io/docs/best-practices/avoid-request-assertions)).

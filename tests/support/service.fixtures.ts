@@ -1,13 +1,37 @@
 import { test as base } from "vitest";
+import { openDatabase } from "../../src/database.ts";
+import { createLogger, type LogEntry } from "../../src/log.ts";
+import { createLoansApp } from "../../src/loans/loans-app.ts";
+import { sendOverdueReminders } from "../../src/reminders/send-overdue-reminders.ts";
 import { fakeCatalogueClient } from "./fake-catalogue-client.ts";
 import { fakeNotificationsClient } from "./fake-notifications-client.ts";
-import { openLibrary } from "./library.ts";
+import { testClock } from "./test-clock.ts";
 
 export const test = base
-  .extend("catalogueClient", () => fakeCatalogueClient())
-  .extend("notificationsClient", () => fakeNotificationsClient())
-  .extend("library", ({ catalogueClient, notificationsClient }, { onCleanup }) => {
-    const library = openLibrary({ catalogueClient, notificationsClient });
-    onCleanup(() => library.close());
-    return library;
-  });
+  .extend("fakeCatalogue", () => fakeCatalogueClient())
+  .extend("fakeNotifications", () => fakeNotificationsClient())
+  .extend("clock", () => testClock())
+  .extend("logs", (): LogEntry[] => [])
+  .extend("db", ({}, { onCleanup }) => {
+    const db = openDatabase(":memory:");
+    onCleanup(() => {
+      if (db.isOpen) db.close();
+    });
+    return db;
+  })
+  .extend("app", ({ db, fakeCatalogue, clock }) =>
+    createLoansApp({ db, catalogueClient: fakeCatalogue, clock: clock.now }),
+  )
+  .extend(
+    "sendOverdueReminders",
+    ({ db, fakeNotifications, clock, logs }) =>
+      () =>
+        sendOverdueReminders({
+          db,
+          notificationsClient: fakeNotifications,
+          clock: clock.now,
+          logger: createLogger((entry) => {
+            logs.push(entry);
+          }),
+        }),
+  );

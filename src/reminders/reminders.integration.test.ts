@@ -7,10 +7,9 @@ import { httpInterceptor } from "../../tests/support/http-interceptor.ts";
 const notificationsClient = createNotificationsClient(NOTIFY_URL);
 const reminder = { memberId: "member-1", loanId: "loan-1", dueOn: "2026-03-16" };
 
-test("B5: posts a loan-overdue notification and accepts any 2xx answer", async () => {
+test("B5: posts a loan-overdue notification as JSON and accepts a 202", async () => {
   const requests: { method: string; path: string; contentType: string | null; body: unknown }[] =
     [];
-  const statuses = [200, 202, 204];
   httpInterceptor.use(
     http.post(NOTIFICATIONS_PATH, async ({ request }) => {
       requests.push({
@@ -19,27 +18,37 @@ test("B5: posts a loan-overdue notification and accepts any 2xx answer", async (
         contentType: request.headers.get("content-type"),
         body: await request.json(),
       });
-      return new HttpResponse(null, { status: statuses[requests.length - 1] ?? 500 });
+      return new HttpResponse(null, { status: 202 });
     }),
   );
 
-  const deliveries = [];
-  for (const _ of statuses)
-    deliveries.push(await notificationsClient.sendOverdueReminder(reminder));
+  const delivery = await notificationsClient.sendOverdueReminder(reminder);
 
-  expect(deliveries.map((delivery) => delivery.kind)).toEqual(["accepted", "accepted", "accepted"]);
-
-  expect(requests).toHaveLength(3);
-  expect(requests[0]).toEqual({
-    method: "POST",
-    path: "/notifications",
-    contentType: "application/json",
-    body: {
-      memberId: "member-1",
-      template: "loan-overdue",
-      data: { loanId: "loan-1", dueOn: "2026-03-16" },
+  expect(delivery.kind).toBe("accepted");
+  expect(requests).toEqual([
+    {
+      method: "POST",
+      path: "/notifications",
+      contentType: "application/json",
+      body: {
+        memberId: "member-1",
+        template: "loan-overdue",
+        data: { loanId: "loan-1", dueOn: "2026-03-16" },
+      },
     },
-  });
+  ]);
+});
+
+test("B5: accepts a 200", async () => {
+  httpInterceptor.use(http.post(NOTIFICATIONS_PATH, () => new HttpResponse(null, { status: 200 })));
+
+  expect((await notificationsClient.sendOverdueReminder(reminder)).kind).toBe("accepted");
+});
+
+test("B5: accepts a 204", async () => {
+  httpInterceptor.use(http.post(NOTIFICATIONS_PATH, () => new HttpResponse(null, { status: 204 })));
+
+  expect((await notificationsClient.sendOverdueReminder(reminder)).kind).toBe("accepted");
 });
 
 test("B5: treats any other answer as refused", async () => {
