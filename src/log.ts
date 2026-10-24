@@ -1,4 +1,4 @@
-type LogLevel = "info" | "warn" | "error";
+type LogLevel = "info" | "warn";
 
 type LogFields = Record<string, unknown>;
 
@@ -11,7 +11,7 @@ export function createLogger(write: (entry: LogEntry) => void): Logger {
     (level: LogLevel) =>
     (event: string, fields: LogFields = {}) =>
       write({ level, event, fields });
-  return { info: logAt("info"), warn: logAt("warn"), error: logAt("error") };
+  return { info: logAt("info"), warn: logAt("warn") };
 }
 
 export const logger = createLogger(({ level, event, fields }) => {
