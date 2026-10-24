@@ -2,7 +2,7 @@
   "$schema": "./node_modules/@stryker-mutator/core/schema/stryker-schema.json",
   "testRunner": "vitest",
   "coverageAnalysis": "perTest",
-  "mutate": ["src/loans/**/*.ts", "!src/loans/**/*.test.ts", "!src/loans/main.ts"],
+  "mutate": ["src/**/*.ts", "!src/**/*.test.ts", "!src/**/main.ts"],
   "reporters": ["clear-text", "html", "json"],
   "htmlReporter": {
     "fileName": "reports/mutation/mutation.html"
