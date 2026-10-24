@@ -8,14 +8,14 @@ Run `docs/research/b3-trial/run.sh`. It applies each patch, runs only B3's test,
 
 ## Results
 
-| Patch | Promise it breaks | B3's test | B3's test, weakened |
-| --- | --- | --- | --- |
-| 1-records-a-refused-reminder | records nothing for that loan | caught | caught |
-| 2-wrong-event | logs `reminder.failed` | caught | caught |
-| 3-logs-at-info | at `warn` | caught | caught |
-| 4-drops-loan-id | with `loanId` | caught | **missed** |
-| 5-drops-error | and `error` | caught | **missed** |
-| 6-stops-after-a-refusal | carries on with the other loans | caught | caught |
+| Patch                        | Promise it breaks               | B3's test | B3's test, weakened |
+| ---------------------------- | ------------------------------- | --------- | ------------------- |
+| 1-records-a-refused-reminder | records nothing for that loan   | caught    | caught              |
+| 2-wrong-event                | logs `reminder.failed`          | caught    | caught              |
+| 3-logs-at-info               | at `warn`                       | caught    | caught              |
+| 4-drops-loan-id              | with `loanId`                   | caught    | **missed**          |
+| 5-drops-error                | and `error`                     | caught    | **missed**          |
+| 6-stops-after-a-refusal      | carries on with the other loans | caught    | caught              |
 
 The weakened test is [control/weaker-b3-test.patch](control/weaker-b3-test.patch): it checks only the log's level and event. It still passes, and so does `pnpm check`.
 
