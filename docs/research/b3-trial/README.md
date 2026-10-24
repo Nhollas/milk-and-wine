@@ -15,7 +15,7 @@ Run `docs/research/b3-trial/run.sh`. It applies each patch, runs only B3's test,
 | 3-logs-at-info               | at `warn`                       | caught    | caught              |
 | 4-drops-loan-id              | with `loanId`                   | caught    | **missed**          |
 | 5-drops-error                | and `error`                     | caught    | **missed**          |
-| 6-stops-after-a-refusal      | carries on with the other loans | caught    | caught              |
+| 6-stops-after-a-refusal      | carries on with the other loans | flaky     | flaky               |
 
 The weakened test is [control/weaker-b3-test.patch](control/weaker-b3-test.patch): it checks only the log's level and event. It still passes, and so does `pnpm check`.
 
