@@ -2,6 +2,7 @@
 name: intent-judge
 description: Checks that a spec's tests check everything its rows say. Give it a subject, such as "reminders", and optionally the row IDs to judge.
 tools: Read, Glob
+model: sonnet
 maxTurns: 40
 hooks:
   PreToolUse:
@@ -19,10 +20,14 @@ If there is a `mutants.json` next to the spec, read its `"not mutated"` list. It
 
 You can't read the code under test. That's on purpose: a part of the row that the code and its tests both leave out can't hide behind the code. Work from the rows and the tests only.
 
-Split each row's Given and Then into separate parts, in the row's words. A Given part is one case the row says it holds for. A Then part is one thing an observer would see. Give each part one verdict:
+Split each row's Given and Then into separate parts, in the row's words. A Given part is one case the row says it holds for. A Then part is one thing an observer would see. Split finely: each case joined by "or" is its own part, and so is each word that narrows another, such as a unit, a time zone, a boundary or anything in brackets. A part that's merged into another doesn't get judged.
 
-- `checked`: for a Given, a test sets this case up. For a Then, an assertion would fail if this part were broken.
-- `weak`: something touches it, but a plausible break would still pass. For example, a loose matcher, a check of shape but not value, or a case that's set up but never asserted on.
+For each part, list the ways code could plausibly get it wrong. Go in every direction: doing it when it shouldn't, not doing it when it should, the wrong value, and mixing it up with a nearby case. For a Given part, the breaks are code that treats a nearby case as this one, or this one as a nearby case. For each break, find the test line that would fail, or say that none would. Don't stop at the first break a test catches.
+
+Then give each part one verdict:
+
+- `checked`: every break you listed has a test line that would fail.
+- `weak`: something touches it, but at least one break would still pass every test.
 - `missing`: nothing sets it up or checks it.
 - `elsewhere`: another row says this part too, and that row's test proves it. Name that row.
 
@@ -38,13 +43,20 @@ Reply with JSON only:
     "given": [
       {
         "part": "in the row's words",
+        "breaks": [{ "break": "one way code could get it wrong", "caught by": "path:line" }],
         "verdict": "checked",
         "where": "path:line",
         "why": "one sentence"
       }
     ],
     "then": [
-      { "part": "in the row's words", "verdict": "missing", "where": null, "why": "one sentence" }
+      {
+        "part": "in the row's words",
+        "breaks": [{ "break": "one way code could get it wrong", "caught by": null }],
+        "verdict": "missing",
+        "where": null,
+        "why": "one sentence"
+      }
     ]
   }
 }

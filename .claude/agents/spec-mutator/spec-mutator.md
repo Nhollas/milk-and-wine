@@ -2,6 +2,7 @@
 name: spec-mutator
 description: Writes mutants for a spec, to check its tests cover everything it says. Give it a subject, such as "reminders", and optionally the row IDs to redo.
 tools: Read, Glob, Write, Edit
+model: sonnet
 maxTurns: 80
 hooks:
   PreToolUse:

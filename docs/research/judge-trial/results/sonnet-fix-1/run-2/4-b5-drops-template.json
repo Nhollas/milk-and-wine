@@ -1,0 +1,444 @@
+{
+  "B1": {
+    "given": [
+      {
+        "part": "An open loan's `dueOn` is before today (UTC)",
+        "breaks": [
+          {
+            "break": "Treats a loan due today or later as overdue",
+            "caught by": "src/reminders/reminders.service.test.ts:77 (B2 loan3, due on the day of the run)"
+          },
+          {
+            "break": "Takes 'today' from local time instead of UTC",
+            "caught by": null
+          },
+          {
+            "break": "Skips a loan that is overdue by more than a day",
+            "caught by": null
+          }
+        ],
+        "verdict": "weak",
+        "where": "src/reminders/reminders.service.test.ts:25",
+        "why": "B1 only runs on loans due the day before. The not-yet-overdue boundary is proven by B2. Nothing varies the UTC date. The clock is fixed at 10:00Z, so a local-time bug would not show."
+      },
+      {
+        "part": "it has no reminder recorded today",
+        "breaks": [
+          {
+            "break": "Sends again to a loan already reminded today",
+            "caught by": "src/reminders/reminders.service.test.ts:75-77 (B2)"
+          },
+          {
+            "break": "Skips a loan that has a reminder from an earlier day, so the member is never reminded again",
+            "caught by": null
+          }
+        ],
+        "verdict": "weak",
+        "where": "src/reminders/reminders.service.test.ts:27",
+        "why": "No test records a reminder on an earlier day and expects a new send. Only a same-day reminder is exercised."
+      }
+    ],
+    "then": [
+      {
+        "part": "Asks the Notifications API to notify the loan's member",
+        "breaks": [
+          {
+            "break": "Never calls the API",
+            "caught by": "src/reminders/reminders.service.test.ts:29-35"
+          },
+          {
+            "break": "Sends the wrong memberId, for example the loanId",
+            "caught by": "src/reminders/reminders.service.test.ts:31-32"
+          },
+          {
+            "break": "Sends the wrong loanId or dueOn",
+            "caught by": "src/reminders/reminders.service.test.ts:31-32"
+          },
+          {
+            "break": "Sends twice for one loan",
+            "caught by": "src/reminders/reminders.service.test.ts:35"
+          }
+        ],
+        "verdict": "checked",
+        "where": "src/reminders/reminders.service.test.ts:29",
+        "why": "The fake records each reminder, and the test asserts memberId, loanId and dueOn for both loans plus the total count."
+      },
+      {
+        "part": "then records a reminder for today",
+        "breaks": [
+          {
+            "break": "Records nothing",
+            "caught by": "src/reminders/reminders.service.test.ts:37-43"
+          },
+          {
+            "break": "Records the due date instead of today",
+            "caught by": "src/reminders/reminders.service.test.ts:39-40"
+          },
+          {
+            "break": "Records the wrong loan",
+            "caught by": "src/reminders/reminders.service.test.ts:39-40"
+          },
+          {
+            "break": "Records before asking the API",
+            "caught by": "src/reminders/reminders.service.test.ts:108-110 (B3)"
+          }
+        ],
+        "verdict": "checked",
+        "where": "src/reminders/reminders.service.test.ts:36",
+        "why": "The test reads the reminders table, expects sent_on to be the run date (not the due date), and expects exactly two rows. The record-before-ask order is covered by B3."
+      }
+    ]
+  },
+  "B2": {
+    "given": [
+      {
+        "part": "An open loan already has a reminder recorded today",
+        "breaks": [
+          {
+            "break": "Ignores existing reminders and resends",
+            "caught by": "src/reminders/reminders.service.test.ts:75-77"
+          },
+          {
+            "break": "Only excludes reminders from before today (`sent_on < today`)",
+            "caught by": "src/reminders/reminders.service.test.ts:75-77"
+          }
+        ],
+        "verdict": "checked",
+        "where": "src/reminders/reminders.service.test.ts:74-77",
+        "why": "The second run must not resend to loan1, and the sent list is matched as a one-element array."
+      },
+      {
+        "part": "or is returned",
+        "breaks": [
+          {
+            "break": "Ignores returned_on and reminds returned loans",
+            "caught by": "src/reminders/reminders.service.test.ts:72,77"
+          }
+        ],
+        "verdict": "checked",
+        "where": "src/reminders/reminders.service.test.ts:72",
+        "why": "loan2 is overdue and returned. The sent list holds only loan1, so reminding loan2 would fail."
+      },
+      {
+        "part": "or isn't overdue",
+        "breaks": [
+          {
+            "break": "Treats a loan due today as overdue (`<=`)",
+            "caught by": "src/reminders/reminders.service.test.ts:70-71,77"
+          },
+          {
+            "break": "Reminds every open loan regardless of due date",
+            "caught by": "src/reminders/reminders.service.test.ts:77"
+          }
+        ],
+        "verdict": "checked",
+        "where": "src/reminders/reminders.service.test.ts:70",
+        "why": "loan3 is lent on 03-03, so it is due on the day of the run, which is the boundary. It must not be sent."
+      }
+    ],
+    "then": [
+      {
+        "part": "Sends nothing for that loan",
+        "breaks": [
+          {
+            "break": "Sends for a reminded, returned or not-overdue loan",
+            "caught by": "src/reminders/reminders.service.test.ts:77"
+          },
+          {
+            "break": "Sends nothing at all, including for loan1",
+            "caught by": "src/reminders/reminders.service.test.ts:77"
+          }
+        ],
+        "verdict": "checked",
+        "where": "src/reminders/reminders.service.test.ts:77",
+        "why": "The sent list must equal exactly [loan1] across two runs."
+      }
+    ]
+  },
+  "B3": {
+    "given": [
+      {
+        "part": "The Notifications API refuses or can't be reached",
+        "breaks": [
+          {
+            "break": "Treats a refused result as success",
+            "caught by": "src/reminders/reminders.service.test.ts:108-110"
+          },
+          {
+            "break": "Handles refusals but not an unreachable API",
+            "caught by": "src/reminders/reminders.integration.test.ts:62-68 (B5 maps unreachable to refused)"
+          }
+        ],
+        "verdict": "checked",
+        "where": "src/reminders/reminders.service.test.ts:102",
+        "why": "The fake refuses loan1. Unreachable is turned into the same refused result by the client, and B5 proves that."
+      }
+    ],
+    "then": [
+      {
+        "part": "Records nothing for that loan",
+        "breaks": [
+          {
+            "break": "Records the reminder despite the refusal",
+            "caught by": "src/reminders/reminders.service.test.ts:108-110"
+          }
+        ],
+        "verdict": "checked",
+        "where": "src/reminders/reminders.service.test.ts:108",
+        "why": "The reminders table must hold only loan2's row."
+      },
+      {
+        "part": "logs `reminder.failed` at `warn` with `loanId` and the refusal's `error`",
+        "breaks": [
+          {
+            "break": "Wrong event name",
+            "caught by": "src/reminders/reminders.service.test.ts:111-115"
+          },
+          {
+            "break": "Wrong level",
+            "caught by": "src/reminders/reminders.service.test.ts:112"
+          },
+          {
+            "break": "Wrong loanId, for example the memberId",
+            "caught by": "src/reminders/reminders.service.test.ts:114"
+          },
+          {
+            "break": "Generic error text instead of the refusal's reason",
+            "caught by": "src/reminders/reminders.service.test.ts:114"
+          },
+          {
+            "break": "No log at all",
+            "caught by": "src/reminders/reminders.service.test.ts:111"
+          }
+        ],
+        "verdict": "checked",
+        "where": "src/reminders/reminders.service.test.ts:111",
+        "why": "The test matches the whole entry exactly: level, event and both fields."
+      },
+      {
+        "part": "carries on with the other loans",
+        "breaks": [
+          {
+            "break": "Stops the run at the first failure",
+            "caught by": "src/reminders/reminders.service.test.ts:107"
+          }
+        ],
+        "verdict": "checked",
+        "where": "src/reminders/reminders.service.test.ts:107",
+        "why": "loan1 is the earlier loan and is refused. loan2 must still be sent after it."
+      }
+    ]
+  },
+  "B4": {
+    "given": [
+      {
+        "part": "The job has handled every overdue loan",
+        "breaks": [
+          {
+            "break": "Logs before the loop has finished",
+            "caught by": "src/reminders/reminders.service.test.ts:144 (`logs.at(-1)`, with counts 2 and 1)"
+          }
+        ],
+        "verdict": "checked",
+        "where": "src/reminders/reminders.service.test.ts:144",
+        "why": "The last log entry must carry the full counts, so an early log would fail."
+      }
+    ],
+    "then": [
+      {
+        "part": "Logs `reminders.finished` at `info`",
+        "breaks": [
+          {
+            "break": "Different event name",
+            "caught by": "src/reminders/reminders.service.test.ts:146"
+          },
+          {
+            "break": "Different level",
+            "caught by": "src/reminders/reminders.service.test.ts:145"
+          }
+        ],
+        "verdict": "checked",
+        "where": "src/reminders/reminders.service.test.ts:144-148",
+        "why": "toEqual on the whole entry pins the level and the event."
+      },
+      {
+        "part": "with `sent` and `failed` counts",
+        "breaks": [
+          {
+            "break": "sent is not counted",
+            "caught by": "src/reminders/reminders.service.test.ts:147"
+          },
+          {
+            "break": "failed is not counted",
+            "caught by": "src/reminders/reminders.service.test.ts:147"
+          },
+          {
+            "break": "The two counts are swapped",
+            "caught by": "src/reminders/reminders.service.test.ts:147"
+          }
+        ],
+        "verdict": "checked",
+        "where": "src/reminders/reminders.service.test.ts:147",
+        "why": "The counts are 2 sent and 1 failed, which differ, so a swap or an omission fails."
+      }
+    ]
+  },
+  "B5": {
+    "given": [
+      {
+        "part": "A reminder is due",
+        "breaks": [
+          {
+            "break": "The client sends nothing when called",
+            "caught by": "src/reminders/reminders.integration.test.ts:28-38"
+          }
+        ],
+        "verdict": "checked",
+        "where": "src/reminders/reminders.integration.test.ts:25",
+        "why": "The test calls the client directly with a reminder and asserts the request that arrives."
+      }
+    ],
+    "then": [
+      {
+        "part": "Sends `POST {NOTIFY_URL}/notifications`",
+        "breaks": [
+          {
+            "break": "Wrong method",
+            "caught by": "src/reminders/reminders.integration.test.ts:30"
+          },
+          {
+            "break": "Wrong path",
+            "caught by": "src/reminders/reminders.integration.test.ts:31"
+          }
+        ],
+        "verdict": "checked",
+        "where": "src/reminders/reminders.integration.test.ts:30-31",
+        "why": "The captured request's method and pathname are asserted, and the handler is registered on the exact URL."
+      },
+      {
+        "part": "with JSON",
+        "breaks": [
+          {
+            "break": "Wrong content-type, for example text/plain",
+            "caught by": "src/reminders/reminders.integration.test.ts:32"
+          },
+          {
+            "break": "Body is not valid JSON",
+            "caught by": "src/reminders/reminders.integration.test.ts:19"
+          }
+        ],
+        "verdict": "checked",
+        "where": "src/reminders/reminders.integration.test.ts:32",
+        "why": "The content-type header is asserted, and request.json() must parse."
+      },
+      {
+        "part": "\"memberId\"",
+        "breaks": [
+          {
+            "break": "Wrong key name",
+            "caught by": "src/reminders/reminders.integration.test.ts:34"
+          },
+          {
+            "break": "Wrong value",
+            "caught by": "src/reminders/reminders.integration.test.ts:34"
+          }
+        ],
+        "verdict": "checked",
+        "where": "src/reminders/reminders.integration.test.ts:34",
+        "why": "objectContaining asserts memberId: \"member-1\"."
+      },
+      {
+        "part": "\"template\": \"loan-overdue\"",
+        "breaks": [
+          {
+            "break": "Wrong template name, for example `overdue-loan`",
+            "caught by": null
+          },
+          {
+            "break": "Template key omitted",
+            "caught by": null
+          }
+        ],
+        "verdict": "missing",
+        "where": null,
+        "why": "The body is matched with objectContaining on memberId and data only, so the template is never asserted."
+      },
+      {
+        "part": "\"data\": { \"loanId\", \"dueOn\" }",
+        "breaks": [
+          {
+            "break": "Wrong key name",
+            "caught by": "src/reminders/reminders.integration.test.ts:35"
+          },
+          {
+            "break": "Wrong value",
+            "caught by": "src/reminders/reminders.integration.test.ts:35"
+          },
+          {
+            "break": "Extra keys in data",
+            "caught by": "src/reminders/reminders.integration.test.ts:35"
+          }
+        ],
+        "verdict": "checked",
+        "where": "src/reminders/reminders.integration.test.ts:35",
+        "why": "data is compared exactly inside the objectContaining match."
+      },
+      {
+        "part": "any `2xx` counts as accepted",
+        "breaks": [
+          {
+            "break": "Only 200 accepted",
+            "caught by": "src/reminders/reminders.integration.test.ts:27"
+          },
+          {
+            "break": "Only 202 accepted",
+            "caught by": "src/reminders/reminders.integration.test.ts:44"
+          },
+          {
+            "break": "204 refused",
+            "caught by": "src/reminders/reminders.integration.test.ts:50"
+          }
+        ],
+        "verdict": "checked",
+        "where": "src/reminders/reminders.integration.test.ts:27,44,50",
+        "why": "Three different 2xx statuses are each expected to be accepted."
+      },
+      {
+        "part": "any other answer ... as refused, with a reason naming the status",
+        "breaks": [
+          {
+            "break": "Treats a 4xx answer as accepted",
+            "caught by": "src/reminders/reminders.integration.test.ts:56-59"
+          },
+          {
+            "break": "Treats a 5xx answer as accepted (only 4xx refused)",
+            "caught by": null
+          },
+          {
+            "break": "Reason does not name the status",
+            "caught by": "src/reminders/reminders.integration.test.ts:58"
+          }
+        ],
+        "verdict": "weak",
+        "where": "src/reminders/reminders.integration.test.ts:54",
+        "why": "Only a 400 is tested. Code that accepts 5xx answers would pass every test."
+      },
+      {
+        "part": "or a failed connection as refused, with a reason saying the API was unreachable",
+        "breaks": [
+          {
+            "break": "Connection error throws instead of returning refused",
+            "caught by": "src/reminders/reminders.integration.test.ts:65"
+          },
+          {
+            "break": "Reason does not say unreachable",
+            "caught by": "src/reminders/reminders.integration.test.ts:67"
+          }
+        ],
+        "verdict": "checked",
+        "where": "src/reminders/reminders.integration.test.ts:63-68",
+        "why": "HttpResponse.error() simulates a failed connection, and the test expects a refused result with 'unreachable' in the reason."
+      }
+    ]
+  }
+}

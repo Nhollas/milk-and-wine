@@ -1,0 +1,96 @@
+{
+  "B2": {
+    "given": [
+      {
+        "part": "An open loan already has a reminder recorded today",
+        "breaks": [
+          {
+            "break": "Code ignores existing reminders and sends again on the second run",
+            "caught by": "src/reminders/reminders.service.test.ts:75"
+          },
+          {
+            "break": "Code only excludes reminders recorded before today (sent_on < today), so today's reminder doesn't block",
+            "caught by": "src/reminders/reminders.service.test.ts:75"
+          },
+          {
+            "break": "Code treats a reminder recorded on an earlier day as blocking, so it never resends the next day",
+            "caught by": null
+          },
+          {
+            "break": "Code blocks only when a reminder exists for a different loan, not this one",
+            "caught by": null
+          }
+        ],
+        "verdict": "weak",
+        "where": "src/reminders/reminders.service.test.ts:72",
+        "why": "Running the job twice proves a reminder recorded today blocks a resend. No test shows that a reminder from another day does not block, so 'today' is not pinned."
+      },
+      {
+        "part": "An open loan is returned",
+        "breaks": [
+          {
+            "break": "Code drops the returned filter and reminds returned loans",
+            "caught by": "src/reminders/reminders.service.test.ts:75"
+          },
+          {
+            "break": "Code treats a returned loan as open (a loan with returned_on set)",
+            "caught by": "src/reminders/reminders.service.test.ts:75"
+          }
+        ],
+        "verdict": "checked",
+        "where": "src/reminders/reminders.service.test.ts:70",
+        "why": "loan2 is overdue and returned. The sent list must contain only loan1, so reminding loan2 would fail."
+      },
+      {
+        "part": "An open loan isn't overdue (dueOn is later than today)",
+        "breaks": [
+          {
+            "break": "Code reminds loans whose dueOn is in the future",
+            "caught by": null
+          }
+        ],
+        "verdict": "missing",
+        "where": null,
+        "why": "Both loans are lent on 03-02 and due 03-16, and today is 03-17, so they are overdue. No loan is ever not yet overdue."
+      },
+      {
+        "part": "An open loan isn't overdue (dueOn is today, the boundary)",
+        "breaks": [
+          {
+            "break": "Code uses due_on <= today and reminds a loan due today",
+            "caught by": null
+          }
+        ],
+        "verdict": "missing",
+        "where": null,
+        "why": "No loan has dueOn equal to today, so the < versus <= mutant survives. The test title claims 'not yet overdue' but nothing sets it up."
+      }
+    ],
+    "then": [
+      {
+        "part": "Sends nothing for that loan",
+        "breaks": [
+          {
+            "break": "Notification is sent again for the already-reminded loan",
+            "caught by": "src/reminders/reminders.service.test.ts:75"
+          },
+          {
+            "break": "Notification is sent for the returned loan",
+            "caught by": "src/reminders/reminders.service.test.ts:75"
+          },
+          {
+            "break": "Notification is sent for a loan that is not yet overdue",
+            "caught by": null
+          },
+          {
+            "break": "Notification is sent for a loan due today",
+            "caught by": null
+          }
+        ],
+        "verdict": "weak",
+        "where": "src/reminders/reminders.service.test.ts:75",
+        "why": "The sent list is asserted exactly for the already-reminded and returned cases. The not-overdue case has no fixture, so sending for it would pass."
+      }
+    ]
+  }
+}
