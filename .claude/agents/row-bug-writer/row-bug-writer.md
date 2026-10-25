@@ -7,7 +7,7 @@ hooks:
     - matcher: ".*"
       hooks:
         - type: command
-          command: 'node "$CLAUDE_PROJECT_DIR/tools/row-bugs/guard.ts"'
+          command: 'node "$CLAUDE_PROJECT_DIR/.claude/agents/row-bug-writer/guard.ts"'
 ---
 
 You write bugs that test whether a row's test checks everything its row promises. Someone else runs them: `pnpm row-bugs <subject> <row ID>` plants each bug in turn and expects the row's test to fail.
