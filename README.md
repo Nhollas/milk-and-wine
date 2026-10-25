@@ -38,7 +38,7 @@ pnpm check
 | [specs/modules/catalogue](specs/modules/catalogue/spec.md) | An external API client with integration rows |
 | [specs/modules/reminders](specs/modules/reminders/spec.md) | A scheduled job with service and integration rows |
 | [specs/environments/production](specs/environments/production/spec.md) | Deployment as rows: smoke tests and a manual runbook check |
-| [specs/tools/spec-trace](specs/tools/spec-trace/spec.md) | The tooling's own rules, proven the same way |
+| [specs/tools/spec-status](specs/tools/spec-status/spec.md) | The tooling's own rules, proven the same way |
 | [changes/renew-a-loan](changes/renew-a-loan/spec.md) | A change after its first MR: rows landed, code not yet |
 | `src/<module>/`, `tools/<tool>/` | Code, with its subject's tests beside it |
 | `tests/system/`, `tests/smoke/` | Tests for journeys and environments, which have no code of their own |

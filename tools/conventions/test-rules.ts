@@ -1,6 +1,6 @@
 import { existsSync } from "node:fs";
 import { join, posix } from "node:path";
-import { isTestLevel } from "../spec-trace/specs.ts";
+import { isTestLevel } from "../spec-status/specs.ts";
 import { exportedNamesOf, importedNameOf, repoPathOf, type Rule } from "./rule-context.ts";
 
 export const testPlacement: Rule = {

@@ -3,7 +3,7 @@ import { existsSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { z } from "zod";
-import type { TestLevel } from "../spec-trace/specs.ts";
+import type { TestLevel } from "../spec-status/specs.ts";
 import { readSubjectMutants, stopOnInterrupt, withMutantPlanted } from "./mutants.ts";
 
 const vitestReport = z.object({

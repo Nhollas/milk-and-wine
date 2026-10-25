@@ -12,7 +12,7 @@ type HookInput = {
 
 const AGENTS_KEPT_FROM_TEST_NAMES = new Set(["spec-mutator"]);
 
-export function runHook(input: string, root: string): string {
+export async function runHook(input: string, root: string): Promise<string> {
   const event = JSON.parse(input) as HookInput;
   const filePath = event.tool_input?.file_path;
   if (event.tool_name !== "Read" || !filePath) return "";
@@ -21,7 +21,7 @@ export function runHook(input: string, root: string): string {
   const subject = subjectOfSpecPath(isAbsolute(filePath) ? relative(root, filePath) : filePath);
   if (!subject) return "";
 
-  const status = runStatus([subject], root);
+  const status = await runStatus([subject], root);
   if (status.exitCode !== 0) return "";
 
   const additionalContext = [
@@ -39,5 +39,5 @@ if (import.meta.main) {
   const input = readFileSync(0, "utf8");
   const root =
     process.env["CLAUDE_PROJECT_DIR"] ?? (JSON.parse(input) as HookInput).cwd ?? process.cwd();
-  process.stdout.write(runHook(input, root));
+  process.stdout.write(await runHook(input, root));
 }

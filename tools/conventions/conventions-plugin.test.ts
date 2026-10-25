@@ -142,7 +142,7 @@ ruleTester.run("test-imports", plugin.rules["test-imports"], {
     { code: 'import { expect, test } from "vitest";', filename: at("src/clock.test.ts") },
     {
       code: 'import { test } from "./repo.fixtures.ts";',
-      filename: at("tools/spec-trace/spec-trace.service.test.ts"),
+      filename: at("tools/spec-status/spec-status.service.test.ts"),
     },
     {
       code: 'import { test as base } from "vitest";',

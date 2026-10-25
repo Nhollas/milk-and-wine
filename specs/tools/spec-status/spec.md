@@ -1,12 +1,12 @@
-# Spec trace
+# Spec status
 
 Works out which spec rows are delivered or proposed, and fails CI when specs and tests disagree, for engineers, reviewers and agents.
 
 | Scope |  |
 | --- | --- |
-| **Owns** | Reading spec rows and test titles, computing each row's status, `spec:status`, `spec:check`, and the Claude Code read hook. |
-| **Depends on** | Git, for `--base`. [ADR 0001](../../../docs/adr/0001-status-is-computed-from-tests.md) and [ADR 0002](../../../docs/adr/0002-test-file-names-carry-subject-and-level.md) explain the rules. |
-| **Excluded** | Running tests. CI runs them; spec trace reads their source. |
+| **Owns** | Reading spec rows, listing tests through Vitest, computing each row's status, `spec:status`, `spec:check`, and the Claude Code read hook. |
+| **Depends on** | Vitest, to list tests. Git, for `--base`. [ADR 0001](../../../docs/adr/0001-status-is-computed-from-tests.md) and [ADR 0002](../../../docs/adr/0002-test-file-names-carry-subject-and-level.md) explain the rules. |
+| **Excluded** | Running tests. CI runs them; spec status only has Vitest collect them. |
 
 ## Behaviour
 
@@ -14,8 +14,8 @@ Works out which spec rows are delivered or proposed, and fails CI when specs and
 
 | ID | Given | When | Then | Verified |
 | --- | --- | --- | --- | --- |
-| B1 | A `specs/**/spec.md` has a table headed `ID \| Given \| When \| Then \| Verified` | Spec trace reads the repository | Each row belongs to the subject named by the spec's folder, with its Verified value | service |
-| B2 | A test file is named `<subject>[.<part>].<level>.test.ts`, and `<level>` is `service`, `integration`, `system` or `smoke` | A test title in it starts with `B<n>:` | The test names row `B<n>` of that subject. Files named without a level are exempt | service |
+| B1 | A `specs/**/spec.md` has a table headed `ID \| Given \| When \| Then \| Verified` | Spec status reads the repository | Each row belongs to the subject named by the spec's folder, with its Verified value | service |
+| B2 | A test file is named `<subject>[.<part>].<level>.test.ts`, and `<level>` is `service`, `integration`, `system` or `smoke` | Vitest collects a test in it whose full name starts with `B<n>:` | The test names row `B<n>` of that subject, however it was declared: `test`, `test.each`, a helper or inside a `describe`. Files named without a level are exempt | service |
 
 ### Computing status
 
@@ -37,8 +37,9 @@ Works out which spec rows are delivered or proposed, and fails CI when specs and
 | --- | --- | --- | --- | --- |
 | B7 | A spec repeats an ID, or a Verified value is none of those in B3 and B4 | `spec:check` runs | Reports `duplicate-id` or `invalid-verified` with the spec's path, and exits `1` | service |
 | B8 | A test at a delivering level names an ID its subject lacks, belongs to a subject with no spec, or names no row | `spec:check` runs | Reports `unknown-id`, `unknown-subject` or `untagged-test` with the test's file and line, and exits `1` | service |
-| B9 | There are proposed rows and nothing B7, B8 or B10 reports | `spec:check` runs | Prints the number of delivered, proposed and sign-off rows, and exits `0` | service |
+| B9 | There are proposed rows and nothing B7, B8, B10 or B13 reports | `spec:check` runs | Prints the number of delivered, proposed and sign-off rows, and exits `0` | service |
 | B10 | A row is delivered at Git ref `<ref>` and proposed now | `spec:check --base <ref>` runs | Reports `regression` with the subject and ID, and exits `1`. A row deleted from its spec is not a regression | service |
+| B13 | A test file at a delivering level throws while Vitest collects it | `spec:check` runs | Reports `collect-error` with the file's path and the error, and exits `1` | service |
 
 ### Telling agents
 
@@ -50,7 +51,8 @@ Works out which spec rows are delivered or proposed, and fails CI when specs and
 ## Limitations
 
 - Status trusts CI. A test counts when it exists and isn't marked `todo` or `skip`; CI running the suite on every merge is what makes it a passing test.
-- Only literal test titles are read. A title built with a template expression or `test.each` can't name a row.
+- Collecting a test file imports it, so its top-level code runs on every `spec:status`, `spec:check` and spec read by an agent.
+- `--base` checks out the base revision without installing it, so its tests load with the working tree's `node_modules`.
 
 ## Open questions
 

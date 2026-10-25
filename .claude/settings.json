@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"$CLAUDE_PROJECT_DIR/tools/spec-trace/hook.ts\""
+            "command": "node \"$CLAUDE_PROJECT_DIR/tools/spec-status/hook.ts\""
           }
         ]
       }

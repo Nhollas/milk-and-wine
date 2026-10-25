@@ -6,7 +6,7 @@ Specs land on `main` before their code, so several MRs can deliver one change an
 
 ## Decision
 
-A row is delivered when an active test at its Verified level names it, and proposed otherwise. `spec:status` reads test source rather than test results. CI runs every test on every merge, so a test that exists on `main` is a passing test.
+A row is delivered when an active test at its Verified level names it, and proposed otherwise. `spec:status` has Vitest collect the tests without running them, rather than reading test results. CI runs every test on every merge, so a test that exists on `main` is a passing test.
 
 ## Consequences
 

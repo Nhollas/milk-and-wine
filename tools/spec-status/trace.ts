@@ -1,6 +1,6 @@
-import type { Repository } from "./repository.ts";
+import { checkOutRevision, workingTree } from "./repository.ts";
 import { readSubjects, verifiedLabel, type Problem, type Row, type Subject } from "./specs.ts";
-import { readTestsAtLevels, type TestAtLevel } from "./tests.ts";
+import { listTestsAtLevels, type TestAtLevel } from "./tests.ts";
 
 export type Status = "delivered" | "proposed" | "sign-off";
 
@@ -14,16 +14,21 @@ export type RowStatus = {
 
 export type Trace = { subjects: Subject[]; rows: RowStatus[]; problems: Problem[] };
 
-export function trace(repository: Repository): Trace {
-  const { subjects, problems } = readSubjects(repository);
-  const tests = readTestsAtLevels(repository);
+export async function trace(root: string): Promise<Trace> {
+  const { subjects, problems: specProblems } = readSubjects(workingTree(root));
+  const { tests, problems: collectProblems } = await listTestsAtLevels(root);
   return {
     subjects,
     rows: subjects.flatMap((subject) =>
       subject.rows.map((row) => statusOfRow(subject.name, row, tests)),
     ),
-    problems: [...problems, ...testProblems(subjects, tests)],
+    problems: [...specProblems, ...collectProblems, ...testProblems(subjects, tests)],
   };
+}
+
+export async function traceRevision(root: string, ref: string): Promise<Trace> {
+  using checkout = checkOutRevision(root, ref);
+  return await trace(checkout.root);
 }
 
 export function regressions(base: Trace, current: Trace): Problem[] {

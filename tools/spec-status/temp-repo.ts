@@ -4,7 +4,7 @@ import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 
 export function createTempRepo() {
-  const dir = mkdtempDisposableSync(join(tmpdir(), "spec-trace-"));
+  const dir = mkdtempDisposableSync(join(tmpdir(), "spec-status-"));
   const root = dir.path;
 
   function write(path: string, content: string) {
@@ -24,6 +24,9 @@ export function createTempRepo() {
     },
     writeTests(path: string, tests: FixtureTest[]) {
       write(path, testSource(tests));
+    },
+    writeFile(path: string, content: string) {
+      write(path, content);
     },
     commit(message: string) {
       git("init", "-q", "-b", "main");

@@ -1,15 +1,14 @@
 import { runFromCommandLine, type CommandResult } from "./command.ts";
-import { gitRevision, workingTree } from "./repository.ts";
-import { countByStatus, regressions, trace } from "./trace.ts";
+import { countByStatus, regressions, trace, traceRevision } from "./trace.ts";
 
-export function runCheck(args: string[], root: string): CommandResult {
+export async function runCheck(args: string[], root: string): Promise<CommandResult> {
   const baseIndex = args.indexOf("--base");
   const baseRef = baseIndex >= 0 ? args[baseIndex + 1] : undefined;
 
-  const current = trace(workingTree(root));
+  const current = await trace(root);
   const problems = [
     ...current.problems,
-    ...(baseRef ? regressions(trace(gitRevision(root, baseRef)), current) : []),
+    ...(baseRef ? regressions(await traceRevision(root, baseRef), current) : []),
   ];
   const counts = countByStatus(current.rows);
   const summary = `${counts.delivered} delivered · ${counts.proposed} proposed · ${counts["sign-off"]} sign-off`;
@@ -27,4 +26,4 @@ export function runCheck(args: string[], root: string): CommandResult {
   };
 }
 
-if (import.meta.main) runFromCommandLine(runCheck);
+if (import.meta.main) await runFromCommandLine(runCheck);

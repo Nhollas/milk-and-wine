@@ -1,7 +1,7 @@
 import { posix } from "node:path";
 import type { Repository } from "./repository.ts";
 
-const TEST_LEVELS = ["service", "integration", "system", "smoke"] as const;
+export const TEST_LEVELS = ["service", "integration", "system", "smoke"] as const;
 
 export type TestLevel = (typeof TEST_LEVELS)[number];
 

@@ -1,5 +1,6 @@
 import { execFileSync } from "node:child_process";
-import { readdirSync, readFileSync } from "node:fs";
+import { existsSync, mkdtempDisposableSync, readdirSync, readFileSync, symlinkSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { join, relative } from "node:path";
 
 export type Repository = {
@@ -20,15 +21,20 @@ export function workingTree(root: string): Repository {
   };
 }
 
-export function gitRevision(root: string, ref: string): Repository {
-  const git = (...args: string[]) =>
-    execFileSync("git", args, { cwd: root, encoding: "utf8", maxBuffer: 64 * 1024 * 1024 });
+export function checkOutRevision(root: string, ref: string) {
+  const dir = mkdtempDisposableSync(join(tmpdir(), "spec-status-base-"));
+  const archive = execFileSync("git", ["archive", "--format=tar", ref], {
+    cwd: root,
+    maxBuffer: 256 * 1024 * 1024,
+  });
+  execFileSync("tar", ["-x", "-C", dir.path], { input: archive });
+  // Collecting tests imports them, so the checkout borrows today's dependencies.
+  const dependencies = join(root, "node_modules");
+  if (existsSync(dependencies)) symlinkSync(dependencies, join(dir.path, "node_modules"), "dir");
   return {
-    filePaths() {
-      return git("ls-tree", "-r", "--name-only", ref).split("\n").filter(Boolean);
-    },
-    read(path) {
-      return git("show", `${ref}:${path}`);
+    root: dir.path,
+    [Symbol.dispose]() {
+      dir.remove();
     },
   };
 }

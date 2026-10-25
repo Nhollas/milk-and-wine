@@ -1,11 +1,10 @@
 import { runFromCommandLine, type CommandResult } from "./command.ts";
-import { workingTree } from "./repository.ts";
 import { countByStatus, trace, type RowStatus } from "./trace.ts";
 
-export function runStatus(args: string[], root: string): CommandResult {
+export async function runStatus(args: string[], root: string): Promise<CommandResult> {
   const asJson = args.includes("--json");
   const subjectName = args.find((arg) => !arg.startsWith("--"));
-  const { subjects, rows } = trace(workingTree(root));
+  const { subjects, rows } = await trace(root);
 
   const selected = subjectName
     ? subjects.filter((subject) => subject.name === subjectName)
@@ -47,4 +46,4 @@ export function formatSubject(name: string, rows: RowStatus[]): string {
   return `${heading}\n\n${lines.map((line) => ` ${line}`.trimEnd()).join("\n")}\n`;
 }
 
-if (import.meta.main) runFromCommandLine(runStatus);
+if (import.meta.main) await runFromCommandLine(runStatus);
