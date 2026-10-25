@@ -10,7 +10,7 @@ export type Verified =
   | { kind: "dependency"; link: string }
   | { kind: "manual"; link: string };
 
-export type Row = { id: string; verified: Verified };
+export type Row = { id: string; thenText: string; verified: Verified };
 
 export type Subject = { name: string; path: string; rows: Row[] };
 
@@ -37,7 +37,7 @@ export function readSubjects(repository: Repository): { subjects: Subject[]; pro
     if (!name) continue;
     const rows: Row[] = [];
     for (const { cells, line } of rowLines(repository.read(path))) {
-      const [id = "", , , , verifiedCell = ""] = cells;
+      const [id = "", , , thenText = "", verifiedCell = ""] = cells;
       const location = `${path}:${line}`;
       const verified = parseVerified(verifiedCell, path);
       if (!verified) {
@@ -56,7 +56,7 @@ export function readSubjects(repository: Repository): { subjects: Subject[]; pro
         });
         continue;
       }
-      rows.push({ id, verified });
+      rows.push({ id, thenText, verified });
     }
     subjects.push({ name, path, rows });
   }

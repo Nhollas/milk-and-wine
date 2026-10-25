@@ -17,7 +17,8 @@
     "spec:check": "node tools/spec-trace/check.ts",
     "mutation": "stryker run",
     "check": "pnpm lint && pnpm format:check && pnpm knip && pnpm test && pnpm spec:check",
-    "row-bugs": "node tools/row-bugs/replay.ts"
+    "spec:mutants": "node tools/spec-mutants/replay.ts",
+    "spec:mutants:check": "node tools/spec-mutants/check.ts"
   },
   "dependencies": {
     "@hono/node-server": "2.1.1",
