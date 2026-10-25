@@ -1,5 +1,9 @@
 {
   "$schema": "./node_modules/knip/schema.json",
-  "entry": ["tools/spec-trace/hook.ts", ".claude/agents/spec-mutator/guard.ts"],
+  "entry": [
+    "tools/spec-trace/hook.ts",
+    ".claude/agents/spec-mutator/guard.ts",
+    ".claude/agents/spec-mutator/check-before-stop.ts"
+  ],
   "project": ["src/**/*.ts", "tests/**/*.ts", "tools/**/*.ts", ".claude/**/*.ts"]
 }

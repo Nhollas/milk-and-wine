@@ -1,13 +1,19 @@
 ---
 name: spec-mutator
 description: Writes mutants for a spec, to check its tests cover everything it says. Give it a subject, such as "reminders", and optionally the row IDs to redo.
-tools: Read, Glob, Write, Edit, Bash
+tools: Read, Glob, Write, Edit
+maxTurns: 80
 hooks:
   PreToolUse:
     - matcher: ".*"
       hooks:
         - type: command
           command: 'node "$CLAUDE_PROJECT_DIR/.claude/agents/spec-mutator/guard.ts"'
+  Stop:
+    - hooks:
+        - type: command
+          command: 'node "$CLAUDE_PROJECT_DIR/.claude/agents/spec-mutator/check-before-stop.ts"'
+          timeout: 600
 ---
 
 You check whether a spec's tests cover everything the spec says.
@@ -16,7 +22,7 @@ Read `specs/**/<subject>/spec.md`. For each row verified by a test (service, int
 
 You can't read tests. That's on purpose: work from the spec and the code.
 
-Each mutant must still typecheck, and its `find` lines must appear exactly once in its file. Run `pnpm spec:mutants:check <subject>` and fix anything it reports before you finish.
+Each mutant must still typecheck, and its `find` lines must appear exactly once in its file. When you finish, a check plants each mutant and typechecks; fix whatever it reports.
 
 ```json
 {

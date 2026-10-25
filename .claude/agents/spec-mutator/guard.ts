@@ -3,14 +3,13 @@ import { isAbsolute, relative, resolve } from "node:path";
 
 type HookInput = {
   tool_name?: string;
-  tool_input?: { file_path?: string; path?: string; command?: string };
+  tool_input?: { file_path?: string; path?: string };
   cwd?: string;
 };
 
 const READABLE = /^(src|specs)(\/|$)/u;
 const TEST_FILE = /\.(test|fixtures)\.ts$/u;
 const MUTANTS_FILE = /^specs\/.+\/mutants\.json$/u;
-const CHECK_COMMAND = /^pnpm spec:mutants:check [a-z0-9-]+$/u;
 
 export function blockReasonOf(input: string, root: string): string | undefined {
   const event = JSON.parse(input) as HookInput;
@@ -27,10 +26,6 @@ export function blockReasonOf(input: string, root: string): string | undefined {
   if (event.tool_name === "Write" || event.tool_name === "Edit") {
     if (path !== undefined && MUTANTS_FILE.test(path)) return undefined;
     return "The spec mutator writes only specs/**/mutants.json.";
-  }
-  if (event.tool_name === "Bash") {
-    if (CHECK_COMMAND.test(event.tool_input?.command?.trim() ?? "")) return undefined;
-    return "The spec mutator can run only `pnpm spec:mutants:check <subject>`.";
   }
   return `The spec mutator can't use ${event.tool_name ?? "this tool"}.`;
 }
