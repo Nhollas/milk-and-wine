@@ -11,6 +11,17 @@ export const test = base
   .extend("fakeCatalogue", () => fakeCatalogueClient())
   .extend("fakeNotifications", () => fakeNotificationsClient())
   .extend("clock", () => testClock())
+  .extend("timeZone", ({}, { onCleanup }) => {
+    const original = process.env["TZ"];
+    onCleanup(() => {
+      process.env["TZ"] = original;
+    });
+    return {
+      setTo(zone: string) {
+        process.env["TZ"] = zone;
+      },
+    };
+  })
   .extend("logs", (): LogEntry[] => [])
   .extend("db", ({}, { onCleanup }) => {
     const db = openDatabase(":memory:");

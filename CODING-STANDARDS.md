@@ -15,7 +15,7 @@ These are defaults, not laws. When a case genuinely doesn't fit, deviate and say
 ## Tests
 
 - Write out what a test sends and expects: method, path and body; status, response body and rows. Build neither from the code under test (route constants, response types, generated clients).
-- Write each case out, even when it repeats. A test has no loops or branches.
+- A test body has no loops or branches, so a reader can see what it does without tracing code. Cases that differ only in data can share one body through `test.each`, with each case's inputs and expected outcome written out in its table.
 - Order a test as setup, call, assertions, with a blank line between each. A call with one assertion can sit inside it. Setup goes through fixtures named for what they are (`fakeCatalogue.addCopies(...)`, `clock.setToday(...)`) or `httpInterceptor.use(...)`.
 - Name a response for the request that sent it, ending in `Response` (`secondLendResponse`, `notJsonResponse`).
 - Every value a test asserts on comes from the test body, including the row's Given. Helpers may build values but not invent ones the test asserts.

@@ -9,5 +9,8 @@ export function testClock() {
     setToday(date: string) {
       now = new Date(`${date}T10:00:00Z`);
     },
+    setNow(instant: string) {
+      now = new Date(instant);
+    },
   };
 }

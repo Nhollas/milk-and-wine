@@ -39,24 +39,22 @@ test("B5: posts a loan-overdue notification as JSON and accepts a 202", async ()
   ]);
 });
 
-test("B5: accepts a 200", async () => {
-  httpInterceptor.use(http.post(NOTIFICATIONS_PATH, () => new HttpResponse(null, { status: 200 })));
+test.each([200, 201, 204, 299])("B5: accepts a %i", async (status) => {
+  httpInterceptor.use(http.post(NOTIFICATIONS_PATH, () => new HttpResponse(null, { status })));
 
   expect((await notificationsClient.sendOverdueReminder(reminder)).kind).toBe("accepted");
 });
 
-test("B5: accepts a 204", async () => {
-  httpInterceptor.use(http.post(NOTIFICATIONS_PATH, () => new HttpResponse(null, { status: 204 })));
-
-  expect((await notificationsClient.sendOverdueReminder(reminder)).kind).toBe("accepted");
-});
-
-test("B5: treats any other answer as refused", async () => {
-  httpInterceptor.use(http.post(NOTIFICATIONS_PATH, () => new HttpResponse(null, { status: 400 })));
+test.each([
+  { status: 304, reason: "304" },
+  { status: 400, reason: "400" },
+  { status: 503, reason: "503" },
+])("B5: treats a $status as refused", async ({ status, reason }) => {
+  httpInterceptor.use(http.post(NOTIFICATIONS_PATH, () => new HttpResponse(null, { status })));
 
   expect(await notificationsClient.sendOverdueReminder(reminder)).toEqual({
     kind: "refused",
-    reason: expect.stringContaining("400"),
+    reason: expect.stringContaining(reason),
   });
 });
 

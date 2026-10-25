@@ -35,6 +35,28 @@
         "file": "src/reminders/send-overdue-reminders.ts",
         "find": ["    store.recordSent(reminder.loanId, today);"],
         "replace": ["    store.recordSent(reminder.loanId, reminder.dueOn);"]
+      },
+      {
+        "breaks": "(UTC)",
+        "file": "src/reminders/send-overdue-reminders.ts",
+        "find": ["  const today = utcDate(clock());"],
+        "replace": ["  const today = clock().toLocaleDateString(\"sv-SE\");"]
+      },
+      {
+        "breaks": "it has no reminder recorded today (an earlier day's reminder blocks)",
+        "file": "src/reminders/reminder-store.ts",
+        "find": [
+          "             AND NOT EXISTS (SELECT 1 FROM reminders WHERE reminders.loan_id = loans.loan_id AND sent_on = ?)"
+        ],
+        "replace": [
+          "             AND NOT EXISTS (SELECT 1 FROM reminders WHERE reminders.loan_id = loans.loan_id AND sent_on <= ?)"
+        ]
+      },
+      {
+        "breaks": "for today (UTC)",
+        "file": "src/reminders/send-overdue-reminders.ts",
+        "find": ["    store.recordSent(reminder.loanId, today);"],
+        "replace": ["    store.recordSent(reminder.loanId, clock().toLocaleDateString(\"sv-SE\"));"]
       }
     ],
     "not mutated": [
@@ -68,6 +90,14 @@
         "file": "src/reminders/reminder-store.ts",
         "find": ["           WHERE returned_on IS NULL AND due_on < ?"],
         "replace": ["           WHERE returned_on IS NULL AND due_on <= ?"]
+      },
+      {
+        "breaks": "Sends nothing for that loan (another loan's reminder today blocks this one)",
+        "file": "src/reminders/reminder-store.ts",
+        "find": [
+          "             AND NOT EXISTS (SELECT 1 FROM reminders WHERE reminders.loan_id = loans.loan_id AND sent_on = ?)"
+        ],
+        "replace": ["             AND NOT EXISTS (SELECT 1 FROM reminders WHERE sent_on = ?)"]
       }
     ],
     "not mutated": []
@@ -156,6 +186,15 @@
         "file": "src/reminders/send-overdue-reminders.ts",
         "find": ["      counts.failed++;"],
         "replace": []
+      },
+      {
+        "breaks": "The job has handled every overdue loan (none overdue)",
+        "file": "src/reminders/send-overdue-reminders.ts",
+        "find": ["  for (const reminder of store.remindersDue(today)) {"],
+        "replace": [
+          "  if (store.remindersDue(today).length === 0) return counts;",
+          "  for (const reminder of store.remindersDue(today)) {"
+        ]
       }
     ],
     "not mutated": []
@@ -258,6 +297,24 @@
         "replace": [
           "      if (!response) return { kind: \"refused\", reason: \"Notifications API failed\" };"
         ]
+      },
+      {
+        "breaks": "any `2xx` counts as accepted (only 200, 202 and 204)",
+        "file": "src/reminders/notifications-client.ts",
+        "find": ["      if (!response.ok)"],
+        "replace": ["      if (![200, 202, 204].includes(response.status))"]
+      },
+      {
+        "breaks": "any other answer ... as refused (a 3xx is accepted)",
+        "file": "src/reminders/notifications-client.ts",
+        "find": ["      if (!response.ok)"],
+        "replace": ["      if (response.status >= 400)"]
+      },
+      {
+        "breaks": "any other answer ... as refused (a 5xx is accepted)",
+        "file": "src/reminders/notifications-client.ts",
+        "find": ["      if (!response.ok)"],
+        "replace": ["      if (response.status >= 400 && response.status < 500)"]
       }
     ],
     "not mutated": []

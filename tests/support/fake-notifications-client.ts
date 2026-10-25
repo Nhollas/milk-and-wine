@@ -22,5 +22,8 @@ export function fakeNotificationsClient() {
     refuseFor(loanId: string, reason: string) {
       refusals.set(loanId, reason);
     },
+    stopRefusing(loanId: string) {
+      refusals.delete(loanId);
+    },
   };
 }
