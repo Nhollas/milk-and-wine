@@ -66,7 +66,7 @@ test("B2: sends nothing for loans already reminded today, returned, or not yet o
     postJson({ memberId: "member-2", copyId: "copy-2" }),
   );
   const { loanId: loan2 } = (await secondLendResponse.json()) as { loanId: string };
-  clock.setToday("2026-03-10");
+  clock.setToday("2026-03-03");
   await app.request("/loans", postJson({ memberId: "member-3", copyId: "copy-3" }));
   clock.setToday("2026-03-17");
   await app.request(`/loans/${loan2}/return`, postJson());
