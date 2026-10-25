@@ -1,0 +1,18 @@
+{
+  "gap": "B4's test checks only the sent count",
+  "split": "dev",
+  "row": "B4",
+  "part": "failed",
+  "weaken": [
+    {
+      "file": "src/reminders/reminders.service.test.ts",
+      "find": ["    fields: { sent: 2, failed: 1 },"],
+      "replace": ["    fields: expect.objectContaining({ sent: 2 }),"]
+    }
+  ],
+  "bug": {
+    "file": "src/reminders/send-overdue-reminders.ts",
+    "find": ["      counts.failed++;"],
+    "replace": []
+  }
+}

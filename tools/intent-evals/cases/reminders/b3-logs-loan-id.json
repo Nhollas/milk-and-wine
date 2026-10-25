@@ -1,0 +1,24 @@
+{
+  "gap": "B3's test no longer checks which loan the warning names",
+  "split": "dev",
+  "row": "B3",
+  "part": "loanId",
+  "weaken": [
+    {
+      "file": "src/reminders/reminders.service.test.ts",
+      "find": ["    fields: { loanId: loan1, error: \"Notifications API answered 503\" },"],
+      "replace": [
+        "    fields: expect.objectContaining({ error: \"Notifications API answered 503\" }),"
+      ]
+    }
+  ],
+  "bug": {
+    "file": "src/reminders/send-overdue-reminders.ts",
+    "find": [
+      "      logger.warn(\"reminder.failed\", { loanId: reminder.loanId, error: delivery.reason });"
+    ],
+    "replace": [
+      "      logger.warn(\"reminder.failed\", { loanId: reminder.memberId, error: delivery.reason });"
+    ]
+  }
+}

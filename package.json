@@ -18,7 +18,9 @@
     "mutation": "stryker run",
     "check": "pnpm lint && pnpm format:check && pnpm knip && pnpm test && pnpm spec:check",
     "spec:mutants": "node tools/spec-mutants/replay.ts",
-    "spec:mutants:check": "node tools/spec-mutants/check.ts"
+    "spec:mutants:check": "node tools/spec-mutants/check.ts",
+    "eval:validate": "node tools/intent-evals/validate-cases.ts",
+    "eval:judge": "node tools/intent-evals/run-judge.ts"
   },
   "dependencies": {
     "@hono/node-server": "2.1.1",

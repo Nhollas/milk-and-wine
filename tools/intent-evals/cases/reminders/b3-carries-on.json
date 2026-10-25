@@ -1,0 +1,35 @@
+{
+  "gap": "B3's test refuses the loan that is sent last, so stopping after a refusal changes nothing",
+  "split": "dev",
+  "row": "B3",
+  "part": "carries on with the other loans",
+  "weaken": [
+    {
+      "file": "src/reminders/reminders.service.test.ts",
+      "find": [
+        "  clock.setToday(\"2026-03-02\");",
+        "  const secondLendResponse = await app.request("
+      ],
+      "replace": [
+        "  clock.setToday(\"2026-03-01\");",
+        "  const secondLendResponse = await app.request("
+      ]
+    },
+    {
+      "file": "src/reminders/reminders.service.test.ts",
+      "find": [
+        "  clock.setToday(\"2026-03-01\");",
+        "  const firstLendResponse = await app.request("
+      ],
+      "replace": [
+        "  clock.setToday(\"2026-03-02\");",
+        "  const firstLendResponse = await app.request("
+      ]
+    }
+  ],
+  "bug": {
+    "file": "src/reminders/send-overdue-reminders.ts",
+    "find": ["      continue;"],
+    "replace": ["      break;"]
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "gap": "B2's test no longer checks that the catalogue wasn't asked again",
+  "split": "heldout",
+  "row": "B2",
+  "part": "asks the catalogue nothing",
+  "weaken": [
+    {
+      "file": "src/loans/loans.service.test.ts",
+      "find": ["  expect(fakeCatalogue.lookups).toEqual([\"copy-1\"]);"],
+      "replace": []
+    }
+  ],
+  "bug": {
+    "file": "src/loans/loans-app.ts",
+    "find": [
+      "    if (store.hasOpenLoan(copyId)) return c.json({ error: \"copy-on-loan\" }, 409);",
+      "",
+      "    const lookup = await catalogueClient.getCopy(copyId);"
+    ],
+    "replace": [
+      "    const lookup = await catalogueClient.getCopy(copyId);",
+      "    if (store.hasOpenLoan(copyId)) return c.json({ error: \"copy-on-loan\" }, 409);"
+    ]
+  }
+}

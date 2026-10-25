@@ -1,0 +1,79 @@
+{
+  "gap": "B1's tests no longer check the day the reminder is recorded for, nor run the job on a second day",
+  "split": "dev",
+  "row": "B1",
+  "part": "for today",
+  "weaken": [
+    {
+      "file": "src/reminders/reminders.service.test.ts",
+      "find": [
+        "  const reminders = db.prepare(\"SELECT loan_id, sent_on FROM reminders\").all();",
+        "  expect(reminders).toEqual(",
+        "    expect.arrayContaining([",
+        "      { loan_id: loan1, sent_on: \"2026-03-17\" },",
+        "      { loan_id: loan2, sent_on: \"2026-03-17\" },",
+        "    ]),",
+        "  );"
+      ],
+      "replace": [
+        "  const reminders = db.prepare(\"SELECT loan_id FROM reminders\").all();",
+        "  expect(reminders).toEqual(",
+        "    expect.arrayContaining([",
+        "      { loan_id: loan1 },",
+        "      { loan_id: loan2 },",
+        "    ]),",
+        "  );"
+      ]
+    },
+    {
+      "file": "src/reminders/reminders.service.test.ts",
+      "find": [
+        "test(\"B1: reminds a loan again on a later day\", async ({",
+        "  app,",
+        "  sendOverdueReminders,",
+        "  clock,",
+        "  db,",
+        "  fakeCatalogue,",
+        "  fakeNotifications,",
+        "}) => {",
+        "  fakeCatalogue.addCopies({ \"copy-1\": \"available\" });",
+        "  clock.setToday(\"2026-03-02\");",
+        "  const lendResponse = await app.request(",
+        "    \"/loans\",",
+        "    postJson({ memberId: \"member-1\", copyId: \"copy-1\" }),",
+        "  );",
+        "  const { loanId } = (await lendResponse.json()) as { loanId: string };",
+        "  clock.setToday(\"2026-03-17\");",
+        "  await sendOverdueReminders();",
+        "  clock.setToday(\"2026-03-18\");",
+        "",
+        "  await sendOverdueReminders();",
+        "",
+        "  expect(fakeNotifications.sent).toEqual([",
+        "    { memberId: \"member-1\", loanId, dueOn: \"2026-03-16\" },",
+        "    { memberId: \"member-1\", loanId, dueOn: \"2026-03-16\" },",
+        "  ]);",
+        "  expect(db.prepare(\"SELECT sent_on FROM reminders ORDER BY sent_on\").all()).toEqual([",
+        "    { sent_on: \"2026-03-17\" },",
+        "    { sent_on: \"2026-03-18\" },",
+        "  ]);",
+        "});"
+      ],
+      "replace": []
+    },
+    {
+      "file": "src/reminders/reminders.service.test.ts",
+      "find": [
+        "  expect(db.prepare(\"SELECT loan_id, sent_on FROM reminders\").all()).toEqual([",
+        "    { loan_id: dueMarch16, sent_on: \"2026-03-17\" },",
+        "  ]);"
+      ],
+      "replace": []
+    }
+  ],
+  "bug": {
+    "file": "src/reminders/send-overdue-reminders.ts",
+    "find": ["    store.recordSent(reminder.loanId, today);"],
+    "replace": ["    store.recordSent(reminder.loanId, reminder.dueOn);"]
+  }
+}

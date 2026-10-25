@@ -1,0 +1,22 @@
+{
+  "gap": "B5's test accepts any template",
+  "split": "dev",
+  "row": "B5",
+  "part": "loan-overdue",
+  "weaken": [
+    {
+      "file": "src/reminders/reminders.integration.test.ts",
+      "find": ["        template: \"loan-overdue\","],
+      "replace": ["        template: expect.any(String),"]
+    }
+  ],
+  "bug": {
+    "file": "src/reminders/notifications-client.ts",
+    "find": [
+      "        body: JSON.stringify({ memberId, template: \"loan-overdue\", data: { loanId, dueOn } }),"
+    ],
+    "replace": [
+      "        body: JSON.stringify({ memberId, template: \"overdue-loan\", data: { loanId, dueOn } }),"
+    ]
+  }
+}

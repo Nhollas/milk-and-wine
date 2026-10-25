@@ -1,0 +1,33 @@
+{
+  "gap": "B1 has no test for a withdrawn copy",
+  "split": "heldout",
+  "row": "B1",
+  "part": "available only when",
+  "weaken": [
+    {
+      "file": "src/catalogue/catalogue.integration.test.ts",
+      "find": [
+        "test(\"B1: reads a withdrawn copy as not available\", async () => {",
+        "  httpInterceptor.use(",
+        "    http.get(COPY_PATH, () =>",
+        "      HttpResponse.json({ id: \"copy-2\", title: \"Middlemarch\", state: \"withdrawn\" }),",
+        "    ),",
+        "  );",
+        "",
+        "  const lookup = await catalogueClient.getCopy(\"copy-2\");",
+        "",
+        "  expect(lookup).toEqual({",
+        "    kind: \"found\",",
+        "    copy: { copyId: \"copy-2\", title: \"Middlemarch\", available: false },",
+        "  });",
+        "});"
+      ],
+      "replace": []
+    }
+  ],
+  "bug": {
+    "file": "src/catalogue/catalogue-client.ts",
+    "find": ["      available: parsed.data.state === \"available\","],
+    "replace": ["      available: true,"]
+  }
+}

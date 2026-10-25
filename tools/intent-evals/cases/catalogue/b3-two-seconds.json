@@ -1,0 +1,18 @@
+{
+  "gap": "B3's test no longer pins the two-second timeout",
+  "split": "heldout",
+  "row": "B3",
+  "part": "exceeds 2 seconds",
+  "weaken": [
+    {
+      "file": "src/catalogue/catalogue.integration.test.ts",
+      "find": ["  expect(DEFAULT_RETRY_POLICY.attemptTimeoutMs).toBe(2_000);"],
+      "replace": []
+    }
+  ],
+  "bug": {
+    "file": "src/catalogue/catalogue-client.ts",
+    "find": ["  attemptTimeoutMs: 2_000,"],
+    "replace": ["  attemptTimeoutMs: 5_000,"]
+  }
+}

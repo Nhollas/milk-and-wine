@@ -1,0 +1,21 @@
+{
+  "gap": "B2's test has no loan that falls due today",
+  "split": "dev",
+  "row": "B2",
+  "part": "isn't overdue",
+  "weaken": [
+    {
+      "file": "src/reminders/reminders.service.test.ts",
+      "find": [
+        "  clock.setToday(\"2026-03-03\");",
+        "  await app.request(\"/loans\", postJson({ memberId: \"member-3\", copyId: \"copy-3\" }));"
+      ],
+      "replace": []
+    }
+  ],
+  "bug": {
+    "file": "src/reminders/reminder-store.ts",
+    "find": ["           WHERE returned_on IS NULL AND due_on < ?"],
+    "replace": ["           WHERE returned_on IS NULL AND due_on <= ?"]
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "gap": "B5 has no test for a failed connection",
+  "split": "dev",
+  "row": "B5",
+  "part": "failed connection",
+  "weaken": [
+    {
+      "file": "src/reminders/reminders.integration.test.ts",
+      "find": [
+        "test(\"B5: treats a failed connection as refused\", async () => {",
+        "  httpInterceptor.use(http.post(NOTIFICATIONS_PATH, () => HttpResponse.error()));",
+        "",
+        "  expect(await notificationsClient.sendOverdueReminder(reminder)).toEqual({",
+        "    kind: \"refused\",",
+        "    reason: expect.stringContaining(\"unreachable\"),",
+        "  });",
+        "});"
+      ],
+      "replace": []
+    }
+  ],
+  "bug": {
+    "file": "src/reminders/notifications-client.ts",
+    "find": ["      }).catch(() => undefined);"],
+    "replace": ["      });"]
+  }
+}
