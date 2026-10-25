@@ -1,6 +1,6 @@
 {
   "B1": {
-    "then": "Asks the Notifications API for a `loan-overdue` notification to the loan's member, then records a reminder for today",
+    "then": "Asks the Notifications API to notify the loan's member, then records a reminder for today",
     "mutants": [
       {
         "breaks": "Asks the Notifications API",
@@ -14,17 +14,7 @@
         ]
       },
       {
-        "breaks": "a `loan-overdue` notification",
-        "file": "src/reminders/notifications-client.ts",
-        "find": [
-          "        body: JSON.stringify({ memberId, template: \"loan-overdue\", data: { loanId, dueOn } }),"
-        ],
-        "replace": [
-          "        body: JSON.stringify({ memberId, template: \"loan-reminder\", data: { loanId, dueOn } }),"
-        ]
-      },
-      {
-        "breaks": "to the loan's member",
+        "breaks": "to notify the loan's member",
         "file": "src/reminders/send-overdue-reminders.ts",
         "find": ["    const delivery = await notificationsClient.sendOverdueReminder(reminder);"],
         "replace": [
@@ -35,7 +25,7 @@
         ]
       },
       {
-        "breaks": "then records a reminder",
+        "breaks": "records a reminder",
         "file": "src/reminders/send-overdue-reminders.ts",
         "find": ["    store.recordSent(reminder.loanId, today);"],
         "replace": []

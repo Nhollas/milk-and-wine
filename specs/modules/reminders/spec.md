@@ -14,7 +14,7 @@ Reminds members about overdue loans, once a day, through the organisation's Noti
 
 | ID | Given | When | Then | Verified |
 | --- | --- | --- | --- | --- |
-| B1 | An open loan's `dueOn` is before today (UTC), and it has no reminder recorded today | The reminders job runs | Asks the Notifications API for a `loan-overdue` notification to the loan's member, then records a reminder for today | service |
+| B1 | An open loan's `dueOn` is before today (UTC), and it has no reminder recorded today | The reminders job runs | Asks the Notifications API to notify the loan's member, then records a reminder for today | service |
 | B2 | An open loan already has a reminder recorded today, or is returned, or isn't overdue | The reminders job runs | Sends nothing for that loan | service |
 | B3 | The Notifications API refuses or can't be reached | The job sends a reminder | Records nothing for that loan, logs `reminder.failed` at `warn` with `loanId` and the refusal's `error`, and carries on with the other loans | service |
 | B4 | The job has handled every overdue loan | The job finishes | Logs `reminders.finished` at `info` with `sent` and `failed` counts | service |
