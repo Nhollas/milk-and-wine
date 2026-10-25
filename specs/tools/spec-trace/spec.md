@@ -45,6 +45,7 @@ Works out which spec rows are delivered or proposed, and fails CI when specs and
 | ID | Given | When | Then | Verified |
 | --- | --- | --- | --- | --- |
 | B11 | Claude Code's `Read` tool has read a file | The `PostToolUse` hook runs | For a `specs/**/spec.md`, adds that subject's `spec:status` output as additional context. For any other file, prints nothing | service |
+| B12 | The `spec-mutator` agent has read a `specs/**/spec.md` | The `PostToolUse` hook runs | Prints nothing, so the agent never sees the names of the tests it is writing mutants for | service |
 
 ## Limitations
 

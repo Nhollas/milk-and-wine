@@ -3,12 +3,20 @@ import { isAbsolute, relative } from "node:path";
 import { subjectOfSpecPath } from "./specs.ts";
 import { runStatus } from "./status.ts";
 
-type HookInput = { tool_name?: string; tool_input?: { file_path?: string }; cwd?: string };
+type HookInput = {
+  tool_name?: string;
+  tool_input?: { file_path?: string };
+  agent_type?: string;
+  cwd?: string;
+};
+
+const AGENTS_KEPT_FROM_TEST_NAMES = new Set(["spec-mutator"]);
 
 export function runHook(input: string, root: string): string {
   const event = JSON.parse(input) as HookInput;
   const filePath = event.tool_input?.file_path;
   if (event.tool_name !== "Read" || !filePath) return "";
+  if (AGENTS_KEPT_FROM_TEST_NAMES.has(event.agent_type ?? "")) return "";
 
   const subject = subjectOfSpecPath(isAbsolute(filePath) ? relative(root, filePath) : filePath);
   if (!subject) return "";

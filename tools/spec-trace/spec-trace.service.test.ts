@@ -266,3 +266,20 @@ test("B11: adds a spec's status to Claude Code's context after reading it, and n
   expect(testReadOutput).toBe("");
   expect(specEditOutput).toBe("");
 });
+
+test("B12: adds nothing when the spec-mutator agent reads a spec", () => {
+  using repo = createTempRepo();
+  repo.writeSpec(WIDGETS_SPEC, [["B1", "service"]]);
+  repo.writeTests(WIDGETS_TESTS, [{ title: "B1: is planned", modifier: "todo" }]);
+
+  const output = runHook(
+    JSON.stringify({
+      tool_name: "Read",
+      tool_input: { file_path: `${repo.root}/${WIDGETS_SPEC}` },
+      agent_type: "spec-mutator",
+    }),
+    repo.root,
+  );
+
+  expect(output).toBe("");
+});
