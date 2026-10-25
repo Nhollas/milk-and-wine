@@ -1,0 +1,16 @@
+diff --git a/src/reminders/reminders.integration.test.ts b/src/reminders/reminders.integration.test.ts
+index f969143..e606594 100644
+--- a/src/reminders/reminders.integration.test.ts
++++ b/src/reminders/reminders.integration.test.ts
+@@ -60,11 +60,3 @@ test("B5: treats any other answer as refused", async () => {
+   });
+ });
+ 
+-test("B5: treats a failed connection as refused", async () => {
+-  httpInterceptor.use(http.post(NOTIFICATIONS_PATH, () => HttpResponse.error()));
+-
+-  expect(await notificationsClient.sendOverdueReminder(reminder)).toEqual({
+-    kind: "refused",
+-    reason: expect.stringContaining("unreachable"),
+-  });
+-});

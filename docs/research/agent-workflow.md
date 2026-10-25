@@ -95,4 +95,4 @@ Possible signals, once it runs:
 ## Open questions
 
 - [SPEC-DRIVEN-DEVELOPMENT.md §4](../../SPEC-DRIVEN-DEVELOPMENT.md) has MR 1 landing the rows and the change spec together. Decision 1 splits them, so §4 and the [change template](../../changes/TEMPLATE.md) change if this is adopted.
-- Of the agents above, only the spec mutator exists here ([spec-mutator](../../.claude/agents/spec-mutator/spec-mutator.md)). The test-file lock hook doesn't exist yet.
+- Of the agents above, only the spec mutator ([spec-mutator](../../.claude/agents/spec-mutator/spec-mutator.md)) and the intent judge ([intent-judge](../../.claude/agents/intent-judge/intent-judge.md), trialled in [judge-trial](judge-trial/README.md)) exist here. The test-file lock hook doesn't exist yet.

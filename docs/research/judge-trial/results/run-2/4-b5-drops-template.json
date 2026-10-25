@@ -1,0 +1,254 @@
+{
+  "B1": {
+    "given": [
+      {
+        "part": "An open loan",
+        "verdict": "checked",
+        "where": "src/reminders/reminders.service.test.ts:15-24",
+        "why": "Both loans are lent through the app and never returned, so they're open when the job runs."
+      },
+      {
+        "part": "its `dueOn` is before today",
+        "verdict": "checked",
+        "where": "src/reminders/reminders.service.test.ts:25",
+        "why": "The loans are due 2026-03-16 and the clock is set to 2026-03-17, so both are overdue and lines 29-35 expect both to be sent."
+      },
+      {
+        "part": "(UTC)",
+        "verdict": "weak",
+        "where": "tests/support/test-clock.ts:10",
+        "why": "The clock is always set to 10:00Z, far from midnight, so code that works out 'today' from the local date instead of the UTC date would still pass in any normal CI timezone."
+      },
+      {
+        "part": "it has no reminder recorded today",
+        "verdict": "checked",
+        "where": "src/reminders/reminders.service.test.ts:27",
+        "why": "The database is fresh, so neither loan has a reminder before the job runs."
+      }
+    ],
+    "then": [
+      {
+        "part": "Asks the Notifications API to notify the loan's member",
+        "verdict": "checked",
+        "where": "src/reminders/reminders.service.test.ts:29-35",
+        "why": "The fake's `sent` must hold exactly two requests, each with the right memberId, loanId and dueOn, so a skipped call or the wrong member would fail."
+      },
+      {
+        "part": "then records a reminder",
+        "verdict": "checked",
+        "where": "src/reminders/reminders.service.test.ts:36-43",
+        "why": "The reminders table must hold exactly one row for each loan."
+      },
+      {
+        "part": "for today",
+        "verdict": "checked",
+        "where": "src/reminders/reminders.service.test.ts:39-40",
+        "why": "`sent_on` must be 2026-03-17, the clock's date, not the due date."
+      },
+      {
+        "part": "asks before it records (\"then\")",
+        "verdict": "elsewhere",
+        "where": "src/reminders/reminders.service.test.ts:108-110",
+        "why": "B3 proves this: if the job recorded before asking, the refused loan1 would get a row and B3's exact toEqual on the reminders table would fail. mutants.json leaves this part unmutated for the same reason."
+      }
+    ]
+  },
+  "B2": {
+    "given": [
+      {
+        "part": "An open loan already has a reminder recorded today",
+        "verdict": "checked",
+        "where": "src/reminders/reminders.service.test.ts:74-75",
+        "why": "The job runs twice on 2026-03-17, so on the second run loan1 already has a reminder for today."
+      },
+      {
+        "part": "or is returned",
+        "verdict": "checked",
+        "where": "src/reminders/reminders.service.test.ts:72",
+        "why": "loan2 is overdue but returned before the job runs."
+      },
+      {
+        "part": "or isn't overdue",
+        "verdict": "checked",
+        "where": "src/reminders/reminders.service.test.ts:69-71",
+        "why": "The third loan is lent on 2026-03-03, so it's due 2026-03-17, the same day the job runs. That's the exact boundary."
+      }
+    ],
+    "then": [
+      {
+        "part": "Sends nothing for that loan",
+        "verdict": "checked",
+        "where": "src/reminders/reminders.service.test.ts:77",
+        "why": "toMatchObject on an array checks its length, so `sent` must be exactly one request, for loan1. A repeat for loan1 or any send for loan2 or loan3 would fail."
+      }
+    ]
+  },
+  "B3": {
+    "given": [
+      {
+        "part": "The Notifications API refuses",
+        "verdict": "checked",
+        "where": "src/reminders/reminders.service.test.ts:102",
+        "why": "The fake refuses loan1 with a reason."
+      },
+      {
+        "part": "or can't be reached",
+        "verdict": "elsewhere",
+        "where": "src/reminders/reminders.integration.test.ts:62-68",
+        "why": "B5 proves that a failed connection reaches the job as a refusal, and the job only ever sees refusals, which this test covers."
+      }
+    ],
+    "then": [
+      {
+        "part": "Records nothing for that loan",
+        "verdict": "checked",
+        "where": "src/reminders/reminders.service.test.ts:108-110",
+        "why": "An exact toEqual on the reminders table allows only loan2's row, so any row for loan1 would fail."
+      },
+      {
+        "part": "logs `reminder.failed`",
+        "verdict": "checked",
+        "where": "src/reminders/reminders.service.test.ts:113",
+        "why": "toContainEqual needs an exact log entry with this event name."
+      },
+      {
+        "part": "at `warn`",
+        "verdict": "checked",
+        "where": "src/reminders/reminders.service.test.ts:112",
+        "why": "The expected entry's level is `warn`, and the match is exact."
+      },
+      {
+        "part": "with `loanId`",
+        "verdict": "checked",
+        "where": "src/reminders/reminders.service.test.ts:114",
+        "why": "The fields must be exactly loanId loan1, so the wrong id would fail."
+      },
+      {
+        "part": "and the refusal's `error`",
+        "verdict": "checked",
+        "where": "src/reminders/reminders.service.test.ts:114",
+        "why": "`error` must equal the fake's refusal reason exactly."
+      },
+      {
+        "part": "carries on with the other loans",
+        "verdict": "checked",
+        "where": "src/reminders/reminders.service.test.ts:107-110",
+        "why": "The refused loan1 is due earlier and was created first, and loan2 must still be sent and recorded afterwards, so stopping after the failure would fail."
+      }
+    ]
+  },
+  "B4": {
+    "given": [
+      {
+        "part": "The job has handled every overdue loan",
+        "verdict": "checked",
+        "where": "src/reminders/reminders.service.test.ts:132-142",
+        "why": "Three overdue loans, one of them refused, all go through one run."
+      }
+    ],
+    "then": [
+      {
+        "part": "Logs `reminders.finished`",
+        "verdict": "checked",
+        "where": "src/reminders/reminders.service.test.ts:144-148",
+        "why": "The last log entry must match exactly, with this event name."
+      },
+      {
+        "part": "at `info`",
+        "verdict": "checked",
+        "where": "src/reminders/reminders.service.test.ts:145",
+        "why": "The level must be `info`, and the match is exact."
+      },
+      {
+        "part": "with `sent` count",
+        "verdict": "checked",
+        "where": "src/reminders/reminders.service.test.ts:147",
+        "why": "`sent` must be 2."
+      },
+      {
+        "part": "and `failed` count",
+        "verdict": "checked",
+        "where": "src/reminders/reminders.service.test.ts:147",
+        "why": "`failed` must be 1."
+      }
+    ]
+  },
+  "B5": {
+    "given": [
+      {
+        "part": "A reminder is due",
+        "verdict": "checked",
+        "where": "src/reminders/reminders.integration.test.ts:8,25",
+        "why": "Each test calls the real client's sendOverdueReminder with a reminder."
+      }
+    ],
+    "then": [
+      {
+        "part": "Sends `POST`",
+        "verdict": "checked",
+        "where": "src/reminders/reminders.integration.test.ts:30",
+        "why": "The recorded method must be POST, and the handler only matches POST. Other requests fail under onUnhandledRequest: \"error\"."
+      },
+      {
+        "part": "`{NOTIFY_URL}/notifications`",
+        "verdict": "checked",
+        "where": "src/reminders/reminders.integration.test.ts:31",
+        "why": "The handler matches only `${NOTIFY_URL}/notifications`, and the recorded path must be `/notifications`."
+      },
+      {
+        "part": "with JSON",
+        "verdict": "checked",
+        "where": "src/reminders/reminders.integration.test.ts:19,32",
+        "why": "The content-type must be application/json, and the body is read with request.json()."
+      },
+      {
+        "part": "`\"memberId\"`",
+        "verdict": "checked",
+        "where": "src/reminders/reminders.integration.test.ts:34",
+        "why": "The body must have memberId set to member-1."
+      },
+      {
+        "part": "`\"template\": \"loan-overdue\"`",
+        "verdict": "weak",
+        "where": "src/reminders/reminders.integration.test.ts:33-36",
+        "why": "B5's assertion uses expect.objectContaining and never names `template`, so a renamed or missing template still passes B5. Only the borrow-a-book system test's B3 pins it (tests/system/borrow-a-book.system.test.ts:73), and that row doesn't promise this, so the check holds by luck."
+      },
+      {
+        "part": "`\"data\": { \"loanId\", \"dueOn\" }`",
+        "verdict": "checked",
+        "where": "src/reminders/reminders.integration.test.ts:35",
+        "why": "`data` must equal exactly { loanId: loan-1, dueOn: 2026-03-16 }, so a renamed key would fail."
+      },
+      {
+        "part": "any `2xx` counts as accepted",
+        "verdict": "checked",
+        "where": "src/reminders/reminders.integration.test.ts:27,41-51",
+        "why": "202, 200 and 204 must each come back as accepted, so code that accepts only 200 would fail."
+      },
+      {
+        "part": "any other answer ... as refused",
+        "verdict": "weak",
+        "where": "src/reminders/reminders.integration.test.ts:53-60",
+        "why": "Only a 400 is tried. A break that refuses only 4xx and accepts 5xx or 3xx would still pass."
+      },
+      {
+        "part": "or a failed connection as refused",
+        "verdict": "checked",
+        "where": "src/reminders/reminders.integration.test.ts:62-68",
+        "why": "HttpResponse.error() must come back as kind refused rather than throw."
+      },
+      {
+        "part": "with a reason naming the status",
+        "verdict": "checked",
+        "where": "src/reminders/reminders.integration.test.ts:58",
+        "why": "The reason must contain \"400\"."
+      },
+      {
+        "part": "or saying the API was unreachable",
+        "verdict": "checked",
+        "where": "src/reminders/reminders.integration.test.ts:67",
+        "why": "The reason must contain \"unreachable\"."
+      }
+    ]
+  }
+}

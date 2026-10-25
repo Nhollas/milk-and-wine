@@ -1,0 +1,18 @@
+diff --git a/src/reminders/reminders.integration.test.ts b/src/reminders/reminders.integration.test.ts
+index f969143..3813b4d 100644
+--- a/src/reminders/reminders.integration.test.ts
++++ b/src/reminders/reminders.integration.test.ts
+@@ -30,11 +30,10 @@ test("B5: posts a loan-overdue notification as JSON and accepts a 202", async ()
+       method: "POST",
+       path: "/notifications",
+       contentType: "application/json",
+-      body: {
++      body: expect.objectContaining({
+         memberId: "member-1",
+-        template: "loan-overdue",
+         data: { loanId: "loan-1", dueOn: "2026-03-16" },
+-      },
++      }),
+     },
+   ]);
+ });

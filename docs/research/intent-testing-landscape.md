@@ -14,7 +14,7 @@ Research notes, 25 October 2026. The question: are there tools that check tests 
 | Check | Question it answers | Best that exists | In this repo |
 | --- | --- | --- | --- |
 | 1. Trace | Does every part of the intent have a test, and every test an intent? | Explicit links: Tessl `[@test]`, Kiro, Xray-style matrices. LLM link recovery when no links exist | `spec:check`, by row ID. Not per clause |
-| 2. Align | Does the test check what its intent says? | LLM judges, and research on test names that don't match their bodies. Evidence is weak | None. [ADR 0001](../adr/0001-status-is-computed-from-tests.md) leaves it to review |
+| 2. Align | Does the test check what its intent says? | LLM judges, and research on test names that don't match their bodies. Evidence is weak | `intent-judge`, advisory. See the [judge trial](judge-trial/README.md) |
 | 3. Mutate intent | Does the suite notice when code drifts from the intent? | ACH, intent-based mutation, round-trip mutation, property-based mutation | `spec-mutator` and `pnpm spec:mutants` |
 
 They depend on each other. Check 1 lists what must be covered. Check 3 is the gate, because its verdict comes from running tests. Check 2 covers check 3's blind spot.
