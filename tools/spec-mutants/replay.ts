@@ -1,115 +1,123 @@
 import { spawnSync } from "node:child_process";
-import { existsSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
+import { existsSync, mkdtempDisposableSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { z } from "zod";
 import type { TestLevel } from "../specs/specs.ts";
-import { readSubjectMutants, stopOnInterrupt, withMutantPlanted } from "./mutants.ts";
+import { isStale, readSubjectMutants, type Mutant } from "./mutants.ts";
+
+const REPLAY_CONFIG = join(import.meta.dirname, "replay-config.ts");
 
 const vitestReport = z.object({
   testResults: z.array(
     z.object({
       name: z.string(),
+      status: z.string(),
       assertionResults: z.array(z.object({ title: z.string(), status: z.string() })),
     }),
   ),
 });
 
-type RowTests = "passed" | "failed" | "found no test";
+type RowTests = "passed" | "failed" | "missing";
 
-function replay(args: string[], root: string): number {
-  const runsIndex = args.indexOf("--runs");
-  const runs = runsIndex >= 0 ? Number(args[runsIndex + 1]) : 1;
-  const [subject, onlyRow] = runsIndex >= 0 ? args.toSpliced(runsIndex, 2) : args;
-  if (!subject || !Number.isInteger(runs) || runs < 1) {
-    process.stdout.write("usage: pnpm spec:mutants <subject> [<row ID>] [--runs <n>]\n");
-    return 1;
+type ReplayResult = { exitCode: number; output: string };
+
+export function replay(args: string[], root: string): ReplayResult {
+  const [subject] = args;
+  if (!subject || args.length !== 1) {
+    return { exitCode: 1, output: "usage: pnpm spec:mutants <subject>\n" };
   }
   const loaded = readSubjectMutants(subject, root);
-  if (typeof loaded === "string") {
-    process.stdout.write(`${loaded}\n`);
-    return 1;
-  }
+  if (typeof loaded === "string") return { exitCode: 1, output: `${loaded}\n` };
 
-  const interrupted = stopOnInterrupt();
-  let failures = 0;
+  let output = "";
+  let problems = 0;
   for (const row of loaded.rows) {
-    if (onlyRow && row.id !== onlyRow) continue;
     const rowMutants = loaded.mutantsByRow.get(row.id);
-    if (row.verified.kind !== "test") continue;
-    if (!rowMutants) {
-      process.stdout.write(`${row.id}  no mutants yet\n`);
-      continue;
-    }
+    if (row.verified.kind !== "test" || !rowMutants) continue;
     if (rowMutants.then !== row.thenText) {
-      failures++;
-      process.stdout.write(`${row.id}  row changed since its mutants were written; rewrite them\n`);
+      problems++;
+      output += `${row.id}  then-changed\n    was  ${rowMutants.then}\n    now  ${row.thenText}\n`;
       continue;
     }
     const level = row.verified.level;
     const unmutated = rowTests(subject, row.id, level, root);
     if (unmutated !== "passed") {
-      failures++;
-      process.stdout.write(
-        `${row.id}  its tests must pass with no mutant planted, but they ${unmutated}\n`,
-      );
+      problems++;
+      const instead = unmutated === "failed" ? "they failed" : "there are none";
+      output += `${row.id}  its tests must pass with no mutant planted, but ${instead}\n`;
       continue;
     }
 
+    output += `${row.id}  ${row.thenText}\n`;
     for (const mutant of rowMutants.mutants) {
-      if (interrupted()) return 1;
-      const outcome = withMutantPlanted(mutant, root, () => {
-        for (let run = 0; run < runs; run++) {
-          const result = rowTests(subject, row.id, level, root);
-          if (result === "found no test") return "broken";
-          if (result === "passed") return "MISSED";
-        }
-        return "caught";
-      });
-      if (outcome !== "caught") failures++;
-      process.stdout.write(`${row.id}  ${outcome.padEnd(7)}  ${mutant.breaks}\n`);
+      if (isStale(mutant, root)) {
+        problems++;
+        output += `    stale     ${mutant.breaks}: find must appear exactly once in ${mutant.file}\n`;
+        continue;
+      }
+      const survived = rowTests(subject, row.id, level, root, mutant) === "passed";
+      if (survived) problems++;
+      output += `    ${survived ? "survived" : "killed  "}  ${mutant.breaks}\n`;
     }
   }
 
-  process.stdout.write(
-    failures === 0 ? "spec:mutants passed\n" : `spec:mutants failed · ${failures} problems\n`,
+  output +=
+    problems === 0 ? "spec:mutants passed\n" : `spec:mutants failed · ${problems} problems\n`;
+  return { exitCode: problems === 0 ? 0 : 1, output };
+}
+
+function rowTests(
+  subject: string,
+  id: string,
+  level: TestLevel,
+  root: string,
+  planted?: Mutant,
+): RowTests {
+  using directory = mkdtempDisposableSync(join(tmpdir(), "spec-mutants-"));
+  const reportPath = join(directory.path, "report.json");
+  spawnSync(
+    join(root, "node_modules/.bin/vitest"),
+    [
+      "run",
+      "--config",
+      REPLAY_CONFIG,
+      "--project",
+      level,
+      "--reporter=json",
+      `--outputFile=${reportPath}`,
+      "-t",
+      `^${id}: `,
+      `/${subject}.`,
+    ],
+    {
+      cwd: root,
+      stdio: "ignore",
+      env: {
+        ...process.env,
+        SPEC_MUTANTS_ROOT: root,
+        SPEC_MUTANT: planted ? JSON.stringify(planted) : "",
+      },
+    },
   );
-  return failures === 0 ? 0 : 1;
+  if (!existsSync(reportPath)) return "missing";
+  const files = vitestReport
+    .parse(JSON.parse(readFileSync(reportPath, "utf8")))
+    .testResults.filter((file) => file.name.endsWith(`.${level}.test.ts`));
+  const statuses = new Set(
+    files.flatMap((file) =>
+      file.assertionResults
+        .filter((test) => test.title.startsWith(`${id}: `))
+        .map((test) => test.status),
+    ),
+  );
+  // A mutant can stop a test file loading at all, which fails its tests as surely as an assertion.
+  if (statuses.has("failed") || files.some((file) => file.status === "failed")) return "failed";
+  return statuses.has("passed") ? "passed" : "missing";
 }
 
-function rowTests(subject: string, id: string, level: TestLevel, root: string): RowTests {
-  const directory = mkdtempSync(join(tmpdir(), "spec-mutants-"));
-  const reportPath = join(directory, "report.json");
-  try {
-    spawnSync(
-      "pnpm",
-      [
-        "exec",
-        "vitest",
-        "run",
-        "--project",
-        level,
-        "--reporter=json",
-        `--outputFile=${reportPath}`,
-        "-t",
-        `^${id}: `,
-        `/${subject}.`,
-      ],
-      { cwd: root, stdio: "ignore" },
-    );
-    if (!existsSync(reportPath)) return "found no test";
-    const report = vitestReport.parse(JSON.parse(readFileSync(reportPath, "utf8")));
-    const statuses = report.testResults
-      .filter((file) => file.name.endsWith(`.${level}.test.ts`))
-      .flatMap((file) => file.assertionResults)
-      .filter((test) => test.title.startsWith(`${id}: `))
-      .map((test) => test.status);
-    const seen = new Set(statuses);
-    if (seen.has("failed")) return "failed";
-    return seen.has("passed") ? "passed" : "found no test";
-  } finally {
-    rmSync(directory, { recursive: true, force: true });
-  }
+if (import.meta.main) {
+  const { exitCode, output } = replay(process.argv.slice(2), process.cwd());
+  process.stdout.write(output);
+  process.exitCode = exitCode;
 }
-
-if (import.meta.main) process.exitCode = replay(process.argv.slice(2), process.cwd());

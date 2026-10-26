@@ -4,7 +4,7 @@ import { z } from "zod";
 import { workingTree } from "../specs/repository.ts";
 import { readSubjects, type Row } from "../specs/specs.ts";
 
-const mutant = z.object({
+export const mutant = z.object({
   breaks: z.string(),
   file: z.string(),
   find: z.array(z.string()).min(1),
@@ -38,22 +38,26 @@ export function readSubjectMutants(subject: string, root: string): SubjectMutant
   if (!existsSync(join(root, mutantsPath)))
     return `no mutants for ${subject}: expected ${mutantsPath}`;
 
-  const parsed = mutantsFile.safeParse(JSON.parse(readFileSync(join(root, mutantsPath), "utf8")));
+  const parsed = mutantsFile.safeParse(parseJson(readFileSync(join(root, mutantsPath), "utf8")));
   if (!parsed.success) return `${mutantsPath} is not valid: ${z.prettifyError(parsed.error)}`;
   return { rows: spec.rows, mutantsPath, mutantsByRow: new Map(Object.entries(parsed.data)) };
 }
 
-export function withMutantPlanted<T>(planted: Mutant, root: string, run: () => T): T | "stale" {
+export function isStale(planted: Mutant, root: string): boolean {
   const path = join(root, planted.file);
-  if (!existsSync(path)) return "stale";
-  const original = readFileSync(path, "utf8");
-  const find = planted.find.join("\n");
-  if (original.split(find).length !== 2) return "stale";
-
-  writeFileSync(
-    path,
-    original.replace(find, () => planted.replace.join("\n")),
+  return (
+    !existsSync(path) || readFileSync(path, "utf8").split(planted.find.join("\n")).length !== 2
   );
+}
+
+export function plant(planted: Mutant, source: string): string {
+  return source.replace(planted.find.join("\n"), () => planted.replace.join("\n"));
+}
+
+export function withMutantPlanted<T>(planted: Mutant, root: string, run: () => T): T {
+  const path = join(root, planted.file);
+  const original = readFileSync(path, "utf8");
+  writeFileSync(path, plant(planted, original));
   try {
     return run();
   } finally {
@@ -67,4 +71,12 @@ export function stopOnInterrupt(): () => boolean {
     interrupted = true;
   });
   return () => interrupted;
+}
+
+function parseJson(text: string): unknown {
+  try {
+    return JSON.parse(text);
+  } catch {
+    return undefined;
+  }
 }

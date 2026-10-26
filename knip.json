@@ -1,6 +1,7 @@
 {
   "$schema": "./node_modules/knip/schema.json",
   "entry": [
+    "tools/spec-mutants/replay-config.ts",
     ".claude/agents/mutant-writer/guard.ts",
     ".claude/agents/mutant-writer/check-before-stop.ts",
     ".claude/agents/intent-judge/guard.ts"
