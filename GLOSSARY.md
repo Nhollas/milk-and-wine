@@ -32,7 +32,7 @@ The words for the library this service runs, and for the spec-driven process tha
 
 **Change spec**: A short-lived spec that wraps the rows one piece of work adds, changes or removes. It is deleted when its last row is delivered. Described, not practised, in this repository. _Avoid_: Delivery spec, ticket
 
-**Row**: One promise in a behaviour spec, with an ID, Given, When, Then and Verified. _Avoid_: Acceptance criterion, AC, requirement, scenario
+**Row**: One behaviour in a behaviour spec, with an ID, Given, When, Then and Verified. Its Given, When and Then are its acceptance criteria. _Avoid_: AC, requirement, scenario
 
 **Level**: The kind of test a row's Verified can name: service, integration or system. A test file's name carries its level.
 

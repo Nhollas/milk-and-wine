@@ -14,8 +14,6 @@ pnpm install
 pnpm check
 ```
 
-`pnpm check` runs oxlint (lint and typecheck), the format check, knip and the tests.
-
 ## Where things are
 
 | Path | What it shows |
