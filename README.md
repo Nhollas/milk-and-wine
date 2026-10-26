@@ -1,8 +1,8 @@
 # SDD example: library loans
 
-A deliberately small service, built to show [spec-driven development](SPEC-DRIVEN-DEVELOPMENT.md) end to end. Members borrow copies, get reminded when they're late, and bring them back.
+A small library service: members borrow copies, get reminded when they're late, and bring them back.
 
-The point is the process, not the app. Every kind of subject has a spec, every row is proven by a named test or a declared check, and some rows are proposed so you can see what specced-but-not-built looks like. [INTENT.md](INTENT.md) explains why the repository exists and what it is testing.
+For why this repository exists, see [INTENT.md](INTENT.md).
 
 ## Try it
 
