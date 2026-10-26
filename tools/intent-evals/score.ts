@@ -1,35 +1,21 @@
 import type { EvalCase } from "./cases.ts";
-import type { Judgement, VerdictPart } from "./intent-judge.ts";
-
-const FLAGGED = new Set(["weak", "missing"]);
-
-export type Flag = { row: string; side: "given" | "then"; part: VerdictPart };
+import type { Judgement } from "./intent-judge.ts";
 
 export type Found = {
-  /** The judgement had verdicts to score. */
+  /** The judgement had a list of misalignments to score. */
   scored: boolean;
-  /** It flagged the part the case is about. */
+  /** A misalignment on the case's row names the part the case is about. */
   part: boolean;
-  /** It flagged some part of the case's row. */
-  row: boolean;
 };
 
-export function flagsIn(judgement: Judgement): Flag[] {
-  return Object.entries(judgement.verdicts ?? {}).flatMap(([row, sides]) =>
-    (["given", "then"] as const).flatMap((side) =>
-      sides[side].filter((part) => FLAGGED.has(part.verdict)).map((part) => ({ row, side, part })),
-    ),
-  );
-}
-
 export function foundGap(evalCase: EvalCase, judgement: Judgement): Found {
-  if (judgement.verdicts === undefined) return { scored: false, part: false, row: false };
-  const flags = flagsIn(judgement).filter((flag) => flag.row === evalCase.row);
+  if (judgement.misalignments === undefined) return { scored: false, part: false };
   const wanted = plain(evalCase.part);
   return {
     scored: true,
-    part: flags.some((flag) => plain(flag.part.part).includes(wanted)),
-    row: flags.length > 0,
+    part: judgement.misalignments.some(
+      (each) => each.row === evalCase.row && plain(each.says).includes(wanted),
+    ),
   };
 }
 

@@ -22,6 +22,9 @@ export function blockReasonOf(input: string, root: string): string | undefined {
     if (event.tool_name === "Read" && path.startsWith("src/") && !TEST_FILE.test(path)) {
       return "The intent judge never reads the code under test, only tests.";
     }
+    if (event.tool_name === "Read" && path.endsWith("/mutants.json")) {
+      return "The intent judge never reads mutants.json.";
+    }
     return undefined;
   }
   return `The intent judge can't use ${event.tool_name ?? "this tool"}.`;

@@ -2,9 +2,9 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { parseArgs } from "node:util";
 import { type Edit, type EvalCase, matching, readCases, testedRows } from "./cases.ts";
-import { judge, type Judgement } from "./intent-judge.ts";
+import { judge, type Judgement, type Misalignment } from "./intent-judge.ts";
 import { inPool } from "./pool.ts";
-import { type Flag, flagsIn, foundGap, type Found } from "./score.ts";
+import { foundGap, type Found } from "./score.ts";
 import { inWorkspace } from "./workspace.ts";
 
 type Job = {
@@ -42,9 +42,8 @@ async function attempt(job: Job, root: string, definition: string | undefined): 
   const judgement = await inWorkspace(root, job.weaken, (directory) =>
     judge(directory, { subject: job.subject, rows: job.rows, definition }),
   ).catch((error: unknown): Judgement => ({
-    verdicts: undefined,
+    misalignments: undefined,
     failure: String(error),
-    warnings: [],
     costUsd: 0,
     seconds: 0,
     reply: "",
@@ -92,7 +91,7 @@ async function runJudge(args: string[], root: string): Promise<number> {
 
   const saved = save(attempts, root);
   report(attempts, jobs, runs, split);
-  process.stdout.write(`\nverdicts saved in ${saved}\n`);
+  process.stdout.write(`\njudgements saved in ${saved}\n`);
   return 0;
 }
 
@@ -104,36 +103,32 @@ function report(attempts: Attempt[], jobs: Job[], runs: number, split: string): 
   const planted = jobs.filter((job) => job.evalCase);
   const nameWidth = Math.max(...planted.map((job) => job.name.length));
 
-  out(`${"case".padEnd(nameWidth)}  part  row   (flagged in n of ${runs} runs)`);
+  out(`${"case".padEnd(nameWidth)}  found  (in n of ${runs} runs)`);
   let partHits = 0;
-  let rowHits = 0;
   let scored = 0;
   for (const job of planted) {
     const own = attempts.filter((each) => each.job === job);
     const part = own.filter((each) => each.found?.part === true).length;
-    const row = own.filter((each) => each.found?.row === true).length;
     partHits += part;
-    rowHits += row;
     scored += own.filter((each) => each.found?.scored === true).length;
     out(
-      `${job.name.padEnd(nameWidth)}  ${part}/${runs}   ${row}/${runs}${part > 0 && part < runs ? "   flaky" : ""}`,
+      `${job.name.padEnd(nameWidth)}  ${part}/${runs}${part > 0 && part < runs ? "   flaky" : ""}`,
     );
   }
   const total = planted.length * runs;
   out(`\nfound the planted part   ${partHits} of ${total}   (${percent(partHits, total)})`);
-  out(`flagged its row          ${rowHits} of ${total}   (${percent(rowHits, total)})`);
   out(`not scored               ${total - scored} of ${total}`);
 
   for (const job of jobs.filter((each) => !each.evalCase)) {
     const own = attempts.filter(
-      (each) => each.job === job && each.judgement.verdicts !== undefined,
+      (each) => each.job === job && each.judgement.misalignments !== undefined,
     );
     out(
-      `\n${job.name}: parts flagged, to triage (a gap to close, or a false alarm), over ${own.length} runs`,
+      `\n${job.name}: misalignments, to triage (a gap to close, or a false alarm), over ${own.length} runs`,
     );
     const counts = new Map<string, number>();
-    for (const flag of own.flatMap((each) => flagsIn(each.judgement))) {
-      const key = describe(flag);
+    for (const found of own.flatMap((each) => each.judgement.misalignments ?? [])) {
+      const key = describe(found);
       counts.set(key, (counts.get(key) ?? 0) + 1);
     }
     if (counts.size === 0) out("  none");
@@ -142,16 +137,12 @@ function report(attempts: Attempt[], jobs: Job[], runs: number, split: string): 
   }
 
   const failures = attempts.filter((each) => each.judgement.failure !== undefined);
-  const warnings = attempts.flatMap((each) => each.judgement.warnings);
   out(`\nunusable judgements: ${failures.length} of ${attempts.length}`);
   for (const failure of new Set(
     failures.map((each) => `${each.job.name}: ${each.judgement.failure}`),
   )) {
     out(`  ${failure.slice(0, 200)}`);
   }
-  out(
-    `inconsistent verdicts: ${warnings.length}${warnings.length > 0 ? ` (for example ${warnings[0]})` : ""}`,
-  );
 
   const cost = attempts.reduce((sum, each) => sum + each.judgement.costUsd, 0);
   const seconds = attempts.map((each) => each.judgement.seconds);
@@ -160,8 +151,8 @@ function report(attempts: Attempt[], jobs: Job[], runs: number, split: string): 
   );
 }
 
-function describe({ row, side, part }: Flag): string {
-  return `${row} ${side} "${part.part}" ${part.verdict}`;
+function describe({ row, says, where }: Misalignment): string {
+  return `${row} "${says}"${where === null ? "" : ` at ${where}`}`;
 }
 
 function percent(part: number, whole: number): string {

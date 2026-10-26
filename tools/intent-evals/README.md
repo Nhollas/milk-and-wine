@@ -1,6 +1,6 @@
 # Intent evals
 
-Measures the [intent judge](../../.claude/agents/intent-judge/intent-judge.md): given a row and its tests, does it find what the tests don't check?
+Measures the [intent judge](../../.claude/agents/intent-judge/intent-judge.md): given a row and its tests, does it find where the tests are out of line with the row (a promise nothing checks, something the row doesn't say, a contradiction)? Whether a test is strong enough is not its job.
 
 ## A case
 
@@ -20,13 +20,11 @@ pnpm eval:judge [--subject s] [--case id] [--split dev|heldout] [--runs 3] [--pa
 
 Each run copies the repository, applies a case's `weaken` edits and runs the judge on that row only. The judge never sees `bug`, because it never reads code. `--judge` tries another definition of the judge without editing the repository.
 
-- **Found the planted part:** a `weak` or `missing` verdict on a part whose words include the case's `part`. This is the headline number.
-- **Flagged its row:** a flag on any part of the row. A row with other gaps scores here for the wrong reason, so read it second.
-- **Control:** the subject's tests as they are. Every flag is listed to triage: a real gap to close in the tests, or a false alarm. Nothing marks one as a false alarm automatically.
-- **Unusable:** no JSON, rows missing, or the guard let a forbidden read through. A judge that read code has seen the answer, so its verdicts aren't scored.
-- **Inconsistent:** verdicts that contradict themselves, such as `checked` with a break nothing catches.
+- **Found the planted part:** a misalignment on the case's row whose `says` includes the case's `part`. This is the headline number.
+- **Control:** the subject's tests as they are. Every misalignment is listed to triage: a real gap to close in the tests, or a false alarm. Nothing marks one as a false alarm automatically.
+- **Unusable:** no JSON, or the guard let a forbidden read through. A judge that read code has seen the answer, so its findings aren't scored.
 
-Raw verdicts go to `reports/intent-evals/`.
+Raw judgements go to `reports/intent-evals/`.
 
 ## Not done yet
 

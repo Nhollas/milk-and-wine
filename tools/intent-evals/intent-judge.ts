@@ -1,4 +1,4 @@
-import { copyFileSync, existsSync, readFileSync } from "node:fs";
+import { copyFileSync } from "node:fs";
 import { join } from "node:path";
 import { z } from "zod";
 import { blockReasonOf } from "../../.claude/agents/intent-judge/guard.ts";
@@ -23,19 +23,14 @@ const GUARD_SETTINGS = JSON.stringify({
   },
 });
 
-const verdictPart = z.object({
-  part: z.string(),
-  breaks: z.array(z.object({ break: z.string(), "caught by": z.string().nullable() })),
-  verdict: z.enum(["checked", "weak", "missing", "elsewhere"]),
+const misalignment = z.object({
+  row: z.string(),
+  says: z.string(),
+  "checked instead": z.string(),
   where: z.string().nullable(),
-  why: z.string(),
 });
 
-const verdicts = z.record(
-  z.string(),
-  // oxlint-disable-next-line unicorn/no-thenable -- the key names the spec's Then column
-  z.object({ given: z.array(verdictPart), then: z.array(verdictPart) }),
-);
+const misalignments = z.array(misalignment);
 
 const toolUse = z.object({
   type: z.literal("tool_use"),
@@ -63,16 +58,13 @@ const finalResult = z.object({
   duration_ms: z.number().optional(),
 });
 
-type Verdicts = z.infer<typeof verdicts>;
-
-export type VerdictPart = z.infer<typeof verdictPart>;
+export type Misalignment = z.infer<typeof misalignment>;
 
 export type Judgement = {
-  verdicts: Verdicts | undefined;
+  /** Undefined when the judgement can't be scored. An empty list means every judged row is aligned. */
+  misalignments: Misalignment[] | undefined;
   /** Why the judgement can't be scored at all. */
   failure: string | undefined;
-  /** What is odd about verdicts that can still be scored. */
-  warnings: string[];
   costUsd: number;
   seconds: number;
   reply: string;
@@ -114,33 +106,19 @@ export async function judge(directory: string, options: JudgeOptions): Promise<J
   const { result = "", is_error, total_cost_usd = 0 } = final.data;
   const costUsd = total_cost_usd;
   const base = { costUsd, seconds, reply: result };
-  if (is_error === true) return { ...base, verdicts: undefined, failure: result, warnings: [] };
+  if (is_error === true) return { ...base, misalignments: undefined, failure: result };
 
   const breach = guardBreach(events, directory);
-  if (breach) return { ...base, verdicts: undefined, failure: breach, warnings: [] };
+  if (breach) return { ...base, misalignments: undefined, failure: breach };
 
-  const parsed = verdictsIn(result);
-  if (typeof parsed === "string")
-    return { ...base, verdicts: undefined, failure: parsed, warnings: [] };
-  const missing = options.rows.filter((row) => !(row in parsed));
-  if (missing.length > 0) {
-    return {
-      ...base,
-      verdicts: undefined,
-      failure: `no verdict for ${missing.join(", ")}`,
-      warnings: [],
-    };
-  }
-  return {
-    ...base,
-    verdicts: parsed,
-    failure: undefined,
-    warnings: warningsAbout(parsed, directory),
-  };
+  const parsed = misalignmentsIn(result);
+  return typeof parsed === "string"
+    ? { ...base, misalignments: undefined, failure: parsed }
+    : { ...base, misalignments: parsed, failure: undefined };
 }
 
 function failed(failure: string, seconds: number): Judgement {
-  return { verdicts: undefined, failure, warnings: [], costUsd: 0, seconds, reply: "" };
+  return { misalignments: undefined, failure, costUsd: 0, seconds, reply: "" };
 }
 
 async function runClaude(directory: string, prompt: string): Promise<string | { error: string }> {
@@ -171,7 +149,7 @@ async function runClaude(directory: string, prompt: string): Promise<string | { 
   }
 }
 
-/** A judge that read what the guard forbids has seen the code, so its verdicts mean nothing. */
+/** A judge that read what the guard forbids has seen the code, so its findings mean nothing. */
 function guardBreach(events: unknown[], directory: string): string | undefined {
   const results = new Map<string, boolean>();
   for (const event of events) {
@@ -202,8 +180,8 @@ function guardBreach(events: unknown[], directory: string): string | undefined {
   return undefined;
 }
 
-function verdictsIn(reply: string): Verdicts | string {
-  const json = /\{[\s\S]*\}/u.exec(reply)?.[0];
+function misalignmentsIn(reply: string): Misalignment[] | string {
+  const json = /\[[\s\S]*\]/u.exec(reply)?.[0];
   if (json === undefined) return "the reply holds no JSON";
   let value: unknown;
   try {
@@ -211,40 +189,8 @@ function verdictsIn(reply: string): Verdicts | string {
   } catch {
     return "the reply's JSON doesn't parse";
   }
-  const parsed = verdicts.safeParse(value);
+  const parsed = misalignments.safeParse(value);
   return parsed.success
     ? parsed.data
-    : `the verdicts don't match the format: ${z.prettifyError(parsed.error)}`;
-}
-
-function warningsAbout(all: Verdicts, directory: string): string[] {
-  const warnings: string[] = [];
-  for (const [row, { given, then }] of Object.entries(all)) {
-    for (const part of [...given, ...then]) {
-      const name = `${row} "${part.part.slice(0, 40)}"`;
-      const unproven = part.breaks.some((entry) => entry["caught by"] === null);
-      if (part.verdict === "checked" && unproven)
-        warnings.push(`${name} is checked with a break nothing catches`);
-      if (part.verdict === "missing" && part.where !== null)
-        warnings.push(`${name} is missing but points at ${part.where}`);
-      if ((part.verdict === "checked" || part.verdict === "weak") && part.where === null) {
-        warnings.push(`${name} is ${part.verdict} but points nowhere`);
-      }
-      const references = [part.where, ...part.breaks.map((entry) => entry["caught by"])];
-      for (const reference of references) {
-        if (reference !== null && !pointsAtALine(reference, directory)) {
-          warnings.push(`${name} points at ${reference}, which isn't a line of a file`);
-        }
-      }
-    }
-  }
-  return warnings;
-}
-
-function pointsAtALine(reference: string, directory: string): boolean {
-  const match = /^(.+?):(\d+)/u.exec(reference);
-  const [, file, line] = match ?? [];
-  if (file === undefined || line === undefined) return false;
-  const path = join(directory, file);
-  return existsSync(path) && Number(line) <= readFileSync(path, "utf8").split("\n").length;
+    : `the misalignments don't match the format: ${z.prettifyError(parsed.error)}`;
 }
