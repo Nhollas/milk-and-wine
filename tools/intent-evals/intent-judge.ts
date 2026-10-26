@@ -30,7 +30,8 @@ const misalignment = z.object({
   where: z.string().nullable(),
 });
 
-const misalignments = z.array(misalignment);
+// The judge must reply in this shape, so its findings never have to be dug out of free text.
+const reply = z.object({ misalignments: z.array(misalignment) });
 
 const toolUse = z.object({
   type: z.literal("tool_use"),
@@ -54,6 +55,7 @@ const finalResult = z.object({
   type: z.literal("result"),
   result: z.string().optional(),
   is_error: z.boolean().optional(),
+  structured_output: z.unknown().optional(),
   total_cost_usd: z.number().optional(),
   duration_ms: z.number().optional(),
 });
@@ -103,7 +105,7 @@ export async function judge(directory: string, options: JudgeOptions): Promise<J
     .map((event) => finalResult.safeParse(event))
     .find((parsed) => parsed.success);
   if (!final) return failed("claude ended without a result", seconds);
-  const { result = "", is_error, total_cost_usd = 0 } = final.data;
+  const { result = "", is_error, structured_output, total_cost_usd = 0 } = final.data;
   const costUsd = total_cost_usd;
   const base = { costUsd, seconds, reply: result };
   if (is_error === true) return { ...base, misalignments: undefined, failure: result };
@@ -111,10 +113,10 @@ export async function judge(directory: string, options: JudgeOptions): Promise<J
   const breach = guardBreach(events, directory);
   if (breach) return { ...base, misalignments: undefined, failure: breach };
 
-  const parsed = misalignmentsIn(result);
-  return typeof parsed === "string"
-    ? { ...base, misalignments: undefined, failure: parsed }
-    : { ...base, misalignments: parsed, failure: undefined };
+  const parsed = reply.safeParse(structured_output);
+  return parsed.success
+    ? { ...base, misalignments: parsed.data.misalignments, failure: undefined }
+    : { ...base, misalignments: undefined, failure: "the reply has no structured output" };
 }
 
 function failed(failure: string, seconds: number): Judgement {
@@ -133,6 +135,8 @@ async function runClaude(directory: string, prompt: string): Promise<string | { 
     "--no-session-persistence",
     "--max-budget-usd",
     "2",
+    "--json-schema",
+    JSON.stringify(z.toJSONSchema(reply, { target: "draft-07" })),
     "--output-format",
     "stream-json",
     "--verbose",
@@ -178,19 +182,4 @@ function guardBreach(events: unknown[], directory: string): string | undefined {
     }
   }
   return undefined;
-}
-
-function misalignmentsIn(reply: string): Misalignment[] | string {
-  const json = /\[[\s\S]*\]/u.exec(reply)?.[0];
-  if (json === undefined) return "the reply holds no JSON";
-  let value: unknown;
-  try {
-    value = JSON.parse(json);
-  } catch {
-    return "the reply's JSON doesn't parse";
-  }
-  const parsed = misalignments.safeParse(value);
-  return parsed.success
-    ? parsed.data
-    : `the misalignments don't match the format: ${z.prettifyError(parsed.error)}`;
 }

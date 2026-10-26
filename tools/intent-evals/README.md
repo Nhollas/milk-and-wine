@@ -22,7 +22,7 @@ Each run copies the repository, applies a case's `weaken` edits and runs the jud
 
 - **Found the planted part:** a misalignment on the case's row whose `says` includes the case's `part`. This is the headline number.
 - **Control:** the subject's tests as they are. Every misalignment is listed to triage: a real gap to close in the tests, or a false alarm. Nothing marks one as a false alarm automatically.
-- **Unusable:** no JSON, or the guard let a forbidden read through. A judge that read code has seen the answer, so its findings aren't scored.
+- **Unusable:** no structured output matching the schema, or the guard let a forbidden read through. A judge that read code has seen the answer, so its findings aren't scored.
 
 Raw judgements go to `reports/intent-evals/`.
 

@@ -1,7 +1,7 @@
 ---
 name: intent-judge
 description: Checks that a spec's tests are aligned with its rows. Give it a subject, such as "reminders", and optionally the row IDs to judge.
-tools: Read, Glob
+tools: Read, Glob, StructuredOutput
 model: sonnet
 maxTurns: 40
 hooks:
@@ -26,15 +26,17 @@ Read each row's Given and Then closely, every case, unit, boundary and qualifier
 
 Judge a row by its own tests. Another row's test covers a promise only if that row promises the same thing.
 
-Reply with a JSON list of misalignments and nothing else. An empty list means every judged row is aligned.
+Reply with your misalignments as JSON and nothing else. An empty list means every judged row is aligned.
 
 ```json
-[
-  {
-    "row": "B3",
-    "says": "the row's words concerned",
-    "checked instead": "what the test checks in its place, or that no test checks it",
-    "where": "path:line, or null when there is no test"
-  }
-]
+{
+  "misalignments": [
+    {
+      "row": "B3",
+      "says": "the row's words concerned",
+      "checked instead": "what the test checks in its place, or that no test checks it",
+      "where": "path:line, or null when there is no test"
+    }
+  ]
+}
 ```

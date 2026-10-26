@@ -27,6 +27,8 @@ export function blockReasonOf(input: string, root: string): string | undefined {
     }
     return undefined;
   }
+  // Claude Code delivers a reply in a set shape through this tool.
+  if (event.tool_name === "StructuredOutput") return undefined;
   return `The intent judge can't use ${event.tool_name ?? "this tool"}.`;
 }
 
