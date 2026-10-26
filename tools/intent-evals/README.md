@@ -27,5 +27,4 @@ Raw judgements go to `reports/intent-evals/`, with each run's transcript, so a m
 
 ## Not done yet
 
-- The control isn't clean. [Gaps found by earlier trials](../../docs/reminders-test-gaps.md) are still in the reminders tests, so its flags can't be told apart from false alarms until they are closed.
 - Planted gaps are easy. The cases are found in every run, so they can't show a change for the better. Harder cases need tests strong enough to plant them in.

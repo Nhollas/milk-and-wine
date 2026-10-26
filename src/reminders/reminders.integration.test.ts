@@ -58,6 +58,22 @@ test.each([
   });
 });
 
+test("B5: keeps the path NOTIFY_URL has", async () => {
+  const notifyUrlWithPath = "http://notifications.test/api";
+  const paths: string[] = [];
+  httpInterceptor.use(
+    http.post(`${notifyUrlWithPath}/notifications`, ({ request }) => {
+      paths.push(new URL(request.url).pathname);
+      return new HttpResponse(null, { status: 202 });
+    }),
+  );
+
+  const delivery = await createNotificationsClient(notifyUrlWithPath).sendOverdueReminder(reminder);
+
+  expect(delivery.kind).toBe("accepted");
+  expect(paths).toEqual(["/api/notifications"]);
+});
+
 test("B5: treats a failed connection as refused", async () => {
   httpInterceptor.use(http.post(NOTIFICATIONS_PATH, () => HttpResponse.error()));
 

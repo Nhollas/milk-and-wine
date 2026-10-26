@@ -6,11 +6,14 @@
     {
       "file": "src/reminders/reminders.service.test.ts",
       "find": [
-        "  expect(logs.at(-1)).toEqual({",
-        "    level: \"info\",",
-        "    event: \"reminders.finished\",",
-        "    fields: { sent: 2, failed: 1 },",
-        "  });"
+        "  expect(logs).toEqual([",
+        "    {",
+        "      level: \"warn\",",
+        "      event: \"reminder.failed\",",
+        "      fields: { loanId: loan3, error: \"Notifications API answered 503\" },",
+        "    },",
+        "    { level: \"info\", event: \"reminders.finished\", fields: { sent: 2, failed: 1 } },",
+        "  ]);"
       ],
       "replace": []
     },

@@ -96,7 +96,7 @@
     ]
   },
   "B3": {
-    "then": "Records nothing for that loan, logs `reminder.failed` at `warn` with `loanId` and the refusal's `error`, and carries on with the other loans",
+    "then": "Records nothing for that loan, logs `reminder.failed` at `warn` with `loanId` and the refusal's `error`, doesn't ask again for that loan in this run, and carries on with the other loans",
     "mutants": [
       {
         "breaks": "Records nothing for that loan",
@@ -149,6 +149,15 @@
         "file": "src/reminders/send-overdue-reminders.ts",
         "find": ["      continue;"],
         "replace": ["      break;"]
+      },
+      {
+        "breaks": "doesn't ask again for that loan in this run",
+        "file": "src/reminders/send-overdue-reminders.ts",
+        "find": ["    const delivery = await notificationsClient.sendOverdueReminder(reminder);"],
+        "replace": [
+          "    let delivery = await notificationsClient.sendOverdueReminder(reminder);",
+          "    if (delivery.kind === \"refused\") delivery = await notificationsClient.sendOverdueReminder(reminder);"
+        ]
       }
     ]
   },
@@ -187,6 +196,12 @@
           "  if (store.remindersDue(today).length === 0) return counts;",
           "  for (const reminder of store.remindersDue(today)) {"
         ]
+      },
+      {
+        "breaks": "The job has handled every overdue loan (logs after each reminder too)",
+        "file": "src/reminders/send-overdue-reminders.ts",
+        "find": ["    counts.sent++;"],
+        "replace": ["    counts.sent++;", "    logger.info(\"reminders.finished\", { ...counts });"]
       }
     ]
   },
@@ -306,6 +321,12 @@
         "file": "src/reminders/notifications-client.ts",
         "find": ["      if (!response.ok)"],
         "replace": ["      if (response.status >= 400 && response.status < 500)"]
+      },
+      {
+        "breaks": "`{NOTIFY_URL}/notifications` (drops NOTIFY_URL's path)",
+        "file": "src/reminders/notifications-client.ts",
+        "find": ["      const response = await fetch(endpoint(baseUrl, \"notifications\"), {"],
+        "replace": ["      const response = await fetch(new URL(\"/notifications\", baseUrl), {"]
       }
     ]
   }

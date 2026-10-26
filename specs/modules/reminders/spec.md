@@ -16,7 +16,7 @@ Reminds members about overdue loans, once a day, through the organisation's Noti
 | --- | --- | --- | --- | --- |
 | B1 | An open loan's `dueOn` is before today (UTC), and it has no reminder recorded today | The reminders job runs | Asks the Notifications API to notify the loan's member, then records a reminder for today | service |
 | B2 | An open loan already has a reminder recorded today, or is returned, or isn't overdue | The reminders job runs | Sends nothing for that loan | service |
-| B3 | The Notifications API refuses a reminder | The job sends a reminder | Records nothing for that loan, logs `reminder.failed` at `warn` with `loanId` and the refusal's `error`, and carries on with the other loans | service |
+| B3 | The Notifications API refuses a reminder | The job sends a reminder | Records nothing for that loan, logs `reminder.failed` at `warn` with `loanId` and the refusal's `error`, doesn't ask again for that loan in this run, and carries on with the other loans | service |
 | B6 | Several loans are overdue | The reminders job runs | Handles them oldest `dueOn` first | service |
 | B4 | The job has handled every overdue loan | The job finishes | Logs `reminders.finished` at `info` with `sent` and `failed` counts | service |
 
@@ -28,7 +28,7 @@ Reminds members about overdue loans, once a day, through the organisation's Noti
 
 **Why**
 
-- **B3:** A failed reminder stays unrecorded, so the next day's run tries it again. We don't retry within a run.
+- **B3:** A failed reminder stays unrecorded, so the next day's run tries it again.
 
 ## Limitations
 

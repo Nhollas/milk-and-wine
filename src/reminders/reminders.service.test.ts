@@ -168,7 +168,7 @@ test("B2: still reminds a loan when only another loan was reminded today", async
   expect(fakeNotifications.sent).toMatchObject([{ loanId: loan1 }, { loanId: loan2 }]);
 });
 
-test("B3: records nothing for a refused reminder and carries on with the other loans", async ({
+test("B3: records nothing for a refused reminder, doesn't ask again, and carries on with the other loans", async ({
   app,
   sendOverdueReminders,
   clock,
@@ -195,6 +195,7 @@ test("B3: records nothing for a refused reminder and carries on with the other l
 
   await sendOverdueReminders();
 
+  expect(fakeNotifications.asked).toMatchObject([{ loanId: loan1 }, { loanId: loan2 }]);
   expect(fakeNotifications.sent).toMatchObject([{ loanId: loan2 }]);
   expect(db.prepare("SELECT loan_id, sent_on FROM reminders").all()).toEqual([
     { loan_id: loan2, sent_on: "2026-03-17" },
@@ -232,11 +233,14 @@ test("B4: logs how many reminders were sent and how many failed", async ({
 
   await sendOverdueReminders();
 
-  expect(logs.at(-1)).toEqual({
-    level: "info",
-    event: "reminders.finished",
-    fields: { sent: 2, failed: 1 },
-  });
+  expect(logs).toEqual([
+    {
+      level: "warn",
+      event: "reminder.failed",
+      fields: { loanId: loan3, error: "Notifications API answered 503" },
+    },
+    { level: "info", event: "reminders.finished", fields: { sent: 2, failed: 1 } },
+  ]);
 });
 
 test("B4: logs no reminders sent or failed when nothing is overdue", async ({

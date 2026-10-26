@@ -5,8 +5,12 @@
   "weaken": [
     {
       "file": "src/reminders/reminders.service.test.ts",
-      "find": ["    fields: { sent: 2, failed: 1 },"],
-      "replace": ["    fields: expect.objectContaining({ sent: 2 }),"]
+      "find": [
+        "    { level: \"info\", event: \"reminders.finished\", fields: { sent: 2, failed: 1 } },"
+      ],
+      "replace": [
+        "    { level: \"info\", event: \"reminders.finished\", fields: expect.objectContaining({ sent: 2 }) },"
+      ]
     }
   ],
   "bug": {

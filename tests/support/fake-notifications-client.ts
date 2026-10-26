@@ -4,11 +4,13 @@ import type {
 } from "../../src/reminders/notifications-client.ts";
 
 export function fakeNotificationsClient() {
+  const asked: OverdueReminder[] = [];
   const sent: OverdueReminder[] = [];
   const refusals = new Map<string, string>();
 
   const notificationsClient: NotificationsClient = {
     async sendOverdueReminder(reminder) {
+      asked.push(reminder);
       const reason = refusals.get(reminder.loanId);
       if (reason !== undefined) return { kind: "refused", reason };
       sent.push(reminder);
@@ -18,6 +20,7 @@ export function fakeNotificationsClient() {
 
   return {
     ...notificationsClient,
+    asked,
     sent,
     refuseFor(loanId: string, reason: string) {
       refusals.set(loanId, reason);

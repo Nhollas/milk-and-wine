@@ -24,6 +24,15 @@
         "  clock.setToday(\"2026-03-02\");",
         "  const firstLendResponse = await app.request("
       ]
+    },
+    {
+      "file": "src/reminders/reminders.service.test.ts",
+      "find": [
+        "  expect(fakeNotifications.asked).toMatchObject([{ loanId: loan1 }, { loanId: loan2 }]);"
+      ],
+      "replace": [
+        "  expect(fakeNotifications.asked).toMatchObject([{ loanId: loan2 }, { loanId: loan1 }]);"
+      ]
     }
   ],
   "bug": {
