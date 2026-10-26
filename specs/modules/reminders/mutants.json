@@ -58,12 +58,6 @@
         "find": ["    store.recordSent(reminder.loanId, today);"],
         "replace": ["    store.recordSent(reminder.loanId, clock().toLocaleDateString(\"sv-SE\"));"]
       }
-    ],
-    "not mutated": [
-      {
-        "what": "then (asks before it records)",
-        "why": "Recording before asking only shows when the API refuses, which is B3's Then (records nothing for that loan); B3's mutant that records on refusal already covers it."
-      }
     ]
   },
   "B2": {
@@ -99,8 +93,7 @@
         ],
         "replace": ["             AND NOT EXISTS (SELECT 1 FROM reminders WHERE sent_on = ?)"]
       }
-    ],
-    "not mutated": []
+    ]
   },
   "B3": {
     "then": "Records nothing for that loan, logs `reminder.failed` at `warn` with `loanId` and the refusal's `error`, and carries on with the other loans",
@@ -157,8 +150,7 @@
         "find": ["      continue;"],
         "replace": ["      break;"]
       }
-    ],
-    "not mutated": []
+    ]
   },
   "B4": {
     "then": "Logs `reminders.finished` at `info` with `sent` and `failed` counts",
@@ -196,8 +188,7 @@
           "  for (const reminder of store.remindersDue(today)) {"
         ]
       }
-    ],
-    "not mutated": []
+    ]
   },
   "B5": {
     "then": "Sends `POST {NOTIFY_URL}/notifications` with JSON `{ \"memberId\", \"template\": \"loan-overdue\", \"data\": { \"loanId\", \"dueOn\" } }`; any `2xx` counts as accepted, and any other answer or a failed connection as refused, with a reason naming the status or saying the API was unreachable",
@@ -316,7 +307,6 @@
         "find": ["      if (!response.ok)"],
         "replace": ["      if (response.status >= 400 && response.status < 500)"]
       }
-    ],
-    "not mutated": []
+    ]
   }
 }

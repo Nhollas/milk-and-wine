@@ -30,7 +30,7 @@ The words for the library this service runs, and for the spec-driven process tha
 
 **Behaviour spec**: A subject's spec: the rows it promises now. It lives with the code and is refined over time. _Avoid_: Requirements doc
 
-**Change spec**: A short-lived spec that wraps the rows one piece of work adds, changes or removes. It is deleted when its last row is delivered. _Avoid_: Delivery spec, ticket
+**Change spec**: A short-lived spec that wraps the rows one piece of work adds, changes or removes. It is deleted when its last row is delivered. Described, not practised, in this repository. _Avoid_: Delivery spec, ticket
 
 **Row**: One promise in a behaviour spec, with an ID, Given, When, Then and Verified. _Avoid_: Acceptance criterion, AC, requirement, scenario
 
@@ -51,3 +51,13 @@ The words for the library this service runs, and for the spec-driven process tha
 **Delivered**: A row whose proof exists: an active test at its level, or a declared dependency. _Avoid_: Done, implemented
 
 **Sign-off**: A manual row. A person checks it with its runbook; tooling never marks it delivered.
+
+## Mutants
+
+**Mutant**: A small, deliberate bug in `src/`, kept in a subject's `mutants.json`, that should break one promise of a row's Then. _Avoid_: Seeded bug, fault
+
+**Breaks**: The plain sentence in a mutant's `breaks` saying which promise of its row the bug is meant to break, such as "the reminder isn't recorded".
+
+**Killed**: A mutant whose row's tests fail with it planted. _Avoid_: Caught
+
+**Survived**: A mutant whose row's tests pass with it planted. _Avoid_: Missed

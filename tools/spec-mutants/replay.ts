@@ -69,9 +69,6 @@ function replay(args: string[], root: string): number {
       if (outcome !== "caught") failures++;
       process.stdout.write(`${row.id}  ${outcome.padEnd(7)}  ${mutant.breaks}\n`);
     }
-    for (const { what, why } of rowMutants["not mutated"] ?? []) {
-      process.stdout.write(`${row.id}  not mutated  ${what}: ${why}\n`);
-    }
   }
 
   process.stdout.write(

@@ -2,7 +2,7 @@
 
 A deliberately small service, built to show [spec-driven development](SPEC-DRIVEN-DEVELOPMENT.md) end to end. Members borrow copies, get reminded when they're late, and bring them back.
 
-The point is the process, not the app. Every kind of subject has a spec, every row is proven by a named test or a declared check, and one change is half-delivered so you can see what proposed rows look like. [INTENT.md](INTENT.md) explains why the repository exists and what it is testing.
+The point is the process, not the app. Every kind of subject has a spec, every row is proven by a named test or a declared check, and some rows are proposed so you can see what specced-but-not-built looks like. [INTENT.md](INTENT.md) explains why the repository exists and what it is testing.
 
 ## Try it
 
@@ -24,17 +24,16 @@ pnpm check
 | [GLOSSARY.md](GLOSSARY.md) | The terms specs, code and conversation share |
 | [CODING-STANDARDS.md](CODING-STANDARDS.md) | How code and tests are shaped and named |
 | [AGENTS.md](AGENTS.md) | What every agent session starts with |
-| [specs/TEMPLATE.md](specs/TEMPLATE.md), [changes/TEMPLATE.md](changes/TEMPLATE.md) | Where every spec and change starts |
+| [specs/TEMPLATE.md](specs/TEMPLATE.md) | Where every spec starts |
 | [specs/journeys/borrow-a-book](specs/journeys/borrow-a-book/spec.md) | A journey across modules, proven by system tests |
 | [specs/modules/loans](specs/modules/loans/spec.md) | A module with service rows, a dependency row, out-of-order IDs and proposed rows |
 | [specs/modules/catalogue](specs/modules/catalogue/spec.md) | An external API client with integration rows |
 | [specs/modules/reminders](specs/modules/reminders/spec.md) | A scheduled job with service and integration rows |
 | [specs/tools/spec-mutants](specs/tools/spec-mutants/spec.md) | The spec mutants tool's own rules, proven the same way |
-| [changes/renew-a-loan](changes/renew-a-loan/spec.md) | A change after its first MR: rows landed, code not yet |
 | `src/<module>/`, `tools/<tool>/` | Code, with its subject's tests beside it |
 | `tests/system/` | Tests for journeys, which have no code of their own |
 | [docs/adr](docs/adr) | Decisions with lasting trade-offs |
-| [.claude/agents](.claude/agents) | The `spec-mutator` and `intent-judge` agents |
+| [.claude/agents](.claude/agents) | The `mutant-writer` and `intent-judge` agents |
 | [tools/spec-mutants](tools/spec-mutants), [tools/intent-evals](tools/intent-evals) | Spec mutants, and evals for the intent judge |
 
 ## Running the service

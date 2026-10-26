@@ -52,7 +52,7 @@ The one `"not mutated"` entry in [mutants.json](../../../specs/modules/reminders
 ## What it shows
 
 1. **It finds dropped parts.** 12 of 12, on one spec with six patches. That's a small sample.
-2. **It finds gaps mutation misses.** The judge and the mutator caught different things, which is the reason both are required in the [workflow](../agent-workflow.md).
+2. **It finds gaps mutation misses.** The judge and the mutator caught different things, so neither replaces the other.
 3. **One run isn't enough for real gaps.** The same gap showed in 3 to 12 of 14 judgements. Planted gaps were stable, but subtler ones weren't. The next section works on that.
 4. **"Weak" needs a policy.** Whether coverage by another row counts was a rule the judge had to be told. It now follows the requirement-killed definition.
 

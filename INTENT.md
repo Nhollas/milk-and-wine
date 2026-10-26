@@ -19,3 +19,10 @@ This repository is where I work that out from first principles, away from one pr
 Nothing here is settled. The specs, the tooling and the process are all open to challenge, including the parts that already work. A question about them is a question, not a decision.
 
 What I want to come away with is the understanding, written down: why each part of the process exists, and what it was weighed against. The app and its tooling are how I test that understanding. They aren't the point of it.
+
+## What I'm testing now
+
+Two experiments, both for confidence at review. Breaking work down, CI and deployment are out of scope until these answer.
+
+- **Intent judge: is the test about the right thing?** It checks that each test checks what its row says: all of it, nothing it doesn't, nothing contrary. It outputs a list of misalignments; an empty list means aligned. Worth keeping if it finds every planted gap in the held-out eval cases, and at least 4 of every 5 misalignments it reports on unweakened tests are real. Dropped if a real misalignment shows up in only some of its runs, so one run can't be trusted.
+- **Spec mutants: is the test strong enough?** When the code breaks a row's promise, does a test fail. Worth keeping if the survivors on tests the judge passed point at weaknesses I agree are real, and a refactor of `src/` doesn't leave most of `mutants.json` stale. Dropped if survivors are mostly noise, or keeping the mutants current costs more than reading the tests would.

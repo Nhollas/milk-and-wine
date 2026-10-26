@@ -1,8 +1,8 @@
 {
   "$schema": "./node_modules/knip/schema.json",
   "entry": [
-    ".claude/agents/spec-mutator/guard.ts",
-    ".claude/agents/spec-mutator/check-before-stop.ts",
+    ".claude/agents/mutant-writer/guard.ts",
+    ".claude/agents/mutant-writer/check-before-stop.ts",
     ".claude/agents/intent-judge/guard.ts"
   ],
   "project": ["src/**/*.ts", "tests/**/*.ts", "tools/**/*.ts", ".claude/**/*.ts"]

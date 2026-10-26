@@ -18,16 +18,16 @@ export function blockReasonOf(input: string, root: string): string | undefined {
 
   if (event.tool_name === "Read" || event.tool_name === "Glob") {
     if (path === undefined || !READABLE.test(path)) {
-      return "The spec mutator reads only src/ and specs/. Pass a path under one of them.";
+      return "The mutant writer reads only src/ and specs/. Pass a path under one of them.";
     }
-    if (TEST_FILE.test(path)) return "The spec mutator never reads tests.";
+    if (TEST_FILE.test(path)) return "The mutant writer never reads tests.";
     return undefined;
   }
   if (event.tool_name === "Write" || event.tool_name === "Edit") {
     if (path !== undefined && MUTANTS_FILE.test(path)) return undefined;
-    return "The spec mutator writes only specs/**/mutants.json.";
+    return "The mutant writer writes only specs/**/mutants.json.";
   }
-  return `The spec mutator can't use ${event.tool_name ?? "this tool"}.`;
+  return `The mutant writer can't use ${event.tool_name ?? "this tool"}.`;
 }
 
 function repoPathOf(toolPath: string, root: string): string {

@@ -2,7 +2,7 @@
 
 How specs, changes and tests fit together in this repository. Specs exist so people and agents agree on behaviour before it's built, and keep agreeing after. If a person can't skim one, it has failed at its main job.
 
-Start a spec from the [template](specs/TEMPLATE.md) and a change from the [change template](changes/TEMPLATE.md).
+Start a spec from the [template](specs/TEMPLATE.md).
 
 ## 1. Milk and wine
 
@@ -23,7 +23,7 @@ Start a spec from the [template](specs/TEMPLATE.md) and a change from the [chang
      learnings move out first                   ages well only if pruned
 ```
 
-A change spec never owns a requirement. It points at rows, carries the Jira key, and goes away. Behaviour specs keep only what's needed now: existing code is evidence, not a reason to keep a row.
+A change spec never owns a requirement. It points at rows, carries the Jira key, and goes away. This repository keeps the idea but doesn't practise it: its changes are small and come straight from a behaviour spec, and breaking work down is out of scope (see [INTENT.md](INTENT.md)), so there is no change template or live example. Behaviour specs keep only what's needed now: existing code is evidence, not a reason to keep a row.
 
 ## 2. Anatomy of a row
 
@@ -45,7 +45,7 @@ A change spec never owns a requirement. It points at rows, carries the Jira key,
     └ stable forever, never reused
 ```
 
-One row, one decision. Jira links, test links and gap reports all assume it.
+One row, one decision. Test links and gap reports assume it.
 
 ```
   B1  "validates, checks the catalogue and lends"     ✗ three decisions in one row
@@ -79,9 +79,9 @@ A row is a promise someone checks. The subject decides where you observe it and 
                     │               │               │
                     MR 1            MR 2            MR 3
                     adds the rows   delivers        delivers
-                    as proposed     loans B8 B9     journey B4,
-                    ▲                               deletes the
-                    └ this repo                     change
+                    as proposed     loans B8 B9     journey B4
+                    ▲
+                    └ this repo
 
   loans B8          ░░░░░░░░░░░░░░░░▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
   loans B9          ░░░░░░░░░░░░░░░░▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
@@ -91,7 +91,7 @@ A row is a promise someone checks. The subject decides where you observe it and 
   ▓ delivered: an active test at the row's Verified level names it
 ```
 
-Specs land ahead of code, so the team reviews behaviour early and several MRs can deliver one change.
+Specs land ahead of code, so behaviour is agreed before it is built.
 
 ## 5. Names the tooling reads
 
@@ -143,24 +143,14 @@ A row describes what's observable at its subject's boundary, so only a test at t
   (3) code that no row needs   →  excess: prune it
 ```
 
-Finding them is a review for now. Spec mutants and the intent judge check something different: that the tests a row does have are faithful to it.
+Finding them is a review for now. The intent judge checks that a row's tests are about what the row says; spec mutants check they are strong enough to fail when the code breaks it. Run the judge first, fix any misalignment, then run the mutants.
 
-## 8. Following the thread
-
-```
-  forward    LIB-42 ──▶ changes/renew-a-loan ──▶ loans B8+ B9+ ──▶ "B8: …" ──▶ code
-  backward   row ──▶ git log -L ──▶ commit "LIB-42: …" ──▶ LIB-42
-```
-
-Jira keys go on changes and commits, never on rows. A row outlives the tickets that shaped it.
-
-## 9. What we threw out
+## 8. What we threw out
 
 ```
   ✗  specs as source of truth, regenerate the code    specs leave things out on purpose
   ✗  long specs written for agents                    unreadable for people, so no alignment
   ✗  a Gherkin runtime and step definitions           keep the grammar, skip the extra codebase
   ✗  a hand-kept status per row                       it drifts; compute it from tests
-  ✗  Jira keys on rows                                rows outlive tickets
   ✗  a test count per row                             a declared proof per row
 ```

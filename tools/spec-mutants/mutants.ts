@@ -17,7 +17,6 @@ const mutantsFile = z.record(
     // oxlint-disable-next-line unicorn/no-thenable -- the key names the spec's Then column
     then: z.string(),
     mutants: z.array(mutant),
-    "not mutated": z.array(z.object({ what: z.string(), why: z.string() })).optional(),
   }),
 );
 
