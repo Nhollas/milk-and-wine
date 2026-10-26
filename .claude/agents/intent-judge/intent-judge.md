@@ -18,24 +18,34 @@ Read `specs/**/<subject>/spec.md`. For each row verified by a test (service, int
 
 You can't read the code under test, and you don't read `mutants.json`. Work from the rows and the tests only.
 
-Read each row's Given and Then closely, every case, unit, boundary and qualifier in it, and compare them with what the row's tests set up and assert. Report a misalignment when:
+Split each judged row's Given and Then into its parts: every case, unit, boundary and qualifier, quoted in the row's own words. "Applies the discount to every line, rounded down to the penny" has at least three parts: the discount, every line, and rounded down to the penny. For each part, find the setup and assertion in the row's tests that check it, and say whether they are aligned with it. A part isn't aligned when:
 
-- the row promises something and no test checks it, or the test checks something else in its place;
-- a test checks something the row doesn't say;
-- a test contradicts the row.
+- no test checks it, or the test checks something else in its place;
+- the test's setup can't show it, such as an order with a single line for "every line";
+- the test contradicts it.
 
-Judge a row by its own tests. Another row's test covers a promise only if that row promises the same thing.
+Then list anything a row's tests check that the row doesn't say.
 
-Reply with your misalignments as JSON and nothing else. An empty list means every judged row is aligned.
+Judge a row by its own tests. Another row's test covers a part only if that row promises the same thing.
+
+Reply as JSON and nothing else.
 
 ```json
 {
-  "misalignments": [
+  "parts": [
     {
-      "row": "B3",
-      "says": "the row's words concerned",
-      "checked instead": "what the test checks in its place, or that no test checks it",
-      "where": "path:line, or null when there is no test"
+      "row": "B4",
+      "part": "every line",
+      "checked by": "path:line, or null when no test checks it",
+      "aligned": false,
+      "why": "what the test checks, and why it is or isn't the part"
+    }
+  ],
+  "extras": [
+    {
+      "row": "B4",
+      "checks": "what the test checks that the row doesn't say",
+      "where": "path:line"
     }
   ]
 }

@@ -1,10 +1,10 @@
-import { copyFileSync } from "node:fs";
+import { copyFileSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { z } from "zod";
 import { blockReasonOf } from "../../.claude/agents/intent-judge/guard.ts";
 import { runProcess } from "./subprocess.ts";
 
-const JUDGE_FILE = ".claude/agents/intent-judge/intent-judge.md";
+export const JUDGE_FILE = ".claude/agents/intent-judge/intent-judge.md";
 
 // `--agent` doesn't run the hooks in the agent's own frontmatter, so the guard is passed here.
 const GUARD_SETTINGS = JSON.stringify({
@@ -23,15 +23,22 @@ const GUARD_SETTINGS = JSON.stringify({
   },
 });
 
-const misalignment = z.object({
+const part = z.object({
   row: z.string(),
-  says: z.string(),
-  "checked instead": z.string(),
-  where: z.string().nullable(),
+  part: z.string(),
+  "checked by": z.string().nullable(),
+  aligned: z.boolean(),
+  why: z.string(),
 });
 
-// The judge must reply in this shape, so its findings never have to be dug out of free text.
-const reply = z.object({ misalignments: z.array(misalignment) });
+const extra = z.object({
+  row: z.string(),
+  checks: z.string(),
+  where: z.string(),
+});
+
+// The judge accounts for every part of a row, so a part it skipped can't pass for one it approved.
+const reply = z.object({ parts: z.array(part), extras: z.array(extra) });
 
 const toolUse = z.object({
   type: z.literal("tool_use"),
@@ -60,16 +67,25 @@ const finalResult = z.object({
   duration_ms: z.number().optional(),
 });
 
-export type Misalignment = z.infer<typeof misalignment>;
+type Checklist = z.infer<typeof reply>;
+
+export type Misalignment = {
+  row: string;
+  says: string;
+  "checked instead": string;
+  where: string | null;
+};
 
 export type Judgement = {
   /** Undefined when the judgement can't be scored. An empty list means every judged row is aligned. */
   misalignments: Misalignment[] | undefined;
+  checklist: Checklist | undefined;
   /** Why the judgement can't be scored at all. */
   failure: string | undefined;
   costUsd: number;
   seconds: number;
-  reply: string;
+  /** Every event claude streamed, one JSON object a line, to see what the judge read. */
+  transcript: string;
 };
 
 export type JudgeOptions = {
@@ -78,12 +94,22 @@ export type JudgeOptions = {
   rows: string[];
   /** A different definition of the judge to try, in place of the one in the repository. */
   definition: string | undefined;
+  /** A model to run the judge on, in place of the one its definition names. */
+  model: string | undefined;
 };
+
+/** The model a definition of the judge names. */
+export function modelOf(definition: string): string {
+  return /^model: (.+)$/mu.exec(readFileSync(definition, "utf8"))?.[1]?.trim() ?? "default";
+}
 
 /** Runs the intent judge in `directory`, a copy of the repository. */
 export async function judge(directory: string, options: JudgeOptions): Promise<Judgement> {
-  if (options.definition !== undefined) {
-    copyFileSync(options.definition, join(directory, JUDGE_FILE));
+  const judgeFile = join(directory, JUDGE_FILE);
+  if (options.definition !== undefined) copyFileSync(options.definition, judgeFile);
+  if (options.model !== undefined) {
+    const definition = readFileSync(judgeFile, "utf8");
+    writeFileSync(judgeFile, definition.replace(/^model: .+$/mu, `model: ${options.model}`));
   }
   const prompt = `Judge the tests of the ${options.subject} spec. Judge only ${options.rows.join(", ")}.`;
   const started = performance.now();
@@ -104,23 +130,56 @@ export async function judge(directory: string, options: JudgeOptions): Promise<J
   const final = events
     .map((event) => finalResult.safeParse(event))
     .find((parsed) => parsed.success);
-  if (!final) return failed("claude ended without a result", seconds);
-  const { result = "", is_error, structured_output, total_cost_usd = 0 } = final.data;
-  const costUsd = total_cost_usd;
-  const base = { costUsd, seconds, reply: result };
-  if (is_error === true) return { ...base, misalignments: undefined, failure: result };
+  const base = { costUsd: final?.data.total_cost_usd ?? 0, seconds, transcript: output };
+  const unscored = { misalignments: undefined, checklist: undefined };
+  if (!final) return { ...base, ...unscored, failure: "claude ended without a result" };
+  if (final.data.is_error === true) {
+    return { ...base, ...unscored, failure: final.data.result ?? "claude failed" };
+  }
 
   const breach = guardBreach(events, directory);
-  if (breach) return { ...base, misalignments: undefined, failure: breach };
+  if (breach) return { ...base, ...unscored, failure: breach };
 
-  const parsed = reply.safeParse(structured_output);
-  return parsed.success
-    ? { ...base, misalignments: parsed.data.misalignments, failure: undefined }
-    : { ...base, misalignments: undefined, failure: "the reply has no structured output" };
+  const parsed = reply.safeParse(final.data.structured_output);
+  if (!parsed.success) {
+    return { ...base, ...unscored, failure: "the reply has no structured output" };
+  }
+  return {
+    ...base,
+    misalignments: misalignmentsIn(parsed.data),
+    checklist: parsed.data,
+    failure: undefined,
+  };
+}
+
+function misalignmentsIn({ parts, extras }: Checklist): Misalignment[] {
+  return [
+    ...parts
+      .filter((each) => !each.aligned)
+      .map((each) => ({
+        row: each.row,
+        says: each.part,
+        "checked instead": each.why,
+        where: each["checked by"],
+      })),
+    ...extras.map((each) => ({
+      row: each.row,
+      says: "nothing about this",
+      "checked instead": each.checks,
+      where: each.where,
+    })),
+  ];
 }
 
 function failed(failure: string, seconds: number): Judgement {
-  return { misalignments: undefined, failure, costUsd: 0, seconds, reply: "" };
+  return {
+    misalignments: undefined,
+    checklist: undefined,
+    failure,
+    costUsd: 0,
+    seconds,
+    transcript: "",
+  };
 }
 
 async function runClaude(directory: string, prompt: string): Promise<string | { error: string }> {
