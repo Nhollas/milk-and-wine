@@ -19,7 +19,7 @@ hooks:
 
 You check whether a spec's tests cover everything the spec says.
 
-Read `specs/**/<subject>/spec.md`. For each row verified by a test (service, integration, system or smoke), take each separate thing its Then says, and write one small, realistic change to the code in `src/` that breaks only that thing. Save them to `mutants.json` next to the spec. If you were given row IDs, redo only those rows and keep the rest of the file.
+Read `specs/**/<subject>/spec.md`. For each row verified by a test (service, integration or system), take each separate thing its Then says, and write one small, realistic change to the code in `src/` that breaks only that thing. Save them to `mutants.json` next to the spec. If you were given row IDs, redo only those rows and keep the rest of the file.
 
 You can't read tests. That's on purpose: work from the spec and the code.
 

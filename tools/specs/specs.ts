@@ -1,11 +1,11 @@
 import { posix } from "node:path";
 import type { Repository } from "./repository.ts";
 
-export const TEST_LEVELS = ["service", "integration", "system", "smoke"] as const;
+const TEST_LEVELS = ["service", "integration", "system"] as const;
 
 export type TestLevel = (typeof TEST_LEVELS)[number];
 
-export type Verified =
+type Verified =
   | { kind: "test"; level: TestLevel }
   | { kind: "dependency"; link: string }
   | { kind: "manual"; link: string };
@@ -14,13 +14,13 @@ export type Row = { id: string; thenText: string; verified: Verified };
 
 export type Subject = { name: string; path: string; rows: Row[] };
 
-export type Problem = { code: string; location: string; message: string };
+type Problem = { code: string; location: string; message: string };
 
 const SPEC_PATH = /^specs\/(?:.+\/)?([^/]+)\/spec\.md$/u;
 const ROW_HEADER = ["id", "given", "when", "then", "verified"];
 const MARKDOWN_LINK = /\[[^\]]*\]\(([^)]+)\)/u;
 
-export function subjectOfSpecPath(path: string): string | undefined {
+function subjectOfSpecPath(path: string): string | undefined {
   return SPEC_PATH.exec(path)?.[1];
 }
 
@@ -62,10 +62,6 @@ export function readSubjects(repository: Repository): { subjects: Subject[]; pro
   }
 
   return { subjects, problems };
-}
-
-export function verifiedLabel(verified: Verified): string {
-  return verified.kind === "test" ? verified.level : verified.kind;
 }
 
 function* rowLines(markdown: string): Generator<{ cells: string[]; line: number }> {

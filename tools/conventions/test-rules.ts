@@ -1,6 +1,6 @@
 import { existsSync } from "node:fs";
 import { join, posix } from "node:path";
-import { isTestLevel } from "../spec-status/specs.ts";
+import { isTestLevel } from "../specs/specs.ts";
 import { exportedNamesOf, importedNameOf, repoPathOf, type Rule } from "./rule-context.ts";
 
 export const testPlacement: Rule = {
@@ -12,7 +12,7 @@ export const testPlacement: Rule = {
         if (expectedFolder !== undefined && posix.dirname(path) !== expectedFolder) {
           context.report({
             node,
-            message: `This test belongs in ${expectedFolder}/. A subject's tests sit beside its code; journeys and environments have none, so theirs go in tests/<level>/.`,
+            message: `This test belongs in ${expectedFolder}/. A subject's tests sit beside its code; journeys have none, so theirs go in tests/<level>/.`,
           });
         }
       },
@@ -121,14 +121,14 @@ export const testImports: Rule = {
           context.report({
             node,
             message:
-              'Import test, by that name, from vitest or a .fixtures.ts module. spec:check finds tests by the text test("…").',
+              'Import test, by that name, from vitest or a .fixtures.ts module. Spec tooling finds tests by the text test("…").',
           });
         }
         if (!importsTest && node.local.name === "test") {
           context.report({
             node,
             message:
-              'Only test itself may be called test. spec:check finds tests by the text test("…").',
+              'Only test itself may be called test. Spec tooling finds tests by the text test("…").',
           });
         }
       },

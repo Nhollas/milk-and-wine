@@ -11,7 +11,7 @@ import {
 import { tmpdir } from "node:os";
 import { basename, join } from "node:path";
 import { z } from "zod";
-import type { TestLevel } from "../spec-status/specs.ts";
+import type { TestLevel } from "../specs/specs.ts";
 import type { Edit } from "./cases.ts";
 import { runProcess } from "./subprocess.ts";
 

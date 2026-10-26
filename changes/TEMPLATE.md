@@ -8,11 +8,10 @@ Mark rows `+` added, `~` changed or `−` removed.
 
 # <Change name>
 
-| Change     |                                   |
-| ---------- | --------------------------------- |
-| **Jira**   | <KEY-123>                         |
-| **Rows**   | <subject> B4+ B2~ · <subject> B7− |
-| **Status** | `pnpm spec:status <subject>`      |
+| Change   |                                   |
+| -------- | --------------------------------- |
+| **Jira** | <KEY-123>                         |
+| **Rows** | <subject> B4+ B2~ · <subject> B7− |
 
 ## Why
 

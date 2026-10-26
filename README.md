@@ -11,18 +11,10 @@ pnpm install
 ```
 
 ```bash
-pnpm spec:status
-```
-
-```bash
-pnpm spec:status loans
-```
-
-```bash
 pnpm check
 ```
 
-`pnpm check` runs oxlint (lint and typecheck), the format check, knip, the tests and `spec:check`. In Claude Code, open any `specs/**/spec.md` and the read hook adds its status to the agent's context.
+`pnpm check` runs oxlint (lint and typecheck), the format check, knip and the tests.
 
 ## Where things are
 
@@ -37,14 +29,13 @@ pnpm check
 | [specs/modules/loans](specs/modules/loans/spec.md) | A module with service rows, a dependency row, out-of-order IDs and proposed rows |
 | [specs/modules/catalogue](specs/modules/catalogue/spec.md) | An external API client with integration rows |
 | [specs/modules/reminders](specs/modules/reminders/spec.md) | A scheduled job with service and integration rows |
-| [specs/environments/production](specs/environments/production/spec.md) | Deployment as rows: smoke tests and a manual runbook check |
-| [specs/tools/spec-status](specs/tools/spec-status/spec.md) | The tooling's own rules, proven the same way |
+| [specs/tools/spec-mutants](specs/tools/spec-mutants/spec.md) | The spec mutants tool's own rules, proven the same way |
 | [changes/renew-a-loan](changes/renew-a-loan/spec.md) | A change after its first MR: rows landed, code not yet |
 | `src/<module>/`, `tools/<tool>/` | Code, with its subject's tests beside it |
-| `tests/system/`, `tests/smoke/` | Tests for journeys and environments, which have no code of their own |
+| `tests/system/` | Tests for journeys, which have no code of their own |
 | [docs/adr](docs/adr) | Decisions with lasting trade-offs |
-| [.claude/settings.json](.claude/settings.json) | The read hook for agents |
-| [.gitlab-ci.yml](.gitlab-ci.yml) | `spec:check` in CI, with `--base` in merge requests |
+| [.claude/agents](.claude/agents) | The `spec-mutator` and `intent-judge` agents |
+| [tools/spec-mutants](tools/spec-mutants), [tools/intent-evals](tools/intent-evals) | Spec mutants, and evals for the intent judge |
 
 ## Running the service
 

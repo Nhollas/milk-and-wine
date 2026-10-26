@@ -4,7 +4,6 @@
 | --- | --- |
 | **Jira** | LIB-42 |
 | **Rows** | [loans](../../specs/modules/loans/spec.md#renewing-a-loan) B8+ B9+ · [borrow a book](../../specs/journeys/borrow-a-book/spec.md#renewing) B4+ |
-| **Status** | `pnpm spec:status loans` and `pnpm spec:status borrow-a-book` |
 
 ## Why
 

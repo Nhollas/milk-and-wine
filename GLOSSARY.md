@@ -22,7 +22,7 @@ The words for the library this service runs, and for the spec-driven process tha
 
 ## Specs
 
-**Subject**: Anything whose behaviour we promise and can observe at a boundary: a journey, a module, an environment or a tool. Each has one behaviour spec.
+**Subject**: Anything whose behaviour we promise and can observe at a boundary: a journey, a module or a tool. Each has one behaviour spec.
 
 **Journey**: A subject that spans modules, told from the member's side. _Avoid_: Flow, user story
 
@@ -34,7 +34,7 @@ The words for the library this service runs, and for the spec-driven process tha
 
 **Row**: One promise in a behaviour spec, with an ID, Given, When, Then and Verified. _Avoid_: Acceptance criterion, AC, requirement, scenario
 
-**Level**: The kind of test a row's Verified can name: service, integration, system or smoke. A test file's name carries its level.
+**Level**: The kind of test a row's Verified can name: service, integration or system. A test file's name carries its level.
 
 **Integration test**: A narrow integration test: our code that talks to a system we don't own, tested against a stand-in for that system. It never reaches the real system or checks that its owners agree. _Avoid_: Contract test, boundary test
 

@@ -6,7 +6,7 @@ Row IDs are plain (`B5`) so they stay short in specs, tests and conversation. Ev
 
 ## Decision
 
-A test file is named `<subject>[.<part>].<level>.test.ts`. The subject is the spec's folder name, and the level is `service`, `integration`, `system` or `smoke`. A test title starts with the row ID. Files without a level are unit tests and name no rows.
+A test file is named `<subject>[.<part>].<level>.test.ts`. The subject is the spec's folder name, and the level is `service`, `integration` or `system`. A test title starts with the row ID. Files without a level are unit tests and name no rows.
 
 ## Consequences
 

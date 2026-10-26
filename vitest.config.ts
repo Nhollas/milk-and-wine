@@ -2,7 +2,7 @@ import { configDefaults, defineConfig, type TestUserConfig } from "vitest/config
 
 const testFolders = ["src", "tests", "tools"];
 
-const levels = ["service", "integration", "system", "smoke"] as const;
+const levels = ["service", "integration", "system"] as const;
 
 type Level = (typeof levels)[number];
 
@@ -50,14 +50,6 @@ export default defineConfig({
           name: { label: "system", color: "magenta" },
           include: testsAt("system"),
           ...interceptedHttp,
-        },
-      },
-      {
-        extends: true,
-        test: {
-          name: { label: "smoke", color: "yellow" },
-          include: testsAt("smoke"),
-          testTimeout: 15_000,
         },
       },
     ],

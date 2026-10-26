@@ -59,7 +59,7 @@ ruleTester.run("test-placement", plugin.rules["test-placement"], {
   ],
   invalid: [
     { code: "", filename: at("tests/service/loans.service.test.ts"), errors: 1 },
-    { code: "", filename: at("tests/smoke/borrow-a-book.system.test.ts"), errors: 1 },
+    { code: "", filename: at("tests/service/borrow-a-book.system.test.ts"), errors: 1 },
     { code: "", filename: at("src/loans/borrow-a-book.system.test.ts"), errors: 1 },
   ],
 });
@@ -142,7 +142,7 @@ ruleTester.run("test-imports", plugin.rules["test-imports"], {
     { code: 'import { expect, test } from "vitest";', filename: at("src/clock.test.ts") },
     {
       code: 'import { test } from "./repo.fixtures.ts";',
-      filename: at("tools/spec-status/spec-status.service.test.ts"),
+      filename: at("tools/spec-mutants/spec-mutants.service.test.ts"),
     },
     {
       code: 'import { test as base } from "vitest";',

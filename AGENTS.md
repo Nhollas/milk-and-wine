@@ -4,7 +4,7 @@
 
 ## Specs
 
-- Behaviour is specified in `specs/**/spec.md`. A row may be proposed: specced, not built. Check with `pnpm spec:status <subject>` before relying on one.
+- Behaviour is specified in `specs/**/spec.md`. A row may be proposed: specced, not built. It is delivered only once an active test at its Verified level names it, so check for that test before relying on a row.
 - A test whose title starts with a row ID (`"B2: …"`) proves that row. If your change alters what such a test checks, or code and a row disagree, say so; don't quietly edit either to match.
 
 ## Before you

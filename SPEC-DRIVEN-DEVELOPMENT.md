@@ -38,7 +38,7 @@ A change spec never owns a requirement. It points at rows, carries the Jira key,
     ▲     ▲                    ▲                  ▲                      ▲
     │     │                    │                  │                      └ what proves it:
     │     │                    │                  │                        service · integration · system
-    │     │                    │                  │                        smoke · dependency · manual
+    │     │                    │                  │                        dependency · manual
     │     │                    │                  └ what an observer at the boundary sees
     │     │                    └ the one event that sets it off
     │     └ the state the world is already in
@@ -60,17 +60,17 @@ That's why [loans](specs/modules/loans/spec.md) lists B10 first: it was split ou
 ## 3. Anything with a boundary can be a subject
 
 ```
-             ┌──────────────┐        ┌──────────────┐        ┌──────────────┐
-             │   JOURNEY    │        │    MODULE    │        │ ENVIRONMENT  │
-             └──────┬───────┘        └──────┬───────┘        └──────┬───────┘
-                    ▼                       ▼                       ▼
-  folder     specs/journeys/         specs/modules/          specs/environments/
-  boundary   the member              the module's edges      the deployed system
-  proof      system test             service, integration    smoke, manual
-  example    borrow-a-book B3        loans B2                production B1
+             ┌──────────────┐        ┌──────────────┐
+             │   JOURNEY    │        │    MODULE    │
+             └──────┬───────┘        └──────┬───────┘
+                    ▼                       ▼
+  folder     specs/journeys/         specs/modules/
+  boundary   the member              the module's edges
+  proof      system test             service, integration
+  example    borrow-a-book B3        loans B2
 ```
 
-A row is a promise someone checks. The subject decides where you observe it and how it's proven. Deployment is rows on an environment, not an exception to the process.
+A row is a promise someone checks. The subject decides where you observe it and how it's proven.
 
 ## 4. Status is computed, never typed
 
@@ -91,14 +91,14 @@ A row is a promise someone checks. The subject decides where you observe it and 
   ▓ delivered: an active test at the row's Verified level names it
 ```
 
-Specs land ahead of code, so the team reviews behaviour early and several MRs can deliver one change. See [ADR 0001](docs/adr/0001-status-is-computed-from-tests.md).
+Specs land ahead of code, so the team reviews behaviour early and several MRs can deliver one change.
 
 ## 5. Names the tooling reads
 
 ```
   src/loans/loans.http.service.test.ts
             └─┬─┘ └┬─┘ └──┬──┘
-              │    │      └─ level: service · integration · system · smoke, or none
+              │    │      └─ level: service · integration · system, or none
               │    └─ part: optional, to split a subject's tests
               └─ subject: the name of a folder under specs/
 
@@ -143,21 +143,9 @@ A row describes what's observable at its subject's boundary, so only a test at t
   (3) code that no row needs   →  excess: prune it
 ```
 
-`spec:check` finds (1) and (2). Finding (3) takes judgement, so it's a review or an agent audit.
+Finding them is a review for now. Spec mutants and the intent judge check something different: that the tests a row does have are faithful to it.
 
-## 8. One tool, three readers
-
-```
-                       ┌────────────────┐
-   specs/**/spec.md ──▶│                │──▶ pnpm spec:status [subject]      people
-                       │  spec-status   │──▶ pnpm spec:check [--base <ref>]  CI
-   **/*.test.ts ──────▶│                │──▶ PostToolUse hook on Read        agents
-                       └────────────────┘
-```
-
-`spec:check` fails CI when specs and tests disagree, and never on a proposed row. Its own rules are a spec: [spec-status](specs/tools/spec-status/spec.md).
-
-## 9. Following the thread
+## 8. Following the thread
 
 ```
   forward    LIB-42 ──▶ changes/renew-a-loan ──▶ loans B8+ B9+ ──▶ "B8: …" ──▶ code
@@ -166,7 +154,7 @@ A row describes what's observable at its subject's boundary, so only a test at t
 
 Jira keys go on changes and commits, never on rows. A row outlives the tickets that shaped it.
 
-## 10. What we threw out
+## 9. What we threw out
 
 ```
   ✗  specs as source of truth, regenerate the code    specs leave things out on purpose

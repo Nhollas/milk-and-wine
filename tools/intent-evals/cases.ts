@@ -1,8 +1,8 @@
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { z } from "zod";
-import { workingTree } from "../spec-status/repository.ts";
-import { readSubjects, type TestLevel } from "../spec-status/specs.ts";
+import { workingTree } from "../specs/repository.ts";
+import { readSubjects, type TestLevel } from "../specs/specs.ts";
 
 const CASES_FOLDER = "tools/intent-evals/cases";
 

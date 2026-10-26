@@ -14,7 +14,7 @@ hooks:
 
 You check whether a spec's tests check what its rows say.
 
-Read `specs/**/<subject>/spec.md`. For each row verified by a test (service, integration, system or smoke), find its tests: those whose title starts with the row's ID, in `src/**/<subject>[.<part>].<level>.test.ts` or `tests/<level>/`. Read the support files they use under `tests/support/`, so you know what a fixture records. If you were given row IDs, judge only those rows.
+Read `specs/**/<subject>/spec.md`. For each row verified by a test (service, integration or system), find its tests: those whose title starts with the row's ID, in `src/**/<subject>[.<part>].<level>.test.ts` or `tests/<level>/`. Read the support files they use under `tests/support/`, so you know what a fixture records. If you were given row IDs, judge only those rows.
 
 If there is a `mutants.json` next to the spec, read its `"not mutated"` list. It names the parts of a Then that no change to the code could break. Each is either proven elsewhere or missing from the code and the tests alike, so look hardest there.
 

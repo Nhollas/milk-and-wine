@@ -1,8 +1,8 @@
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join, posix } from "node:path";
 import { z } from "zod";
-import { workingTree } from "../spec-status/repository.ts";
-import { readSubjects, type Row } from "../spec-status/specs.ts";
+import { workingTree } from "../specs/repository.ts";
+import { readSubjects, type Row } from "../specs/specs.ts";
 
 const mutant = z.object({
   breaks: z.string(),
