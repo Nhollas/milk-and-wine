@@ -1,7 +1,7 @@
 {
-  "name": "sdd-example",
+  "name": "milk-and-wine",
   "private": true,
-  "description": "A small library-loans service that demonstrates spec-driven development.",
+  "description": "An experimental take on spec-driven development, separating short-lived change specs (milk) from lasting behaviour specs (wine).",
   "type": "module",
   "scripts": {
     "prepare": "husky",

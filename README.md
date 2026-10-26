@@ -1,6 +1,8 @@
-# SDD example: library loans
+# Milk and wine
 
-A small library service: members borrow copies, get reminded when they're late, and bring them back.
+Specs come in two kinds. Wine gets better with age: a behaviour spec that lasts and is refined as the system grows. Milk goes off: a change spec that exists to deliver one piece of work and is thrown out once it's done. This repository is about the wine, and how to make people and agents trust it.
+
+The ideas are tried out on a small library service: members borrow copies, get reminded when they're late, and bring them back.
 
 For why this repository exists, see [INTENT.md](INTENT.md).
 
