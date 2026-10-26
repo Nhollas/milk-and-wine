@@ -258,3 +258,30 @@ test("B4: logs no reminders sent or failed when nothing is overdue", async ({
     fields: { sent: 0, failed: 0 },
   });
 });
+
+test("B6: handles overdue loans oldest dueOn first", async ({
+  app,
+  sendOverdueReminders,
+  clock,
+  fakeCatalogue,
+  fakeNotifications,
+}) => {
+  fakeCatalogue.addCopies({ "copy-1": "available", "copy-2": "available" });
+  clock.setToday("2026-03-02");
+  const firstLendResponse = await app.request(
+    "/loans",
+    postJson({ memberId: "member-1", copyId: "copy-1" }),
+  );
+  const { loanId: loan1 } = (await firstLendResponse.json()) as { loanId: string };
+  clock.setToday("2026-03-01");
+  const secondLendResponse = await app.request(
+    "/loans",
+    postJson({ memberId: "member-2", copyId: "copy-2" }),
+  );
+  const { loanId: loan2 } = (await secondLendResponse.json()) as { loanId: string };
+  clock.setToday("2026-03-17");
+
+  await sendOverdueReminders();
+
+  expect(fakeNotifications.sent).toMatchObject([{ loanId: loan2 }, { loanId: loan1 }]);
+});
