@@ -1,6 +1,5 @@
 {
   "gap": "B4's test checks only the sent count",
-  "split": "dev",
   "row": "B4",
   "part": "failed",
   "weaken": [

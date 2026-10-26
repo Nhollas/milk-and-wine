@@ -73,7 +73,6 @@ async function runJudge(args: string[], root: string): Promise<number> {
     options: {
       subject: { type: "string" },
       case: { type: "string" },
-      split: { type: "string", default: "dev" },
       runs: { type: "string", default: "6" },
       parallel: { type: "string", default: "4" },
       judge: { type: "string" },
@@ -81,17 +80,10 @@ async function runJudge(args: string[], root: string): Promise<number> {
       "no-control": { type: "boolean", default: false },
     },
   });
-  if (values.split !== "dev" && values.split !== "heldout") {
-    process.stdout.write("--split is dev or heldout\n");
-    return 1;
-  }
-  const split = values.split;
   const runs = Number(values.runs);
-  const cases = matching(readCases(root), { subject: values.subject, id: values.case }).filter(
-    (evalCase) => evalCase.split === split,
-  );
+  const cases = matching(readCases(root), { subject: values.subject, id: values.case });
   if (cases.length === 0) {
-    process.stdout.write(`no ${split} cases match\n`);
+    process.stdout.write("no cases match\n");
     return 1;
   }
   const definition = values.judge === undefined ? undefined : resolve(values.judge);
@@ -104,16 +96,14 @@ async function runJudge(args: string[], root: string): Promise<number> {
     models.flatMap((model) => jobs.map((job) => ({ job, model }))),
   ).flat();
 
-  process.stdout.write(
-    `${jobs.length} jobs x ${models.length} models x ${runs} runs on ${split}: `,
-  );
+  process.stdout.write(`${jobs.length} jobs x ${models.length} models x ${runs} runs: `);
   const attempts = await inPool(queue, Number(values.parallel), ({ job, model }) =>
     attempt(job, model, root, definition),
   );
   process.stdout.write("\n\n");
 
   const saved = save(attempts, root);
-  report(attempts, jobs, models, runs, split);
+  report(attempts, jobs, models, runs);
   process.stdout.write(`\njudgements and transcripts saved in ${saved}\n`);
   return 0;
 }
@@ -122,13 +112,7 @@ function out(line = ""): void {
   process.stdout.write(`${line}\n`);
 }
 
-function report(
-  attempts: Attempt[],
-  jobs: Job[],
-  models: Model[],
-  runs: number,
-  split: string,
-): void {
+function report(attempts: Attempt[], jobs: Job[], models: Model[], runs: number): void {
   const planted = jobs.filter((job) => job.evalCase);
   const nameWidth = Math.max(
     ...jobs.map((job) => job.name.length),
@@ -198,7 +182,7 @@ function report(
     const cost = own.reduce((sum, each) => sum + each.judgement.costUsd, 0);
     const seconds = own.map((each) => each.judgement.seconds);
     out(
-      `${model}: $${cost.toFixed(2)} over ${own.length} judgements, ${Math.max(...seconds).toFixed(0)}s at most (${split})`,
+      `${model}: $${cost.toFixed(2)} over ${own.length} judgements, ${Math.max(...seconds).toFixed(0)}s at most`,
     );
   }
 }

@@ -1,6 +1,5 @@
 {
   "gap": "B2's test no longer checks that the catalogue wasn't asked again",
-  "split": "heldout",
   "row": "B2",
   "part": "asks the catalogue nothing",
   "weaken": [

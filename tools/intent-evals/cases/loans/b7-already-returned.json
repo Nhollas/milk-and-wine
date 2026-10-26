@@ -1,6 +1,5 @@
 {
   "gap": "B7's test no longer returns a loan twice",
-  "split": "heldout",
   "row": "B7",
   "part": "already returned",
   "weaken": [

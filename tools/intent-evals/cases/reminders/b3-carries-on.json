@@ -1,6 +1,5 @@
 {
   "gap": "B3's test refuses the loan that is sent last, so stopping after a refusal changes nothing",
-  "split": "dev",
   "row": "B3",
   "part": "carries on with the other loans",
   "weaken": [

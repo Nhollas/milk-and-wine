@@ -1,6 +1,5 @@
 {
   "gap": "B5's test accepts any template",
-  "split": "dev",
   "row": "B5",
   "part": "loan-overdue",
   "weaken": [

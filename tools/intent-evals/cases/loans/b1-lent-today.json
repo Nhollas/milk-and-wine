@@ -1,6 +1,5 @@
 {
   "gap": "B1's test accepts any lent-on date",
-  "split": "heldout",
   "row": "B1",
   "part": "lentOn",
   "weaken": [

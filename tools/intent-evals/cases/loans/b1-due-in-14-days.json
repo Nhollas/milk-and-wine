@@ -1,6 +1,5 @@
 {
   "gap": "B1's test accepts any due date",
-  "split": "heldout",
   "row": "B1",
   "part": "dueOn",
   "weaken": [

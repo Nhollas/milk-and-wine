@@ -1,6 +1,5 @@
 {
   "gap": "B5 has no test for a failed connection",
-  "split": "dev",
   "row": "B5",
   "part": "failed connection",
   "weaken": [

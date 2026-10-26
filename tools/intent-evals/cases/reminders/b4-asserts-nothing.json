@@ -1,6 +1,5 @@
 {
   "gap": "B4's tests run the job and assert nothing",
-  "split": "dev",
   "row": "B4",
   "part": "reminders.finished",
   "weaken": [

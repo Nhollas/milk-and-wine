@@ -1,6 +1,5 @@
 {
   "gap": "B3's test no longer checks which loan the warning names",
-  "split": "dev",
   "row": "B3",
   "part": "loanId",
   "weaken": [

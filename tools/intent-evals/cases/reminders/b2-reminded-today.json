@@ -1,6 +1,5 @@
 {
   "gap": "B2's test runs the job once, and no test runs it twice on a day with another loan reminded",
-  "split": "dev",
   "row": "B2",
   "part": "already has a reminder recorded today",
   "weaken": [

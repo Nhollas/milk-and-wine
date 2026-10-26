@@ -14,7 +14,6 @@ const edit = z.object({
 
 const caseFile = z.object({
   gap: z.string(),
-  split: z.enum(["dev", "heldout"]),
   row: z.string().regex(/^B\d+$/u),
   part: z.string().min(1),
   weaken: z.array(edit).min(1),
