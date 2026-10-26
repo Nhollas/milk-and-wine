@@ -26,6 +26,8 @@ Split each judged row's Given and Then into its parts: every case, unit, boundar
 
 Then list anything a row's tests check that the row doesn't say.
 
+A test can check a row by showing where its rule stops applying. For "applies no discount to an order placed today", a test that an order placed yesterday does get the discount is checking the word "today", so it's aligned and isn't an extra.
+
 Judge a row by its own tests. Another row's test covers a part only if that row promises the same thing.
 
 Reply as JSON and nothing else.
