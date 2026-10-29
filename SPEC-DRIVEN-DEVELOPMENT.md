@@ -2,7 +2,7 @@
 
 How specs, changes and tests fit together in this repository. Specs exist so people and agents agree on behaviour before it's built, and keep agreeing after. If a person can't skim one, it has failed at its main job.
 
-Start a spec from the [template](specs/TEMPLATE.md).
+Write or change a spec with the `/write-spec` skill.
 
 ## 1. Milk and wine
 

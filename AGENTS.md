@@ -10,7 +10,6 @@
 
 ## Before you
 
-- write or deliver spec rows, read [SPEC-DRIVEN-DEVELOPMENT.md](SPEC-DRIVEN-DEVELOPMENT.md).
 - name anything, use the terms in [GLOSSARY.md](GLOSSARY.md).
 - write code or tests, read [CODING-STANDARDS.md](CODING-STANDARDS.md).
 - change the process, read [INTENT.md](INTENT.md).

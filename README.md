@@ -24,7 +24,7 @@ pnpm check
 | [GLOSSARY.md](GLOSSARY.md) | The terms specs, code and conversation share |
 | [CODING-STANDARDS.md](CODING-STANDARDS.md) | How code and tests are shaped and named |
 | [AGENTS.md](AGENTS.md) | What every agent session starts with |
-| [specs/TEMPLATE.md](specs/TEMPLATE.md) | Where every spec starts |
+| [.claude/skills/write-spec](.claude/skills/write-spec/SKILL.md) | How every spec is written, and its template |
 | [specs/journeys/borrow-a-book](specs/journeys/borrow-a-book/spec.md) | A journey across modules, proven by system tests |
 | [specs/modules/loans](specs/modules/loans/spec.md) | A module with service rows, a dependency row, out-of-order IDs and proposed rows |
 | [specs/modules/catalogue](specs/modules/catalogue/spec.md) | An external API client with integration rows |

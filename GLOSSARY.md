@@ -61,3 +61,21 @@ The words for the library this service runs, and for the spec-driven process tha
 **Killed**: A mutant whose row's tests fail with it planted. _Avoid_: Caught
 
 **Survived**: A mutant whose row's tests pass with it planted. _Avoid_: Missed
+
+## Intent evals
+
+**Flag**: One thing the intent judge reports: something a row says that its tests don't match, or a test line that checks something the row doesn't say. _Avoid_: Complaint, finding, misalignment
+
+**Judgement**: A person's decision on a flag: right, a false alarm or, in an example, the planted gap in other words. _Avoid_: Verdict, triage
+
+**False alarm**: A flag a person judges wrong, or, in an example, any flag on something other than the planted gap.
+
+**Example**: A small made-up subject, with spec, tests and code, kept for planting cases in. It never changes with the app. _Avoid_: Fixture
+
+**Case**: One gap planted in an example's tests, of one kind, with the difficulty its writer expects: easy, medium or hard. The kinds are:
+
+- **Unchecked**: no test checks something the row says.
+- **Wrong thing checked**: a test checks something near it instead.
+- **Setup can't show it**: the test's setup can't show whether it holds.
+- **Contradicted**: a test expects the opposite of what the row says.
+- **Unasked**: a test checks something the row doesn't say.
