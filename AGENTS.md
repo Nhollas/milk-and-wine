@@ -11,6 +11,7 @@
 ## Before you
 
 - name anything, use the terms in [GLOSSARY.md](GLOSSARY.md).
+- add a term to the glossary: don't. A tool's or a test's names aren't terms. If a spec row or a conversation needs a word the glossary lacks, propose it when you hand work back, and a person adds it.
 - write code or tests, read [CODING-STANDARDS.md](CODING-STANDARDS.md).
 - change the process, read [INTENT.md](INTENT.md).
 - hand work back, run `pnpm check`.

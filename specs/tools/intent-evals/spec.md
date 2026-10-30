@@ -8,6 +8,8 @@ Measures how well the [intent judge](../../../.claude/agents/intent-judge/intent
 | **Depends on** | The intent judge's definition and guard, run through the Claude Code CLI. `tools/specs`, to read rows. Vitest, to run a row's tests. |
 | **Excluded** | The judge's own instructions. Writing examples and cases; people and agents write them, and this tool checks and runs them. `pnpm check`, which never runs the judge. |
 
+**Terms.** An _example_ is a small made-up subject, with spec, tests and code, that never changes with the app. A _case_ is one gap planted in an example's tests, of one kind, with the difficulty its writer expects: easy, medium or hard. The kinds are _unchecked_ (no test checks something the row says), _wrong thing checked_ (a test checks something near it instead), _setup can't show it_ (the test's setup can't show whether it holds), _contradicted_ (a test expects the opposite of what the row says) and _unasked_ (a test checks something the row doesn't say). A _flag_ is one thing the judge reports. A _judgement_ is a person's decision on a flag: right, a _false alarm_, or, in an example, the planted gap in other words.
+
 ## Behaviour
 
 ### Checking cases

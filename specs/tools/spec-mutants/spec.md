@@ -8,6 +8,8 @@ Checks that a spec's tests fail when the code breaks a promise their rows make, 
 | **Depends on** | `tools/specs`, to read rows. Vitest, to run a row's tests. TypeScript, to typecheck `src/`. |
 | **Excluded** | Writing mutants. The `mutant-writer` agent writes them; this tool only checks and replays what it wrote. |
 
+**Terms.** A _mutant_ is a small, deliberate bug in `src/`, kept in a subject's `mutants.json`, that should break one promise of a row's Then. Its `breaks` is the plain sentence saying which promise, such as "the reminder isn't recorded". A mutant is _killed_ when its row's tests fail with it planted, and _survived_ when they pass.
+
 ## Behaviour
 
 ### Reading mutants

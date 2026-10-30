@@ -16,25 +16,9 @@ pnpm install
 pnpm check
 ```
 
-## Where things are
+## Where to start
 
-| Path | What it shows |
-| --- | --- |
-| [SPEC-DRIVEN-DEVELOPMENT.md](SPEC-DRIVEN-DEVELOPMENT.md) | The process, mostly as diagrams |
-| [GLOSSARY.md](GLOSSARY.md) | The terms specs, code and conversation share |
-| [CODING-STANDARDS.md](CODING-STANDARDS.md) | How code and tests are shaped and named |
-| [AGENTS.md](AGENTS.md) | What every agent session starts with |
-| [.claude/skills/write-spec](.claude/skills/write-spec/SKILL.md) | How every spec is written, and its template |
-| [specs/journeys/borrow-a-book](specs/journeys/borrow-a-book/spec.md) | A journey across modules, proven by system tests |
-| [specs/modules/loans](specs/modules/loans/spec.md) | A module with service rows, a dependency row, out-of-order IDs and proposed rows |
-| [specs/modules/catalogue](specs/modules/catalogue/spec.md) | An external API client with integration rows |
-| [specs/modules/reminders](specs/modules/reminders/spec.md) | A scheduled job with service and integration rows |
-| [specs/tools/spec-mutants](specs/tools/spec-mutants/spec.md) | The spec mutants tool's own rules, proven the same way |
-| `src/<module>/`, `tools/<tool>/` | Code, with its subject's tests beside it |
-| `tests/system/` | Tests for journeys, which have no code of their own |
-| [docs/adr](docs/adr) | Decisions with lasting trade-offs |
-| [.claude/agents](.claude/agents) | The `mutant-writer` and `intent-judge` agents |
-| [tools/spec-mutants](tools/spec-mutants), [tools/intent-evals](tools/intent-evals) | Spec mutants, and evals for the intent judge |
+[INTENT.md](INTENT.md) says why this exists and what's being tested. [SPEC-DRIVEN-DEVELOPMENT.md](SPEC-DRIVEN-DEVELOPMENT.md) shows the process, mostly as diagrams. Specs live under `specs/`, with the code and its tests under `src/` and `tools/`.
 
 ## Running the service
 
