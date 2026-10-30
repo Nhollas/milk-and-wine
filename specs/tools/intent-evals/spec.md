@@ -34,8 +34,8 @@ Measures how well the [intent judge](../../../.claude/agents/intent-judge/intent
 | B11 | A run's reply doesn't match the reply schema, the CLI fails, or the call reaches its $2 spending limit | The run's reply is scored | The run is `broken`, and counts as not found | service |
 | B12 | A run reads a file the guard forbids | The run's reply is scored | The run is `forbidden read`, counts as not found, and the report lists it before anything else | service |
 | B13 | A run flags something B10 doesn't count, and the judgements file has a judgement matching it | The run's reply is scored | Counts it as `found` if judged the planted gap, and as a false alarm if judged a false alarm | service |
-| B14 | A run flags something B10 doesn't count, and no judgement matches it | The run's reply is scored | Adds it to the judgements file with no judgement, and the report counts it under `unjudged` until a person judges it | service |
-| B15 | Every run has a result | `eval:judge` finishes | Saves a report under `reports/intent-evals/` labelled with the judge's version, the model and the date, with each run's raw reply beside it, and prints it | service |
+| B14 | A run flags something B10 doesn't count, and no judgement matches it | The run's reply is scored | Adds it to the judgements file with no judgement, and the report counts it under `unjudged` until a person writes a judgement in the file | service |
+| B15 | Every run has a result | `eval:judge` finishes | Saves a report under `reports/intent-evals/` labelled with the commit, the model and the date, with each run's raw reply beside it, and prints it | service |
 | B16 | A report is printed | It lists each case | Each case shows how many runs found it, out of how many, with a 95% range, beside its expected difficulty | service |
 | B17 | A report is printed | It sums the runs | It shows found and false alarms for each kind and difficulty and overall, each with a 95% range, and for each model its cost, time and `broken` runs | service |
 | B18 | A report is printed | It checks the pass marks | It shows each pass mark as `met`, `not met` or, with any flag unjudged, `pending`, with the latest share judged right from `eval:app` and its date | service |
@@ -71,6 +71,8 @@ Measures how well the [intent judge](../../../.claude/agents/intent-judge/intent
 - **B5, B6:** A wrong case marks the judge down for being right, and a hard case no model finds might be wrong rather than hard. So each case is checked without the judge. An unasked case can't be checked this way: no bug gets past an extra check. Its schema requires a person's one-line reason why the scenario doesn't ask for it instead.
 - **B9:** The judge sees only the example, so nothing in the app can confuse it, and examples never change with the app, so cases don't go stale.
 - **B11:** A judge that breaks finds nothing for whoever relies on it, so a broken run counts against it, and is still shown apart from a miss.
+- **B14, B21:** A judgement is written by editing the judgements file, never through a prompt at the end of a run. The file is committed and reviewed with the tests it judges, and an agent can write to it as easily as a person.
+- **B15:** The judge is its definition and guard in this repository, so the commit that holds them names its version. A report from an uncommitted edit carries the commit it was made on, so commit the judge before measuring it.
 - **B13, B14, B20:** The judge words the same thing differently from run to run. Matching on the scenario and the line it points at doesn't depend on wording, so a person judges each flag once.
 - **B16, B17, B23:** The judge's answers vary, so a difference between 4 of 6 and 5 of 6 can be luck. A range shows how sure a rate is, and only totals carry enough runs to call a change better or worse.
 - **Pass marks:** Set before the first full run, so its results can't bend them. They're revisited once, after it, with the reason for any change written down.
@@ -80,8 +82,3 @@ Measures how well the [intent judge](../../../.claude/agents/intent-judge/intent
 - A judgement matched by line goes stale when the tests change and the line moves, and the flag is asked about again.
 - The judge only reads this repository's layout, so examples are laid out the same way.
 - Totals by kind come from the case's kind. The judge doesn't say which kind it found.
-
-## Open questions
-
-- **How a person judges a flag.** Unjudged flags could be judged by editing the judgements file, or through prompts in the terminal at the end of a run. Recommended: edit the file, since it's committed, reviewable, and works for an agent too. Decision needed: file or prompts.
-- **What labels a judge's version.** A definition passed with `--judge` may not be committed. Recommended: the commit plus a short hash of the definition's text. Decision needed: whether that's enough to tell versions apart.
