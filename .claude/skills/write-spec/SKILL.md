@@ -18,6 +18,8 @@ One decidable behaviour per row. IDs are plain (`B1`, B for behaviour), stable, 
 
 - **Each row has a reason now:** a caller's need, a product decision, an external contract or a project standard. Existing code shows what happens today, not what must. "More robust" or "we might need it" isn't a reason, for retries, limits, validation and logging as much as features.
 - **Say what happens.** Name the system, the resource and the inputs, and what the observer gets back. "Reminds the member" leaves the reader guessing; "Asks the Notifications API to notify the loan's member, then records a reminder for today" doesn't. The same goes for "handle", "valid", "reuse" and "fail".
+- **Name what the observer sees, not the parts that do it.** A guard, a hook, a schema or a file the code uses isn't behaviour; say what it lets through, refuses or returns. This matters most when the subject is already built: its code's names are the first words to hand, and a spec copied from them describes today's implementation, not the behaviour we want.
+- **Write for someone who hasn't read the code.** Every row should make sense from the spec and the glossary alone. Link a glossary term where the spec first uses it, and define anything else in place.
 - **State the values that change what's observed:** a timeout's length and what it covers, retries as total attempts, a log's event, level and fields. Leave out constants nothing depends on.
 - **One owner per policy.** State it in one spec and link to it from the others.
 - **The code doesn't decide.** Where the code or its tests differ from a row, the difference is wording to fix, a gap in the code, behaviour nobody needs, or a choice for Open questions. Tests can protect accidental behaviour too.
