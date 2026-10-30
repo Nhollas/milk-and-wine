@@ -4,13 +4,14 @@ import type { Judgement } from "./intent-judge.ts";
 export type Found = {
   /** The judgement had a list of misalignments to score. */
   scored: boolean;
-  /** A misalignment on the case's scenario names the part the case is about. */
+  /** A misalignment on the case's scenario quotes the words the case is about. */
   part: boolean;
 };
 
 export function foundGap(evalCase: EvalCase, judgement: Judgement): Found {
   if (judgement.misalignments === undefined) return { scored: false, part: false };
-  const wanted = plain(evalCase.part);
+  // An unasked case has no words of the scenario to quote, so any extra on its scenario counts for now.
+  const wanted = "quote" in evalCase ? plain(evalCase.quote) : "nothing about this";
   return {
     scored: true,
     part: judgement.misalignments.some(

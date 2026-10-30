@@ -1,4 +1,4 @@
-import { copyFileSync, readFileSync, writeFileSync } from "node:fs";
+import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { z } from "zod";
 import { blockReasonOf } from "../../.claude/agents/intent-judge/guard.ts";
@@ -92,8 +92,6 @@ export type JudgeOptions = {
   subject: string;
   /** The scenarios to judge. */
   scenarios: string[];
-  /** A different definition of the judge to try, in place of the one in the repository. */
-  definition: string | undefined;
   /** A model to run the judge on, in place of the one its definition names. */
   model: string | undefined;
 };
@@ -103,10 +101,9 @@ export function modelOf(definition: string): string {
   return /^model: (.+)$/mu.exec(readFileSync(definition, "utf8"))?.[1]?.trim() ?? "default";
 }
 
-/** Runs the intent judge in `directory`, a copy of the repository. */
+/** Runs the intent judge in `directory`, a workspace holding one example. */
 export async function judge(directory: string, options: JudgeOptions): Promise<Judgement> {
   const judgeFile = join(directory, JUDGE_FILE);
-  if (options.definition !== undefined) copyFileSync(options.definition, judgeFile);
   if (options.model !== undefined) {
     const definition = readFileSync(judgeFile, "utf8");
     writeFileSync(judgeFile, definition.replace(/^model: .+$/mu, `model: ${options.model}`));

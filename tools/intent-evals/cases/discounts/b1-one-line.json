@@ -1,0 +1,30 @@
+{
+  "gap": "B1's order has a single line",
+  "kind": "setup can't show it",
+  "difficulty": "medium",
+  "scenario": "B1",
+  "quote": "every line",
+  "plant": [
+    {
+      "file": "src/discounts/discounts.service.test.ts",
+      "find": [
+        "  const order = { placedOn: \"2026-03-01\", lines: [{ pence: 999 }, { pence: 255 }] };"
+      ],
+      "replace": ["  const order = { placedOn: \"2026-03-01\", lines: [{ pence: 999 }] };"]
+    },
+    {
+      "file": "src/discounts/discounts.service.test.ts",
+      "find": ["  expect(priced).toEqual({ lines: [899, 229], total: 1128 });"],
+      "replace": ["  expect(priced).toEqual({ lines: [899], total: 899 });"]
+    }
+  ],
+  "bug": {
+    "file": "src/discounts/discounts.ts",
+    "find": ["  const lines = order.lines.map(({ pence }) => Math.floor(pence * (1 - discount)));"],
+    "replace": [
+      "  const lines = order.lines.map(({ pence }, index) =>",
+      "    index === 0 ? Math.floor(pence * (1 - discount)) : pence,",
+      "  );"
+    ]
+  }
+}

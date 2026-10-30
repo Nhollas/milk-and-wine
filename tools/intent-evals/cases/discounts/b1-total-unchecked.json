@@ -1,0 +1,21 @@
+{
+  "gap": "B1's test no longer checks the total",
+  "kind": "unchecked",
+  "difficulty": "easy",
+  "scenario": "B1",
+  "quote": "totals the lines",
+  "plant": [
+    {
+      "file": "src/discounts/discounts.service.test.ts",
+      "find": ["  expect(priced).toEqual({ lines: [899, 229], total: 1128 });"],
+      "replace": ["  expect(priced.lines).toEqual([899, 229]);"]
+    }
+  ],
+  "bug": {
+    "file": "src/discounts/discounts.ts",
+    "find": ["  return { lines, total: lines.reduce((sum, pence) => sum + pence, 0) };"],
+    "replace": [
+      "  return { lines, total: order.lines.reduce((sum, { pence }) => sum + pence, 0) };"
+    ]
+  }
+}

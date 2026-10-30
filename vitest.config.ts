@@ -2,6 +2,9 @@ import { configDefaults, defineConfig, type TestUserConfig } from "vitest/config
 
 const testFolders = ["src", "tests", "tools"];
 
+// Examples are laid out like this repository, but their tests run only through the intent evals.
+const examples = ["tools/intent-evals/examples/**"];
+
 const levels = ["service", "integration", "system"] as const;
 
 type Level = (typeof levels)[number];
@@ -24,7 +27,11 @@ export default defineConfig({
         test: {
           name: { label: "unit", color: "white" },
           include: testFolders.map((folder) => `${folder}/**/*.test.ts`),
-          exclude: [...configDefaults.exclude, ...levels.flatMap((level) => testsAt(level))],
+          exclude: [
+            ...configDefaults.exclude,
+            ...examples,
+            ...levels.flatMap((level) => testsAt(level)),
+          ],
           ...interceptedHttp,
         },
       },
@@ -33,6 +40,7 @@ export default defineConfig({
         test: {
           name: { label: "service", color: "cyan" },
           include: testsAt("service"),
+          exclude: [...configDefaults.exclude, ...examples],
           ...interceptedHttp,
         },
       },
@@ -41,6 +49,7 @@ export default defineConfig({
         test: {
           name: { label: "integration", color: "blue" },
           include: testsAt("integration"),
+          exclude: [...configDefaults.exclude, ...examples],
           ...interceptedHttp,
         },
       },
@@ -49,6 +58,7 @@ export default defineConfig({
         test: {
           name: { label: "system", color: "magenta" },
           include: testsAt("system"),
+          exclude: [...configDefaults.exclude, ...examples],
           ...interceptedHttp,
         },
       },

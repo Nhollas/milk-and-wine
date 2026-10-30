@@ -1,0 +1,19 @@
+{
+  "gap": "B2's test counts the lines instead of checking their prices",
+  "kind": "wrong thing checked",
+  "difficulty": "easy",
+  "scenario": "B2",
+  "quote": "Takes nothing off",
+  "plant": [
+    {
+      "file": "src/discounts/discounts.service.test.ts",
+      "find": ["  expect(priced).toEqual({ lines: [999, 255], total: 1254 });"],
+      "replace": ["  expect(priced.lines).toHaveLength(2);"]
+    }
+  ],
+  "bug": {
+    "file": "src/discounts/discounts.ts",
+    "find": ["  const discount = order.placedOn === today ? 0 : 0.1;"],
+    "replace": ["  const discount = 0.1;"]
+  }
+}

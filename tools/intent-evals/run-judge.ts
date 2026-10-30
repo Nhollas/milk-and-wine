@@ -1,17 +1,18 @@
 import { mkdirSync, writeFileSync } from "node:fs";
-import { join, resolve } from "node:path";
+import { join } from "node:path";
 import { parseArgs } from "node:util";
-import { type Edit, type EvalCase, matching, readCases, testedScenarios } from "./cases.ts";
+import { type Edit, type EvalCase, matching, readCaseFiles } from "./cases.ts";
+import { validCases } from "./check.ts";
+import { inWorkspace, testedScenarios } from "./examples.ts";
 import { JUDGE_FILE, judge, type Judgement, type Misalignment, modelOf } from "./intent-judge.ts";
 import { inPool } from "./pool.ts";
 import { foundGap, type Found } from "./score.ts";
-import { inWorkspace } from "./workspace.ts";
 
 type Job = {
   name: string;
-  subject: string;
+  example: string;
   scenarios: string[];
-  weaken: Edit[];
+  plant: Edit[];
   /** The case being judged, or nothing when the tests are judged as they are. */
   evalCase: EvalCase | undefined;
 };
@@ -23,37 +24,27 @@ type Attempt = { job: Job; model: string; judgement: Judgement; found: Found | u
 
 function jobsFor(cases: EvalCase[], root: string, withControl: boolean): Job[] {
   const planted = cases.map((evalCase) => ({
-    name: `${evalCase.subject}/${evalCase.id}`,
-    subject: evalCase.subject,
+    name: evalCase.id,
+    example: evalCase.example,
     scenarios: [evalCase.scenario],
-    weaken: evalCase.weaken,
+    plant: evalCase.plant,
     evalCase,
   }));
   const control = withControl
-    ? [...new Set(cases.map((evalCase) => evalCase.subject))].map((subject) => ({
-        name: `${subject} as it is`,
-        subject,
-        scenarios: [...testedScenarios(root, subject).keys()],
-        weaken: [],
+    ? [...new Set(cases.map((evalCase) => evalCase.example))].map((example) => ({
+        name: `${example} as it is`,
+        example,
+        scenarios: [...testedScenarios(root, example).keys()],
+        plant: [],
         evalCase: undefined,
       }))
     : [];
   return [...planted, ...control];
 }
 
-async function attempt(
-  job: Job,
-  model: Model,
-  root: string,
-  definition: string | undefined,
-): Promise<Attempt> {
-  const judgement = await inWorkspace(root, job.weaken, (directory) =>
-    judge(directory, {
-      subject: job.subject,
-      scenarios: job.scenarios,
-      definition,
-      model: model.override,
-    }),
+async function attempt(job: Job, model: Model, root: string): Promise<Attempt> {
+  const judgement = await inWorkspace(root, job.example, job.plant, (directory) =>
+    judge(directory, { subject: job.example, scenarios: job.scenarios, model: model.override }),
   ).catch((error: unknown): Judgement => ({
     misalignments: undefined,
     checklist: undefined,
@@ -71,25 +62,26 @@ async function runJudge(args: string[], root: string): Promise<number> {
   const { values } = parseArgs({
     args,
     options: {
-      subject: { type: "string" },
+      example: { type: "string" },
       case: { type: "string" },
       runs: { type: "string", default: "6" },
       parallel: { type: "string", default: "4" },
-      judge: { type: "string" },
       models: { type: "string" },
       "no-control": { type: "boolean", default: false },
     },
   });
   const runs = Number(values.runs);
-  const cases = matching(readCases(root), { subject: values.subject, id: values.case });
+  const cases = matching(validCases(readCaseFiles(root)), {
+    example: values.example,
+    id: values.case,
+  });
   if (cases.length === 0) {
     process.stdout.write("no cases match\n");
     return 1;
   }
-  const definition = values.judge === undefined ? undefined : resolve(values.judge);
   const models: Model[] =
     values.models === undefined
-      ? [{ name: modelOf(definition ?? join(root, JUDGE_FILE)), override: undefined }]
+      ? [{ name: modelOf(join(root, JUDGE_FILE)), override: undefined }]
       : values.models.split(",").map((name) => ({ name, override: name }));
   const jobs = jobsFor(cases, root, !values["no-control"]);
   const queue = Array.from({ length: runs }, () =>
@@ -98,7 +90,7 @@ async function runJudge(args: string[], root: string): Promise<number> {
 
   process.stdout.write(`${jobs.length} jobs x ${models.length} models x ${runs} runs: `);
   const attempts = await inPool(queue, Number(values.parallel), ({ job, model }) =>
-    attempt(job, model, root, definition),
+    attempt(job, model, root),
   );
   process.stdout.write("\n\n");
 
