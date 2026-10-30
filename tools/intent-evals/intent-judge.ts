@@ -24,7 +24,7 @@ const GUARD_SETTINGS = JSON.stringify({
 });
 
 const part = z.object({
-  row: z.string(),
+  scenario: z.string(),
   part: z.string(),
   "checked by": z.string().nullable(),
   aligned: z.boolean(),
@@ -32,12 +32,12 @@ const part = z.object({
 });
 
 const extra = z.object({
-  row: z.string(),
+  scenario: z.string(),
   checks: z.string(),
   where: z.string(),
 });
 
-// The judge accounts for every part of a row, so a part it skipped can't pass for one it approved.
+// The judge accounts for every part of a scenario, so a part it skipped can't pass for one it approved.
 const reply = z.object({ parts: z.array(part), extras: z.array(extra) });
 
 const toolUse = z.object({
@@ -70,14 +70,14 @@ const finalResult = z.object({
 type Checklist = z.infer<typeof reply>;
 
 export type Misalignment = {
-  row: string;
+  scenario: string;
   says: string;
   "checked instead": string;
   where: string | null;
 };
 
 export type Judgement = {
-  /** Undefined when the judgement can't be scored. An empty list means every judged row is aligned. */
+  /** Undefined when the judgement can't be scored. An empty list means every judged scenario is aligned. */
   misalignments: Misalignment[] | undefined;
   checklist: Checklist | undefined;
   /** Why the judgement can't be scored at all. */
@@ -90,8 +90,8 @@ export type Judgement = {
 
 export type JudgeOptions = {
   subject: string;
-  /** The rows to judge. */
-  rows: string[];
+  /** The scenarios to judge. */
+  scenarios: string[];
   /** A different definition of the judge to try, in place of the one in the repository. */
   definition: string | undefined;
   /** A model to run the judge on, in place of the one its definition names. */
@@ -111,7 +111,7 @@ export async function judge(directory: string, options: JudgeOptions): Promise<J
     const definition = readFileSync(judgeFile, "utf8");
     writeFileSync(judgeFile, definition.replace(/^model: .+$/mu, `model: ${options.model}`));
   }
-  const prompt = `Judge the tests of the ${options.subject} spec. Judge only ${options.rows.join(", ")}.`;
+  const prompt = `Judge the tests of the ${options.subject} spec. Judge only ${options.scenarios.join(", ")}.`;
   const started = performance.now();
   const output = await runClaude(directory, prompt);
   const seconds = (performance.now() - started) / 1000;
@@ -157,13 +157,13 @@ function misalignmentsIn({ parts, extras }: Checklist): Misalignment[] {
     ...parts
       .filter((each) => !each.aligned)
       .map((each) => ({
-        row: each.row,
+        scenario: each.scenario,
         says: each.part,
         "checked instead": each.why,
         where: each["checked by"],
       })),
     ...extras.map((each) => ({
-      row: each.row,
+      scenario: each.scenario,
       says: "nothing about this",
       "checked instead": each.checks,
       where: each.where,

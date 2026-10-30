@@ -14,7 +14,7 @@ const edit = z.object({
 
 const caseFile = z.object({
   gap: z.string(),
-  row: z.string().regex(/^B\d+$/u),
+  scenario: z.string().regex(/^B\d+$/u),
   part: z.string().min(1),
   weaken: z.array(edit).min(1),
   bug: edit,
@@ -52,13 +52,13 @@ export function matching(cases: EvalCase[], { subject, id }: CaseFilter): EvalCa
   );
 }
 
-/** The rows of a subject that a test proves, with the level of that test. */
-export function testedRows(root: string, subject: string): Map<string, TestLevel> {
+/** The scenarios of a subject that a test proves, with the level of that test. */
+export function testedScenarios(root: string, subject: string): Map<string, TestLevel> {
   const found = readSubjects(workingTree(root)).subjects.find(({ name }) => name === subject);
   if (!found) throw new Error(`unknown subject: ${subject}`);
   return new Map(
-    found.rows.flatMap((row) =>
-      row.verified.kind === "test" ? [[row.id, row.verified.level]] : [],
+    found.scenarios.flatMap((scenario) =>
+      scenario.verified.kind === "test" ? [[scenario.id, scenario.verified.level]] : [],
     ),
   );
 }

@@ -1,7 +1,7 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { parseArgs } from "node:util";
-import { type Edit, type EvalCase, matching, readCases, testedRows } from "./cases.ts";
+import { type Edit, type EvalCase, matching, readCases, testedScenarios } from "./cases.ts";
 import { JUDGE_FILE, judge, type Judgement, type Misalignment, modelOf } from "./intent-judge.ts";
 import { inPool } from "./pool.ts";
 import { foundGap, type Found } from "./score.ts";
@@ -10,7 +10,7 @@ import { inWorkspace } from "./workspace.ts";
 type Job = {
   name: string;
   subject: string;
-  rows: string[];
+  scenarios: string[];
   weaken: Edit[];
   /** The case being judged, or nothing when the tests are judged as they are. */
   evalCase: EvalCase | undefined;
@@ -25,7 +25,7 @@ function jobsFor(cases: EvalCase[], root: string, withControl: boolean): Job[] {
   const planted = cases.map((evalCase) => ({
     name: `${evalCase.subject}/${evalCase.id}`,
     subject: evalCase.subject,
-    rows: [evalCase.row],
+    scenarios: [evalCase.scenario],
     weaken: evalCase.weaken,
     evalCase,
   }));
@@ -33,7 +33,7 @@ function jobsFor(cases: EvalCase[], root: string, withControl: boolean): Job[] {
     ? [...new Set(cases.map((evalCase) => evalCase.subject))].map((subject) => ({
         name: `${subject} as it is`,
         subject,
-        rows: [...testedRows(root, subject).keys()],
+        scenarios: [...testedScenarios(root, subject).keys()],
         weaken: [],
         evalCase: undefined,
       }))
@@ -50,7 +50,7 @@ async function attempt(
   const judgement = await inWorkspace(root, job.weaken, (directory) =>
     judge(directory, {
       subject: job.subject,
-      rows: job.rows,
+      scenarios: job.scenarios,
       definition,
       model: model.override,
     }),
@@ -121,14 +121,14 @@ function report(attempts: Attempt[], jobs: Job[], models: Model[], runs: number)
   const columns = models.map((model) => model.name);
   const widest = percent(planted.length * runs, planted.length * runs);
   const columnWidth = Math.max(...columns.map((name) => name.length), widest.length) + 2;
-  const row = (name: string, cells: string[]) =>
+  const line = (name: string, cells: string[]) =>
     out(`${name.padEnd(nameWidth)}  ${cells.map((cell) => cell.padEnd(columnWidth)).join("")}`);
   const of = (model: string) => attempts.filter((each) => each.model === model);
 
   out(`found the planted part, in n of ${runs} runs\n`);
-  row("case", columns);
+  line("case", columns);
   for (const job of planted) {
-    row(
+    line(
       job.name,
       columns.map((model) => {
         const found = of(model).filter((each) => each.job === job && each.found?.part === true);
@@ -137,14 +137,14 @@ function report(attempts: Attempt[], jobs: Job[], models: Model[], runs: number)
     );
   }
   const total = planted.length * runs;
-  row(
+  line(
     "found the planted part",
     columns.map((model) => {
       const found = of(model).filter((each) => each.found?.part === true).length;
       return percent(found, total);
     }),
   );
-  row(
+  line(
     "not scored",
     columns.map((model) => {
       const scored = of(model).filter((each) => each.found?.scored === true).length;
@@ -187,8 +187,8 @@ function report(attempts: Attempt[], jobs: Job[], models: Model[], runs: number)
   }
 }
 
-function describe({ row, says, where }: Misalignment): string {
-  return `${row} "${says}"${where === null ? "" : ` at ${where}`}`;
+function describe({ scenario, says, where }: Misalignment): string {
+  return `${scenario} "${says}"${where === null ? "" : ` at ${where}`}`;
 }
 
 function percent(part: number, whole: number): string {
@@ -198,7 +198,7 @@ function percent(part: number, whole: number): string {
 function save(attempts: Attempt[], root: string): string {
   const folder = join("reports", "intent-evals", new Date().toISOString().replaceAll(":", "-"));
   mkdirSync(join(root, folder, "transcripts"), { recursive: true });
-  const rows = attempts.map(({ job, model, judgement, found }, index) => {
+  const judgements = attempts.map(({ job, model, judgement, found }, index) => {
     const { transcript, ...rest } = judgement;
     const file = join(
       "transcripts",
@@ -207,7 +207,7 @@ function save(attempts: Attempt[], root: string): string {
     writeFileSync(join(root, folder, file), transcript);
     return { job: job.name, model, found, transcript: file, judgement: rest };
   });
-  writeFileSync(join(root, folder, "judgements.json"), `${JSON.stringify(rows, null, 2)}\n`);
+  writeFileSync(join(root, folder, "judgements.json"), `${JSON.stringify(judgements, null, 2)}\n`);
   return folder;
 }
 

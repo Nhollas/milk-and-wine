@@ -1,6 +1,6 @@
 {
   "gap": "B3's test no longer checks which loan the warning names",
-  "row": "B3",
+  "scenario": "B3",
   "part": "loanId",
   "weaken": [
     {

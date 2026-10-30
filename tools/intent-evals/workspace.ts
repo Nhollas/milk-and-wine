@@ -25,7 +25,7 @@ const vitestReport = z.object({
   ),
 });
 
-export type RowOutcome = "passed" | "failed" | "found no test";
+export type ScenarioOutcome = "passed" | "failed" | "found no test";
 
 /**
  * Gives `work` its own copy of the repository with `edits` applied, and removes the copy after.
@@ -66,13 +66,13 @@ function applyEdits(directory: string, edits: Edit[]): void {
   }
 }
 
-/** Runs only the tests that prove one row, as the row's own tests are all that count for it. */
-export async function runRowTests(
+/** Runs only the tests that prove one scenario, as the scenario's own tests are all that count for it. */
+export async function runScenarioTests(
   directory: string,
   subject: string,
   level: TestLevel,
-  row: string,
-): Promise<RowOutcome> {
+  scenario: string,
+): Promise<ScenarioOutcome> {
   const reportPath = join(directory, "vitest-report.json");
   await runProcess(
     process.execPath,
@@ -84,7 +84,7 @@ export async function runRowTests(
       "--reporter=json",
       `--outputFile=${reportPath}`,
       "-t",
-      `^${row}: `,
+      `^${scenario}: `,
       `${subject}.${level}.test.ts`,
     ],
     { cwd: directory, timeoutMs: 5 * 60 * 1000 },
@@ -95,7 +95,7 @@ export async function runRowTests(
   const statuses = new Set(
     report.testResults
       .flatMap((file) => file.assertionResults)
-      .filter((test) => test.title.startsWith(`${row}: `))
+      .filter((test) => test.title.startsWith(`${scenario}: `))
       .map((test) => test.status),
   );
   if (statuses.has("failed")) return "failed";

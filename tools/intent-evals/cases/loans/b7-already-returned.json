@@ -1,6 +1,6 @@
 {
   "gap": "B7's test no longer returns a loan twice",
-  "row": "B7",
+  "scenario": "B7",
   "part": "already returned",
   "weaken": [
     {

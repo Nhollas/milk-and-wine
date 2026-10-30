@@ -19,13 +19,13 @@ Write or change a spec with the `/write-spec` skill.
   │ before deleting: checklist    │          │ what we promise, right now    │
   └───────────────────────────────┘          └───────────────────────────────┘
      born with the work                         lives with the code
-     deleted with its last row                  refined over time
+     deleted with its last scenario                  refined over time
      learnings move out first                   ages well only if pruned
 ```
 
-A change spec never owns a requirement. It points at rows, carries the Jira key, and goes away. This repository keeps the idea but doesn't practise it: its changes are small and come straight from a behaviour spec, and breaking work down is out of scope (see [INTENT.md](INTENT.md)), so there is no change template or live example. Behaviour specs keep only what's needed now: existing code is evidence, not a reason to keep a row.
+A change spec never owns a requirement. It points at scenarios, carries the Jira key, and goes away. This repository keeps the idea but doesn't practise it: its changes are small and come straight from a behaviour spec, and breaking work down is out of scope (see [INTENT.md](INTENT.md)), so there is no change template or live example. Behaviour specs keep only what's needed now: existing code is evidence, not a reason to keep a scenario.
 
-## 2. Anatomy of a row
+## 2. Anatomy of a scenario
 
 ```
  ┌─────┬────────────────────┬──────────────────┬──────────────────────┬────────────┐
@@ -45,10 +45,10 @@ A change spec never owns a requirement. It points at rows, carries the Jira key,
     └ stable forever, never reused
 ```
 
-One row, one decision. Test links and gap reports assume it.
+One scenario, one decision. Test links and gap reports assume it.
 
 ```
-  B1  "validates, checks the catalogue and lends"     ✗ three decisions in one row
+  B1  "validates, checks the catalogue and lends"     ✗ three decisions in one scenario
    │
    ├──▶ B10  refuses an invalid request                ✓ each can be linked to a
    ├──▶ B4   refuses a copy the catalogue doesn't know   ticket and to a test
@@ -70,7 +70,7 @@ That's why [loans](specs/modules/loans/spec.md) lists B10 first: it was split ou
   example    borrow-a-book B3        loans B2
 ```
 
-A row is a promise someone checks. The subject decides where you observe it and how it's proven.
+A scenario is a promise someone checks. The subject decides where you observe it and how it's proven.
 
 ## 4. Status is computed, never typed
 
@@ -78,7 +78,7 @@ A row is a promise someone checks. The subject decides where you observe it and 
   main ─────────────●───────────────●───────────────●──────▶
                     │               │               │
                     MR 1            MR 2            MR 3
-                    adds the rows   delivers        delivers
+                    adds the scenarios   delivers        delivers
                     as proposed     loans B8 B9     journey B4
                     ▲
                     └ this repo
@@ -87,8 +87,8 @@ A row is a promise someone checks. The subject decides where you observe it and 
   loans B9          ░░░░░░░░░░░░░░░░▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
   borrow-a-book B4  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▓▓▓▓▓▓▓▓
 
-  ░ proposed: no active test at the row's level names it, e.g. test.todo("B8: …")
-  ▓ delivered: an active test at the row's Verified level names it
+  ░ proposed: no active test of the kind its Verified names has its ID, e.g. test.todo("B8: …")
+  ▓ delivered: an active test of that kind has its ID in the title
 ```
 
 Specs land ahead of code, so behaviour is agreed before it is built.
@@ -104,7 +104,7 @@ Specs land ahead of code, so behaviour is agreed before it is built.
 
   test("B2: refuses a copy that is already on loan", async () => { … })
         └┬┘
-         └─ the row it proves, then what it checks
+         └─ the scenario it proves, then what it checks
 ```
 
 IDs are plain, so the file name says which subject's `B2` a test means ([ADR 0002](docs/adr/0002-test-file-names-carry-subject-and-level.md)).
@@ -117,18 +117,18 @@ IDs are plain, so the file name says which subject's `B2` a test means ([ADR 000
                  └───────────────────────────────────────────────┘
                                                ▲                    ▲
               clock.test.ts ───────────────────┘                    │
-              no level, so it names no row                          │
+              no level, so it names no scenario                          │
                                                                     │
               loans.service.test.ts › "B1: …" ──────────────────────┘
               service level, so it delivers B1
 ```
 
-A row describes what's observable at its subject's boundary, so only a test at the row's level can deliver it. Unit tests are still welcome; they just don't count.
+A scenario describes what's observable at its subject's boundary, so only a test of the kind its Verified names can deliver it. Unit tests are still welcome; they just don't count.
 
 ## 7. The gaps are the backlog
 
 ```
-      SPEC ROWS                  TESTS                       CODE
+      SCENARIOS                  TESTS                       CODE
    ┌───────────┐             ┌──────────────┐            ┌───────────────┐
    │ B1        │ ──────────▶ │ "B1: …"      │ ─────────▶ │ POST /loans   │
    │ B11       │ ──────────▶ │ "B11: …"     │ ─────────▶ │ GET /health   │
@@ -138,12 +138,12 @@ A row describes what's observable at its subject's boundary, so only a test at t
    └───────────┘             └──────────────┘            └───────────────┘
         (1)                        (2)                          (3)
 
-  (1) a row nothing proves     →  proposed: work to do
-  (2) a test that names no row →  untagged-test: tag it or delete it
-  (3) code that no row needs   →  excess: prune it
+  (1) a scenario nothing proves     →  proposed: work to do
+  (2) a test that names no scenario →  untagged-test: tag it or delete it
+  (3) code that no scenario needs   →  excess: prune it
 ```
 
-Finding them is a review for now. The intent judge checks that a row's tests are about what the row says; spec mutants check they are strong enough to fail when the code breaks it. Run the judge first, fix any misalignment, then run the mutants.
+Finding them is a review for now. The intent judge checks that a scenario's tests are about what the scenario says; spec mutants check they are strong enough to fail when the code breaks it. Run the judge first, fix any misalignment, then run the mutants.
 
 ## 8. What we threw out
 
@@ -151,6 +151,6 @@ Finding them is a review for now. The intent judge checks that a row's tests are
   ✗  specs as source of truth, regenerate the code    specs leave things out on purpose
   ✗  long specs written for agents                    unreadable for people, so no alignment
   ✗  a Gherkin runtime and step definitions           keep the grammar, skip the extra codebase
-  ✗  a hand-kept status per row                       it drifts; compute it from tests
-  ✗  a test count per row                             a declared proof per row
+  ✗  a hand-kept status per scenario                       it drifts; compute it from tests
+  ✗  a test count per scenario                             a declared proof per scenario
 ```

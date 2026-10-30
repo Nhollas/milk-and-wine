@@ -4,7 +4,7 @@ import { pathToFileURL } from "node:url";
 import { mergeConfig, type Plugin, type ViteUserConfig } from "vitest/config";
 import { mutant, plant, type Mutant } from "./mutants.ts";
 
-// Replays a row's tests with one mutant applied as its module loads, so src/ never changes on disk.
+// Replays a scenario's tests with one mutant applied as its module loads, so src/ never changes on disk.
 const root = realpathSync(process.env["SPEC_MUTANTS_ROOT"] ?? process.cwd());
 const plantedMutant = process.env["SPEC_MUTANT"]
   ? mutant.parse(JSON.parse(process.env["SPEC_MUTANT"]))

@@ -1,6 +1,6 @@
 {
   "gap": "B3's test no longer pins the two-second timeout",
-  "row": "B3",
+  "scenario": "B3",
   "part": "exceeds 2 seconds",
   "weaken": [
     {

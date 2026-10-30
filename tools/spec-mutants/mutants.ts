@@ -2,7 +2,7 @@ import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join, posix } from "node:path";
 import { z } from "zod";
 import { workingTree } from "../specs/repository.ts";
-import { readSubjects, type Row } from "../specs/specs.ts";
+import { readSubjects, type Scenario } from "../specs/specs.ts";
 
 export const mutant = z.object({
   breaks: z.string(),
@@ -22,12 +22,12 @@ const mutantsFile = z.record(
 
 export type Mutant = z.infer<typeof mutant>;
 
-type RowMutants = z.infer<typeof mutantsFile>[string];
+type ScenarioMutants = z.infer<typeof mutantsFile>[string];
 
 export type SubjectMutants = {
-  rows: Row[];
+  scenarios: Scenario[];
   mutantsPath: string;
-  mutantsByRow: Map<string, RowMutants>;
+  mutantsByScenario: Map<string, ScenarioMutants>;
 };
 
 export function readSubjectMutants(subject: string, root: string): SubjectMutants | string {
@@ -40,7 +40,11 @@ export function readSubjectMutants(subject: string, root: string): SubjectMutant
 
   const parsed = mutantsFile.safeParse(parseJson(readFileSync(join(root, mutantsPath), "utf8")));
   if (!parsed.success) return `${mutantsPath} is not valid: ${z.prettifyError(parsed.error)}`;
-  return { rows: spec.rows, mutantsPath, mutantsByRow: new Map(Object.entries(parsed.data)) };
+  return {
+    scenarios: spec.scenarios,
+    mutantsPath,
+    mutantsByScenario: new Map(Object.entries(parsed.data)),
+  };
 }
 
 export function isStale(planted: Mutant, root: string): boolean {

@@ -1,26 +1,26 @@
 import { parseArgs } from "node:util";
-import { type EvalCase, matching, readCases, testedRows } from "./cases.ts";
+import { type EvalCase, matching, readCases, testedScenarios } from "./cases.ts";
 import { inPool } from "./pool.ts";
-import { inWorkspace, runRowTests } from "./workspace.ts";
+import { inWorkspace, runScenarioTests } from "./workspace.ts";
 
-// A case is real if the row's own tests pass, catch the bug, and miss it once weakened.
+// A case is real if the scenario's own tests pass, catch the bug, and miss it once weakened.
 // The judge isn't involved, so the answer doesn't depend on it.
 async function problemWith(evalCase: EvalCase, root: string): Promise<string | undefined> {
-  const { subject, row, weaken, bug } = evalCase;
-  const level = testedRows(root, subject).get(row);
-  if (level === undefined) return `${subject} ${row} isn't verified by a test`;
-  const rowTests = (edits: Parameters<typeof inWorkspace>[1]) =>
-    inWorkspace(root, edits, (directory) => runRowTests(directory, subject, level, row));
+  const { subject, scenario, weaken, bug } = evalCase;
+  const level = testedScenarios(root, subject).get(scenario);
+  if (level === undefined) return `${subject} ${scenario} isn't verified by a test`;
+  const scenarioTests = (edits: Parameters<typeof inWorkspace>[1]) =>
+    inWorkspace(root, edits, (directory) => runScenarioTests(directory, subject, level, scenario));
 
-  const asTheyAre = await rowTests([]);
-  if (asTheyAre !== "passed") return `${row}'s tests must pass as they are, but ${asTheyAre}`;
-  const withBug = await rowTests([bug]);
+  const asTheyAre = await scenarioTests([]);
+  if (asTheyAre !== "passed") return `${scenario}'s tests must pass as they are, but ${asTheyAre}`;
+  const withBug = await scenarioTests([bug]);
   if (withBug !== "failed") {
-    return `${row}'s tests must catch the bug before they are weakened, but ${withBug}`;
+    return `${scenario}'s tests must catch the bug before they are weakened, but ${withBug}`;
   }
-  const weakenedWithBug = await rowTests([...weaken, bug]);
+  const weakenedWithBug = await scenarioTests([...weaken, bug]);
   if (weakenedWithBug !== "passed") {
-    return `${row}'s weakened tests must miss the bug, but ${weakenedWithBug}`;
+    return `${scenario}'s weakened tests must miss the bug, but ${weakenedWithBug}`;
   }
   return undefined;
 }

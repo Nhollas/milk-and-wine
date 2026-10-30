@@ -1,6 +1,6 @@
 {
   "gap": "B3's tests let a fourth attempt fail too",
-  "row": "B3",
+  "scenario": "B3",
   "part": "3 attempts in total",
   "weaken": [
     {

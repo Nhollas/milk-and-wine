@@ -1,6 +1,6 @@
 {
   "gap": "B4's test checks only the sent count",
-  "row": "B4",
+  "scenario": "B4",
   "part": "failed",
   "weaken": [
     {

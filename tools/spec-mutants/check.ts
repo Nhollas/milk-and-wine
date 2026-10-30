@@ -27,13 +27,13 @@ export function check(args: string[], root: string): CheckResult {
   const line = (id: string, label: string, text: string) => {
     output += `${id}  ${label.padEnd(13)}  ${text}\n`;
   };
-  for (const [id, rowMutants] of loaded.mutantsByRow) {
-    if (!loaded.rows.some((row) => row.id === id)) {
+  for (const [id, scenarioMutants] of loaded.mutantsByScenario) {
+    if (!loaded.scenarios.some((scenario) => scenario.id === id)) {
       problems++;
-      line(id, "unknown-id", `not a row of ${subject}`);
+      line(id, "unknown-id", `not a scenario of ${subject}`);
       continue;
     }
-    for (const mutant of rowMutants.mutants) {
+    for (const mutant of scenarioMutants.mutants) {
       if (interrupted()) return { exitCode: 1, output };
       if (isStale(mutant, root)) {
         problems++;
@@ -51,11 +51,11 @@ export function check(args: string[], root: string): CheckResult {
     }
   }
 
-  const unmutatedRows = loaded.rows.filter(
-    (row) => row.verified.kind === "test" && !loaded.mutantsByRow.has(row.id),
+  const unmutatedScenarios = loaded.scenarios.filter(
+    (scenario) => scenario.verified.kind === "test" && !loaded.mutantsByScenario.has(scenario.id),
   );
-  if (unmutatedRows.length > 0) {
-    output += `no mutants yet: ${unmutatedRows.map((row) => row.id).join(", ")}\n`;
+  if (unmutatedScenarios.length > 0) {
+    output += `no mutants yet: ${unmutatedScenarios.map((scenario) => scenario.id).join(", ")}\n`;
   }
   output +=
     problems === 0

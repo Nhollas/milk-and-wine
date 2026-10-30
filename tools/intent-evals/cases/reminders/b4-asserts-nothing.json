@@ -1,6 +1,6 @@
 {
   "gap": "B4's tests run the job and assert nothing",
-  "row": "B4",
+  "scenario": "B4",
   "part": "reminders.finished",
   "weaken": [
     {

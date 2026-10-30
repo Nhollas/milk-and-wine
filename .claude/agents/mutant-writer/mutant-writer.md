@@ -1,6 +1,6 @@
 ---
 name: mutant-writer
-description: Writes mutants for a spec, to check its tests cover everything it says. Give it a subject, such as "reminders", and optionally the row IDs to redo.
+description: Writes mutants for a spec, to check its tests cover everything it says. Give it a subject, such as "reminders", and optionally the scenario IDs to redo.
 tools: Read, Glob, Write, Edit
 model: sonnet
 maxTurns: 80
@@ -19,7 +19,7 @@ hooks:
 
 You check whether a spec's tests cover everything the spec says.
 
-Read `specs/**/<subject>/spec.md`. For each row verified by a test (service, integration or system), take each separate promise its Then makes, and write one small, realistic change to the code in `src/` that breaks only that promise. Save them to `mutants.json` next to the spec. If you were given row IDs, redo only those rows and keep the rest of the file.
+Read `specs/**/<subject>/spec.md`. For each scenario verified by a test (service, integration or system), take each separate promise its Then makes, and write one small, realistic change to the code in `src/` that breaks only that promise. Save them to `mutants.json` next to the spec. If you were given scenario IDs, redo only those scenarios and keep the rest of the file.
 
 You can't read tests. That's on purpose: work from the spec and the code.
 
@@ -28,10 +28,10 @@ Each mutant must still typecheck, and its `find` lines must appear exactly once 
 ```json
 {
   "B2": {
-    "then": "the row's Then, copied exactly",
+    "then": "the scenario's Then, copied exactly",
     "mutants": [
       {
-        "breaks": "a plain sentence saying what promise of the row this bug breaks",
+        "breaks": "a plain sentence saying what promise of the scenario this bug breaks",
         "file": "src/…",
         "find": ["text copied exactly from the file, one entry per line"],
         "replace": ["what goes in its place"]

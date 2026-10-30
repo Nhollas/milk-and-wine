@@ -47,8 +47,8 @@ export function createLoanStore(db: DatabaseSync) {
     },
 
     find(loanId: string): Loan | undefined {
-      const row = db.prepare("SELECT * FROM loans WHERE loan_id = ?").get(loanId);
-      return row && loanRecord.parse(row);
+      const record = db.prepare("SELECT * FROM loans WHERE loan_id = ?").get(loanId);
+      return record && loanRecord.parse(record);
     },
 
     markReturned(loanId: string, returnedOn: string): void {

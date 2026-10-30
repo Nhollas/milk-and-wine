@@ -1,6 +1,6 @@
 {
   "gap": "B4 has no test for a 4xx other than 404",
-  "row": "B4",
+  "scenario": "B4",
   "part": "4xx",
   "weaken": [
     {

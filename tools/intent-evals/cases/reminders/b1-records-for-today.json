@@ -1,6 +1,6 @@
 {
   "gap": "B1's tests no longer check the day the reminder is recorded for, nor run the job on a second day",
-  "row": "B1",
+  "scenario": "B1",
   "part": "for today",
   "weaken": [
     {

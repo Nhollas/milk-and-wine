@@ -10,14 +10,14 @@ type Verified =
   | { kind: "dependency"; link: string }
   | { kind: "manual"; link: string };
 
-export type Row = { id: string; thenText: string; verified: Verified };
+export type Scenario = { id: string; thenText: string; verified: Verified };
 
-export type Subject = { name: string; path: string; rows: Row[] };
+export type Subject = { name: string; path: string; scenarios: Scenario[] };
 
 type Problem = { code: string; location: string; message: string };
 
 const SPEC_PATH = /^specs\/(?:.+\/)?([^/]+)\/spec\.md$/u;
-const ROW_HEADER = ["id", "given", "when", "then", "verified"];
+const SCENARIO_HEADER = ["id", "given", "when", "then", "verified"];
 const MARKDOWN_LINK = /\[[^\]]*\]\(([^)]+)\)/u;
 
 function subjectOfSpecPath(path: string): string | undefined {
@@ -35,8 +35,8 @@ export function readSubjects(repository: Repository): { subjects: Subject[]; pro
   for (const path of repository.filePaths().toSorted()) {
     const name = subjectOfSpecPath(path);
     if (!name) continue;
-    const rows: Row[] = [];
-    for (const { cells, line } of rowLines(repository.read(path))) {
+    const scenarios: Scenario[] = [];
+    for (const { cells, line } of scenarioLines(repository.read(path))) {
       const [id = "", , , thenText = "", verifiedCell = ""] = cells;
       const location = `${path}:${line}`;
       const verified = parseVerified(verifiedCell, path);
@@ -48,7 +48,7 @@ export function readSubjects(repository: Repository): { subjects: Subject[]; pro
         });
         continue;
       }
-      if (rows.some((row) => row.id === id)) {
+      if (scenarios.some((scenario) => scenario.id === id)) {
         problems.push({
           code: "duplicate-id",
           location,
@@ -56,28 +56,28 @@ export function readSubjects(repository: Repository): { subjects: Subject[]; pro
         });
         continue;
       }
-      rows.push({ id, thenText, verified });
+      scenarios.push({ id, thenText, verified });
     }
-    subjects.push({ name, path, rows });
+    subjects.push({ name, path, scenarios });
   }
 
   return { subjects, problems };
 }
 
-function* rowLines(markdown: string): Generator<{ cells: string[]; line: number }> {
+function* scenarioLines(markdown: string): Generator<{ cells: string[]; line: number }> {
   const lines = markdown.split("\n");
-  let inRowTable = false;
+  let inScenarioTable = false;
   for (const [index, text] of lines.entries()) {
     if (!text.trimStart().startsWith("|")) {
-      inRowTable = false;
+      inScenarioTable = false;
       continue;
     }
     const cells = splitCells(text);
-    if (cells.map((cell) => cell.toLowerCase()).join("|") === ROW_HEADER.join("|")) {
-      inRowTable = true;
+    if (cells.map((cell) => cell.toLowerCase()).join("|") === SCENARIO_HEADER.join("|")) {
+      inScenarioTable = true;
       continue;
     }
-    if (!inRowTable || cells.every((cell) => /^:?-+:?$/u.test(cell))) continue;
+    if (!inScenarioTable || cells.every((cell) => /^:?-+:?$/u.test(cell))) continue;
     yield { cells, line: index + 1 };
   }
 }

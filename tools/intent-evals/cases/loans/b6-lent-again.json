@@ -1,6 +1,6 @@
 {
   "gap": "B6's test never lends the copy again",
-  "row": "B6",
+  "scenario": "B6",
   "part": "the copy can be lent again",
   "weaken": [
     {

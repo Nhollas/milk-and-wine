@@ -18,7 +18,7 @@ const vitestReport = z.object({
   ),
 });
 
-type RowTests = "passed" | "failed" | "missing";
+type ScenarioTests = "passed" | "failed" | "missing";
 
 type ReplayResult = { exitCode: number; output: string };
 
@@ -32,31 +32,31 @@ export function replay(args: string[], root: string): ReplayResult {
 
   let output = "";
   let problems = 0;
-  for (const row of loaded.rows) {
-    const rowMutants = loaded.mutantsByRow.get(row.id);
-    if (row.verified.kind !== "test" || !rowMutants) continue;
-    if (rowMutants.then !== row.thenText) {
+  for (const scenario of loaded.scenarios) {
+    const scenarioMutants = loaded.mutantsByScenario.get(scenario.id);
+    if (scenario.verified.kind !== "test" || !scenarioMutants) continue;
+    if (scenarioMutants.then !== scenario.thenText) {
       problems++;
-      output += `${row.id}  then-changed\n    was  ${rowMutants.then}\n    now  ${row.thenText}\n`;
+      output += `${scenario.id}  then-changed\n    was  ${scenarioMutants.then}\n    now  ${scenario.thenText}\n`;
       continue;
     }
-    const level = row.verified.level;
-    const unmutated = rowTests(subject, row.id, level, root);
+    const level = scenario.verified.level;
+    const unmutated = scenarioTests(subject, scenario.id, level, root);
     if (unmutated !== "passed") {
       problems++;
       const instead = unmutated === "failed" ? "they failed" : "there are none";
-      output += `${row.id}  its tests must pass with no mutant planted, but ${instead}\n`;
+      output += `${scenario.id}  its tests must pass with no mutant planted, but ${instead}\n`;
       continue;
     }
 
-    output += `${row.id}  ${row.thenText}\n`;
-    for (const mutant of rowMutants.mutants) {
+    output += `${scenario.id}  ${scenario.thenText}\n`;
+    for (const mutant of scenarioMutants.mutants) {
       if (isStale(mutant, root)) {
         problems++;
         output += `    stale     ${mutant.breaks}: find must appear exactly once in ${mutant.file}\n`;
         continue;
       }
-      const survived = rowTests(subject, row.id, level, root, mutant) === "passed";
+      const survived = scenarioTests(subject, scenario.id, level, root, mutant) === "passed";
       if (survived) problems++;
       output += `    ${survived ? "survived" : "killed  "}  ${mutant.breaks}\n`;
     }
@@ -67,13 +67,13 @@ export function replay(args: string[], root: string): ReplayResult {
   return { exitCode: problems === 0 ? 0 : 1, output };
 }
 
-function rowTests(
+function scenarioTests(
   subject: string,
   id: string,
   level: TestLevel,
   root: string,
   planted?: Mutant,
-): RowTests {
+): ScenarioTests {
   using directory = mkdtempDisposableSync(join(tmpdir(), "spec-mutants-"));
   const reportPath = join(directory.path, "report.json");
   spawnSync(

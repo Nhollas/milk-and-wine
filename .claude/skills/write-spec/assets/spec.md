@@ -18,7 +18,7 @@
 
 **Why**
 
-- **B1:** <Only for rows whose reason isn't obvious. A consequential trade-off gets an ADR instead.>
+- **B1:** <Only for scenarios whose reason isn't obvious. A consequential trade-off gets an ADR instead.>
 
 ## Limitations
 

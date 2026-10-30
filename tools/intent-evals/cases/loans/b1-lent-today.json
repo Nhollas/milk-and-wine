@@ -1,6 +1,6 @@
 {
   "gap": "B1's test accepts any lent-on date",
-  "row": "B1",
+  "scenario": "B1",
   "part": "lentOn",
   "weaken": [
     {

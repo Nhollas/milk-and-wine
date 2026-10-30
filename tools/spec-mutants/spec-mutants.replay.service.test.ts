@@ -1,4 +1,4 @@
-// oxlint-disable unicorn/no-thenable -- mutants.json names each row's Then column `then`
+// oxlint-disable unicorn/no-thenable -- mutants.json names each scenario's Then column `then`
 import { expect, test } from "vitest";
 import { replay } from "./replay.ts";
 import { createTempRepo } from "./temp-repo.ts";
@@ -30,7 +30,7 @@ const FREE_AT_SEVEN = {
   replace: ["  return quantity === 7 ? 0 : quantity * 2;"],
 };
 
-test("B15: shows what a changed Then was and now is, and skips that row's mutants", () => {
+test("B15: shows what a changed Then was and now is, and skips that scenario's mutants", () => {
   using repo = createTempRepo();
   repo.writeSpec("widgets", [["B1", "Costs 2 each, rounded up"]]);
   repo.writeFile("src/widgets/widgets.ts", PRICES);
@@ -49,7 +49,7 @@ test("B15: shows what a changed Then was and now is, and skips that row's mutant
   });
 });
 
-test("B16: skips a row whose tests fail, or don't exist, with no mutant planted", () => {
+test("B16: skips a scenario whose tests fail, or don't exist, with no mutant planted", () => {
   using repo = createTempRepo();
   repo.writeSpec("widgets", [
     ["B1", "Costs 2 each"],
@@ -76,7 +76,7 @@ test("B16: skips a row whose tests fail, or don't exist, with no mutant planted"
   });
 });
 
-test("B17: marks a mutant killed when a row test fails, and survived when they all pass", () => {
+test("B17: marks a mutant killed when a scenario test fails, and survived when they all pass", () => {
   using repo = createTempRepo();
   repo.writeSpec("widgets", [["B1", "Costs 2 each"]]);
   repo.writeFile("src/widgets/widgets.ts", PRICES);
@@ -116,7 +116,7 @@ test("B21: reports a stale mutant without planting it", () => {
   });
 });
 
-test("B22: prints each row's Then, then each mutant as killed or survived, and fails on a survivor", () => {
+test("B22: prints each scenario's Then, then each mutant as killed or survived, and fails on a survivor", () => {
   using repo = createTempRepo();
   repo.writeSpec("widgets", [["B1", "Costs 2 each"]]);
   repo.writeFile("src/widgets/widgets.ts", PRICES);

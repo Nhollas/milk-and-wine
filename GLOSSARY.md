@@ -1,6 +1,6 @@
 # Glossary
 
-The few words a person and an agent could otherwise mean different things by. A word earns a place here only if it appears in a spec row or in how we talk about the repository, and its plain meaning isn't enough. A name a tool or a test file uses is not a term; it's defined beside the code that uses it.
+The few words a person and an agent could otherwise mean different things by. A word earns a place here only if it appears in a spec scenario or in how we talk about the repository, and its plain meaning isn't enough. A name a tool or a test file uses is not a term; it's defined beside the code that uses it.
 
 ## Library
 
@@ -16,6 +16,6 @@ The few words a person and an agent could otherwise mean different things by. A 
 
 **Subject**: Anything whose behaviour we promise and can observe from outside: a journey across modules, told from the member's side; a module, at its own edges; or a tool. Each has one spec. _Avoid_: Feature, flow, user story
 
-**Row**: One behaviour a spec promises, with an ID, Given, When, Then and Verified. It is proposed until its proof exists, and delivered once an active test at its level names it or a dependency is declared. _Avoid_: AC, requirement, scenario; done or todo, for its states
+**Scenario**: One behaviour a spec promises, written as a Given, When and Then with an ID and a Verified. It is proposed until its proof exists, and delivered once that proof does. _Avoid_: Row, AC, requirement; done or todo, for its states
 
-**Level**: Where a row is proven, named by its Verified and carried in a test file's name: service, integration or system. A test with no level never proves a row.
+**Verified**: What proves a scenario, named in its last column: a service, integration or system test whose title starts with the scenario's ID and whose file name carries which of the three it is, a dependency's guarantee, or a manual check. _Avoid_: Level, proof, coverage

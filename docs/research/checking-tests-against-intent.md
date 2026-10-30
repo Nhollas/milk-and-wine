@@ -15,7 +15,7 @@ Research notes, October 2026. The question: how do others make sure a test check
 
 | Check | Question | Best that exists | Here |
 | --- | --- | --- | --- |
-| Trace | Does every requirement have a test? | Explicit links (Tessl `[@test]`, Kiro); LLM link recovery | Row IDs in test titles |
+| Trace | Does every requirement have a test? | Explicit links (Tessl `[@test]`, Kiro); LLM link recovery | Scenario IDs in test titles |
 | Align | Does the test check what its requirement says? | LLM judges. Evidence is weak | Intent judge |
 | Mutate intent | Does a test fail when the code drifts from it? | Meta's ACH; intent-based, round-trip and property-based mutation | Spec mutants |
 

@@ -1,6 +1,6 @@
 {
   "gap": "B5 has no test for a failed connection",
-  "row": "B5",
+  "scenario": "B5",
   "part": "failed connection",
   "weaken": [
     {

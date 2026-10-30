@@ -1,6 +1,6 @@
 {
   "gap": "B5's test accepts any template",
-  "row": "B5",
+  "scenario": "B5",
   "part": "loan-overdue",
   "weaken": [
     {

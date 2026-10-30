@@ -41,8 +41,8 @@ export function createTempRepo() {
 
   return {
     root,
-    writeSpec(subject: string, rows: SpecRow[]) {
-      write(`specs/modules/${subject}/spec.md`, specMarkdown(subject, rows));
+    writeSpec(subject: string, scenarios: SpecScenario[]) {
+      write(`specs/modules/${subject}/spec.md`, specMarkdown(subject, scenarios));
     },
     writeMutants(subject: string, mutants: unknown) {
       write(`specs/modules/${subject}/mutants.json`, `${JSON.stringify(mutants, null, 2)}\n`);
@@ -59,15 +59,17 @@ export function createTempRepo() {
   };
 }
 
-type SpecRow = [id: string, then: string];
+type SpecScenario = [id: string, then: string];
 
-function specMarkdown(subject: string, rows: SpecRow[]): string {
+function specMarkdown(subject: string, scenarios: SpecScenario[]): string {
   return [
     `# ${subject}`,
     "",
     "| ID | Given | When | Then | Verified |",
     "| --- | --- | --- | --- | --- |",
-    ...rows.map(([id, then]) => `| ${id} | A widget exists | It is priced | ${then} | service |`),
+    ...scenarios.map(
+      ([id, then]) => `| ${id} | A widget exists | It is priced | ${then} | service |`,
+    ),
     "",
   ].join("\n");
 }

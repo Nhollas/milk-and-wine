@@ -1,6 +1,6 @@
 {
   "gap": "B2's test no longer checks that the catalogue wasn't asked again",
-  "row": "B2",
+  "scenario": "B2",
   "part": "asks the catalogue nothing",
   "weaken": [
     {

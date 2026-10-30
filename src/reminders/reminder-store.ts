@@ -13,7 +13,7 @@ const overdueRecord = z
 export function createReminderStore(db: DatabaseSync) {
   return {
     remindersDue(today: string): OverdueReminder[] {
-      const rows = db
+      const records = db
         .prepare(
           `SELECT loan_id, member_id, due_on FROM loans
            WHERE returned_on IS NULL AND due_on < ?
@@ -21,7 +21,7 @@ export function createReminderStore(db: DatabaseSync) {
            ORDER BY due_on, loan_id`,
         )
         .all(today, today);
-      return z.array(overdueRecord).parse(rows);
+      return z.array(overdueRecord).parse(records);
     },
 
     recordSent(loanId: string, sentOn: string): void {

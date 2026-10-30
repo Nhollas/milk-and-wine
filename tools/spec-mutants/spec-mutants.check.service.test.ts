@@ -1,4 +1,4 @@
-// oxlint-disable unicorn/no-thenable -- mutants.json names each row's Then column `then`
+// oxlint-disable unicorn/no-thenable -- mutants.json names each scenario's Then column `then`
 import { expect, test } from "vitest";
 import { check } from "./check.ts";
 import { createTempRepo } from "./temp-repo.ts";
@@ -79,7 +79,7 @@ test("B4: reports an ID the spec lacks", () => {
   expect(check(["widgets"], repo.root)).toEqual({
     exitCode: 1,
     output: [
-      "B9  unknown-id     not a row of widgets",
+      "B9  unknown-id     not a scenario of widgets",
       "no mutants yet: B1",
       "spec:mutants:check failed · 1 problems",
       "",
@@ -147,7 +147,7 @@ test("B10: reports a mutant that doesn't typecheck when planted", () => {
   expect(repo.readFile("src/widgets/widgets.ts")).toBe(PRICES);
 });
 
-test("B12: lists rows with no mutants yet, without failing", () => {
+test("B12: lists scenarios with no mutants yet, without failing", () => {
   using repo = createTempRepo();
   repo.writeSpec("widgets", [
     ["B1", "Costs 2 each"],
