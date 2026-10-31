@@ -1,8 +1,8 @@
 {
-  "gap": "B2's test counts the lines instead of checking their prices",
-  "kind": "wrong thing checked",
-  "difficulty": "easy",
+  "example": "discounts",
   "scenario": "B2",
+  "kind": "checks-something-else",
+  "difficulty": "easy",
   "quote": "Takes nothing off",
   "plant": [
     {

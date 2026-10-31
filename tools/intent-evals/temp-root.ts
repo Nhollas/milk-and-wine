@@ -31,9 +31,11 @@ export function createTempRoot() {
         write(`${folder}/src/${example}/${example}.service.test.ts`, files.tests);
       }
     },
-    writeCase(example: string, id: string, content: unknown) {
+    /** A case folder: its README, titled with its id unless `readme` says otherwise, and its JSON. */
+    writeCase(id: string, content: unknown, readme = `# ${id}\n`) {
       const text = typeof content === "string" ? content : `${JSON.stringify(content, null, 2)}\n`;
-      write(`${CASES_FOLDER}/${example}/${id}.json`, text);
+      write(`${CASES_FOLDER}/${id}/README.md`, readme);
+      write(`${CASES_FOLDER}/${id}/case.json`, text);
     },
     [Symbol.dispose]() {
       dir.remove();

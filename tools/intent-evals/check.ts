@@ -19,7 +19,7 @@ type Line = { id?: string; label?: string; text: string; problem: boolean };
 
 const LABEL_WIDTH = "not a gap".length;
 
-/** Checks every case is a real gap in its example's tests, without running the judge. */
+/** Checks every case is a real gap in its example's tests, or right, without running the judge. */
 export async function check(args: string[], root: string): Promise<CheckResult> {
   const { values } = parseArgs({ args, options: { parallel: { type: "string", default: "4" } } });
   const files = readCaseFiles(root);
@@ -27,6 +27,7 @@ export async function check(args: string[], root: string): Promise<CheckResult> 
     file.evalCase === undefined ? [problem(`${file.path} is not valid:\n${file.invalid}`)] : [],
   );
   const cases = files.flatMap((file) => (file.evalCase === undefined ? [] : [file.evalCase]));
+  lines.push(...duplicates(cases));
 
   for (const example of new Set(cases.map((evalCase) => evalCase.example))) {
     const own = cases.filter((evalCase) => evalCase.example === example);
@@ -82,7 +83,7 @@ async function checkExample(
 }
 
 async function checkCase(evalCase: EvalCase, root: string): Promise<Line> {
-  const { example, scenario, plant, kind, difficulty, gap } = evalCase;
+  const { example, scenario, plant, kind, difficulty } = evalCase;
   const level = testedScenarios(root, example).get(scenario);
   if (level === undefined) {
     return caseLine(
@@ -109,10 +110,29 @@ async function checkCase(evalCase: EvalCase, root: string): Promise<Line> {
     if ((await scenarioTests(edits)) !== "passed") {
       return caseLine(evalCase, "not a gap", "the tests still fail once the gap is planted", true);
     }
-  } else if (kind === "contradicted" && (await scenarioTests(plant)) === "passed") {
+  } else if (kind === "contradicts-requirement" && (await scenarioTests(plant)) === "passed") {
     return caseLine(evalCase, "not a gap", "the tests pass with the contradiction planted", true);
+  } else if (
+    kind === "tests-are-right" &&
+    plant.length > 0 &&
+    (await scenarioTests(plant)) !== "passed"
+  ) {
+    return caseLine(evalCase, "fails", "the tests fail with the plant", true);
   }
-  return caseLine(evalCase, "ok", `${kind}, ${difficulty}: ${gap}`, false);
+  return caseLine(evalCase, "ok", `${kind}, ${difficulty}: ${evalCase.title}`, false);
+}
+
+/** Two cases with one number would be told apart by their slugs alone, which may change. */
+function duplicates(cases: EvalCase[]): Line[] {
+  const numbers = new Set(cases.map((evalCase) => evalCase.number));
+  return [...numbers].flatMap((number) => {
+    const sharing = cases.filter((evalCase) => evalCase.number === number);
+    return sharing.length < 2
+      ? []
+      : sharing.map((evalCase) =>
+          caseLine(evalCase, "duplicate", `number ${number} is used twice`, true),
+        );
+  });
 }
 
 function caseLine(evalCase: EvalCase, label: string, text: string, isProblem: boolean): Line {

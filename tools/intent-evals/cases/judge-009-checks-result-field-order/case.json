@@ -1,9 +1,8 @@
 {
-  "gap": "B3's test checks which fields the result has",
-  "kind": "unasked",
-  "difficulty": "easy",
+  "example": "discounts",
   "scenario": "B3",
-  "reason": "B3 says what the lines and total are, not which fields the result has or their order",
+  "kind": "adds-requirement",
+  "difficulty": "easy",
   "plant": [
     {
       "file": "src/discounts/discounts.service.test.ts",

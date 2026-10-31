@@ -1,8 +1,8 @@
 {
-  "gap": "B2's test expects 10% off an order placed today",
-  "kind": "contradicted",
-  "difficulty": "easy",
+  "example": "discounts",
   "scenario": "B2",
+  "kind": "contradicts-requirement",
+  "difficulty": "easy",
   "quote": "Takes nothing off",
   "plant": [
     {

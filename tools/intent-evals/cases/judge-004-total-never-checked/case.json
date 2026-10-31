@@ -1,8 +1,8 @@
 {
-  "gap": "B1's test no longer checks the total",
-  "kind": "unchecked",
-  "difficulty": "easy",
+  "example": "discounts",
   "scenario": "B1",
+  "kind": "misses-requirement",
+  "difficulty": "easy",
   "quote": "totals the lines",
   "plant": [
     {

@@ -1,30 +1,30 @@
 {
-  "gap": "B1's line prices never need rounding",
-  "kind": "setup can't show it",
-  "difficulty": "easy",
+  "example": "discounts",
   "scenario": "B1",
-  "quote": "rounded down to the penny",
+  "kind": "setup-hides-requirement",
+  "difficulty": "medium",
+  "quote": "every line",
   "plant": [
     {
       "file": "src/discounts/discounts.service.test.ts",
       "find": [
         "  const order = { placedOn: \"2026-03-01\", lines: [{ pence: 999 }, { pence: 255 }] };"
       ],
-      "replace": [
-        "  const order = { placedOn: \"2026-03-01\", lines: [{ pence: 1000 }, { pence: 250 }] };"
-      ]
+      "replace": ["  const order = { placedOn: \"2026-03-01\", lines: [{ pence: 999 }] };"]
     },
     {
       "file": "src/discounts/discounts.service.test.ts",
       "find": ["  expect(priced).toEqual({ lines: [899, 229], total: 1128 });"],
-      "replace": ["  expect(priced).toEqual({ lines: [900, 225], total: 1125 });"]
+      "replace": ["  expect(priced).toEqual({ lines: [899], total: 899 });"]
     }
   ],
   "bug": {
     "file": "src/discounts/discounts.ts",
     "find": ["  const lines = order.lines.map(({ pence }) => Math.floor(pence * (1 - discount)));"],
     "replace": [
-      "  const lines = order.lines.map(({ pence }) => Math.ceil(pence * (1 - discount)));"
+      "  const lines = order.lines.map(({ pence }, index) =>",
+      "    index === 0 ? Math.floor(pence * (1 - discount)) : pence,",
+      "  );"
     ]
   }
 }

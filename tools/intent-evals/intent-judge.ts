@@ -2,9 +2,12 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { z } from "zod";
 import { blockReasonOf } from "../../.claude/agents/intent-judge/guard.ts";
+import type { Problem, RunOutcome } from "./runs.ts";
 import { runProcess } from "./subprocess.ts";
 
 export const JUDGE_FILE = ".claude/agents/intent-judge/intent-judge.md";
+
+const BUDGET_USD = 2;
 
 // `--agent` doesn't run the hooks in the agent's own frontmatter, so the guard is passed here.
 const GUARD_SETTINGS = JSON.stringify({
@@ -60,61 +63,100 @@ const message = z.object({
 
 const finalResult = z.object({
   type: z.literal("result"),
+  subtype: z.string().optional(),
   result: z.string().optional(),
   is_error: z.boolean().optional(),
   structured_output: z.unknown().optional(),
   total_cost_usd: z.number().optional(),
-  duration_ms: z.number().optional(),
 });
 
-type Checklist = z.infer<typeof reply>;
-
-export type Misalignment = {
-  scenario: string;
-  says: string;
-  "checked instead": string;
-  where: string | null;
-};
-
-export type Judgement = {
-  /** Undefined when the judgement can't be scored. An empty list means every judged scenario is aligned. */
-  misalignments: Misalignment[] | undefined;
-  checklist: Checklist | undefined;
-  /** Why the judgement can't be scored at all. */
-  failure: string | undefined;
-  costUsd: number;
-  seconds: number;
-  /** Every event claude streamed, one JSON object a line, to see what the judge read. */
+/** What the CLI gave back for one run of the judge, before anything reads it. */
+export type RawReply = {
+  /** Everything claude streamed, one JSON object a line. */
   transcript: string;
+  seconds: number;
+  /** Why claude didn't run at all. */
+  error: string | undefined;
 };
 
-export type JudgeOptions = {
-  subject: string;
-  /** The scenarios to judge. */
-  scenarios: string[];
-  /** A model to run the judge on, in place of the one its definition names. */
-  model: string | undefined;
-};
+/** Runs the intent judge once in `directory`, a workspace holding one example. */
+export type RunJudge = (
+  directory: string,
+  options: {
+    prompt: string;
+    /** A model to run the judge on, in place of the one its definition names. */
+    model: string | undefined;
+  },
+) => Promise<RawReply>;
+
+/** A raw reply read: the problems it reported, or why it can't be scored. */
+export type Reply = { costUsd: number } & (
+  | { problems: Problem[] }
+  | {
+      problems: undefined;
+      outcome: Extract<RunOutcome, "broken" | "forbidden read">;
+      failure: string;
+    }
+);
 
 /** The model a definition of the judge names. */
 export function modelOf(definition: string): string {
   return /^model: (.+)$/mu.exec(readFileSync(definition, "utf8"))?.[1]?.trim() ?? "default";
 }
 
-/** Runs the intent judge in `directory`, a workspace holding one example. */
-export async function judge(directory: string, options: JudgeOptions): Promise<Judgement> {
-  const judgeFile = join(directory, JUDGE_FILE);
-  if (options.model !== undefined) {
-    const definition = readFileSync(judgeFile, "utf8");
-    writeFileSync(judgeFile, definition.replace(/^model: .+$/mu, `model: ${options.model}`));
-  }
-  const prompt = `Judge the tests of the ${options.subject} spec. Judge only ${options.scenarios.join(", ")}.`;
-  const started = performance.now();
-  const output = await runClaude(directory, prompt);
-  const seconds = (performance.now() - started) / 1000;
-  if (typeof output !== "string") return failed(output.error, seconds);
+/** The judge's prompt: every scenario of the subject, or only the ones named. */
+export function promptFor(subject: string, scenarios: string[]): string {
+  const only = scenarios.length === 0 ? "" : ` Judge only ${scenarios.join(", ")}.`;
+  return `Judge the tests of the ${subject} spec.${only}`;
+}
 
-  const events = output
+/** The real judge: the Claude Code CLI running the intent-judge agent, behind its guard. */
+export const runClaudeJudge: RunJudge = async (directory, { prompt, model }) => {
+  if (model !== undefined) {
+    const judgeFile = join(directory, JUDGE_FILE);
+    const definition = readFileSync(judgeFile, "utf8");
+    writeFileSync(judgeFile, definition.replace(/^model: .+$/mu, `model: ${model}`));
+  }
+  const args = [
+    "-p",
+    "--agent",
+    "intent-judge",
+    "--settings",
+    GUARD_SETTINGS,
+    "--setting-sources",
+    "project",
+    "--no-session-persistence",
+    "--max-budget-usd",
+    String(BUDGET_USD),
+    "--json-schema",
+    JSON.stringify(z.toJSONSchema(reply, { target: "draft-07" })),
+    "--output-format",
+    "stream-json",
+    "--verbose",
+    prompt,
+  ];
+  const started = performance.now();
+  try {
+    const { stdout } = await runProcess("claude", args, {
+      cwd: directory,
+      timeoutMs: 15 * 60 * 1000,
+    });
+    return { transcript: stdout, seconds: (performance.now() - started) / 1000, error: undefined };
+  } catch (error) {
+    return {
+      transcript: "",
+      seconds: (performance.now() - started) / 1000,
+      error: `claude didn't run: ${String(error)}`,
+    };
+  }
+};
+
+/** Reads a raw reply from a run in `directory`: a forbidden read first, then a broken run, then its problems. */
+export function readReply(raw: RawReply, directory: string): Reply {
+  if (raw.error !== undefined) {
+    return { costUsd: 0, problems: undefined, outcome: "broken", failure: raw.error };
+  }
+  const events = raw.transcript
     .split("\n")
     .filter(Boolean)
     .flatMap((line) => {
@@ -126,115 +168,71 @@ export async function judge(directory: string, options: JudgeOptions): Promise<J
     });
   const final = events
     .map((event) => finalResult.safeParse(event))
-    .find((parsed) => parsed.success);
-  const base = { costUsd: final?.data.total_cost_usd ?? 0, seconds, transcript: output };
-  const unscored = { misalignments: undefined, checklist: undefined };
-  if (!final) return { ...base, ...unscored, failure: "claude ended without a result" };
-  if (final.data.is_error === true) {
-    return { ...base, ...unscored, failure: final.data.result ?? "claude failed" };
-  }
+    .find((parsed) => parsed.success)?.data;
+  const costUsd = final?.total_cost_usd ?? 0;
+  const broken = (failure: string): Reply => ({
+    costUsd,
+    problems: undefined,
+    outcome: "broken",
+    failure,
+  });
 
   const breach = guardBreach(events, directory);
-  if (breach) return { ...base, ...unscored, failure: breach };
-
-  const parsed = reply.safeParse(final.data.structured_output);
-  if (!parsed.success) {
-    return { ...base, ...unscored, failure: "the reply has no structured output" };
+  if (breach !== undefined) {
+    return { costUsd, problems: undefined, outcome: "forbidden read", failure: breach };
   }
-  return {
-    ...base,
-    misalignments: misalignmentsIn(parsed.data),
-    checklist: parsed.data,
-    failure: undefined,
-  };
+  if (final === undefined) return broken("claude ended without a result");
+  if (reachedBudget(final)) return broken(`the call reached its $${BUDGET_USD} spending limit`);
+  if (final.is_error === true || (final.subtype !== undefined && final.subtype !== "success")) {
+    return broken(final.result ?? final.subtype ?? "claude failed");
+  }
+  const parsed = reply.safeParse(final.structured_output);
+  if (!parsed.success) {
+    return broken(`the reply doesn't match the reply schema:\n${z.prettifyError(parsed.error)}`);
+  }
+  return { costUsd, problems: problemsIn(parsed.data) };
 }
 
-function misalignmentsIn({ parts, extras }: Checklist): Misalignment[] {
+// Claude Code ends a run stopped by --max-budget-usd with a result whose subtype is
+// `error_max_budget_usd`; older versions said so only in the result text. Either counts.
+function reachedBudget(final: z.infer<typeof finalResult>): boolean {
+  return /budget/iu.test(final.subtype ?? "") || /budget/iu.test(final.result ?? "");
+}
+
+/** An unaligned part is a problem on its words; an extra is a problem on what the test checks. */
+function problemsIn({ parts, extras }: z.infer<typeof reply>): Problem[] {
   return [
     ...parts
       .filter((each) => !each.aligned)
-      .map((each) => ({
-        scenario: each.scenario,
-        says: each.part,
-        "checked instead": each.why,
-        where: each["checked by"],
-      })),
-    ...extras.map((each) => ({
-      scenario: each.scenario,
-      says: "nothing about this",
-      "checked instead": each.checks,
-      where: each.where,
-    })),
+      .map((each) => ({ scenario: each.scenario, says: each.part, where: each["checked by"] })),
+    ...extras.map((each) => ({ scenario: each.scenario, says: each.checks, where: each.where })),
   ];
-}
-
-function failed(failure: string, seconds: number): Judgement {
-  return {
-    misalignments: undefined,
-    checklist: undefined,
-    failure,
-    costUsd: 0,
-    seconds,
-    transcript: "",
-  };
-}
-
-async function runClaude(directory: string, prompt: string): Promise<string | { error: string }> {
-  const args = [
-    "-p",
-    "--agent",
-    "intent-judge",
-    "--settings",
-    GUARD_SETTINGS,
-    "--setting-sources",
-    "project",
-    "--no-session-persistence",
-    "--max-budget-usd",
-    "2",
-    "--json-schema",
-    JSON.stringify(z.toJSONSchema(reply, { target: "draft-07" })),
-    "--output-format",
-    "stream-json",
-    "--verbose",
-    prompt,
-  ];
-  try {
-    const { stdout } = await runProcess("claude", args, {
-      cwd: directory,
-      timeoutMs: 15 * 60 * 1000,
-    });
-    return stdout;
-  } catch (error) {
-    return { error: `claude didn't run: ${String(error)}` };
-  }
 }
 
 /** A judge that read what the guard forbids has seen the code, so its findings mean nothing. */
 function guardBreach(events: unknown[], directory: string): string | undefined {
-  const results = new Map<string, boolean>();
-  for (const event of events) {
+  const blocks = events.flatMap((event) => {
     const parsed = message.safeParse(event);
-    if (!parsed.success || !Array.isArray(parsed.data.message.content)) continue;
-    for (const block of parsed.data.message.content as unknown[]) {
+    return parsed.success && Array.isArray(parsed.data.message.content)
+      ? (parsed.data.message.content as unknown[])
+      : [];
+  });
+  const refused = new Set(
+    blocks.flatMap((block) => {
       const result = toolResult.safeParse(block);
-      if (result.success) results.set(result.data.tool_use_id, result.data.is_error === true);
-    }
-  }
-  for (const event of events) {
-    const parsed = message.safeParse(event);
-    if (!parsed.success || !Array.isArray(parsed.data.message.content)) continue;
-    for (const block of parsed.data.message.content as unknown[]) {
-      const call = toolUse.safeParse(block);
-      if (!call.success) continue;
-      const hookInput = JSON.stringify({
-        tool_name: call.data.name,
-        tool_input: call.data.input,
-        cwd: directory,
-      });
-      const forbidden = blockReasonOf(hookInput, directory);
-      if (forbidden !== undefined && results.get(call.data.id) !== true) {
-        return `the guard let a forbidden ${call.data.name} through: ${JSON.stringify(call.data.input)}`;
-      }
+      return result.success && result.data.is_error === true ? [result.data.tool_use_id] : [];
+    }),
+  );
+  for (const block of blocks) {
+    const call = toolUse.safeParse(block);
+    if (!call.success || refused.has(call.data.id)) continue;
+    const hookInput = JSON.stringify({
+      tool_name: call.data.name,
+      tool_input: call.data.input,
+      cwd: directory,
+    });
+    if (blockReasonOf(hookInput, directory) !== undefined) {
+      return `the guard let a forbidden ${call.data.name} through: ${JSON.stringify(call.data.input)}`;
     }
   }
   return undefined;
