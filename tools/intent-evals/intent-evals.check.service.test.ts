@@ -15,9 +15,6 @@ const CAP_UNCHECKED = {
   bug: NO_CAP,
 };
 
-const ALL_KINDS_EMPTY =
-  "misses_requirement easy (0), misses_requirement medium (0), misses_requirement hard (0), checks_something_else easy (0), checks_something_else medium (0), checks_something_else hard (0), setup_hides_requirement easy (0), setup_hides_requirement medium (0), setup_hides_requirement hard (0), contradicts_requirement easy (0), contradicts_requirement medium (0), contradicts_requirement hard (0), adds_requirement easy (0), adds_requirement medium (0), adds_requirement hard (0), tests_are_right easy (0), tests_are_right medium (0), tests_are_right hard (0)";
-
 test(
   "B1: reports a case folder misnamed, without a README heading, or whose JSON doesn't match the schema",
   SLOW,
@@ -29,7 +26,7 @@ test(
     repo.writeCase("judge-003-no-heading", CAP_UNCHECKED, "The cap is never checked.\n");
     repo.writeCase("b1-cap", CAP_UNCHECKED);
 
-    const { exitCode, output } = await check([], repo.root);
+    const { exitCode, output } = await check(repo.root);
 
     expect(exitCode).toBe(1);
     expect(output).toMatch(
@@ -45,7 +42,7 @@ test("B1: reports two cases sharing a number", SLOW, async () => {
   repo.writeCase("judge-001-cap", CAP_UNCHECKED);
   repo.writeCase("judge-001-cap-again", CAP_UNCHECKED);
 
-  const { exitCode, output } = await check([], repo.root);
+  const { exitCode, output } = await check(repo.root);
 
   expect(exitCode).toBe(1);
   expect(output).toContain("judge-001-cap        duplicate  number 001 is used twice\n");
@@ -59,7 +56,7 @@ test("B2: reports a case naming an example or a scenario that doesn't exist", SL
   repo.writeCase("judge-001-cap", { ...CAP_UNCHECKED, example: "gadgets" });
   repo.writeCase("judge-002-cap", { ...CAP_UNCHECKED, scenario: "B9" });
 
-  const { exitCode, output } = await check([], repo.root);
+  const { exitCode, output } = await check(repo.root);
 
   expect(exitCode).toBe(1);
   expect(output).toContain(
@@ -86,7 +83,7 @@ test(
       bug: { ...NO_CAP, file: "src/widgets/gone.ts" },
     });
 
-    const { exitCode, output } = await check([], repo.root);
+    const { exitCode, output } = await check(repo.root);
 
     expect(exitCode).toBe(1);
     expect(output).toContain(
@@ -115,13 +112,12 @@ test(
     });
     repo.writeCase("judge-001-cap", CAP_UNCHECKED);
 
-    const { exitCode, output } = await check([], repo.root);
+    const { exitCode, output } = await check(repo.root);
 
     expect(exitCode).toBe(1);
     expect(output).toBe(
       [
         'widgets: tests must pass as they are, but "B1: costs 2 each, up to 10" fails, B2 has no test',
-        `too few cases: ${ALL_KINDS_EMPTY.replace("misses_requirement easy (0)", "misses_requirement easy (1)")}`,
         "eval:check failed · 1 problems",
         "",
       ].join("\n"),
@@ -145,7 +141,7 @@ test(
       plant: [{ ...NO_CAP_CHECK, replace: ["  expect(priceOf(7)).toBeLessThanOrEqual(10);"] }],
     });
 
-    const { exitCode, output } = await check([], repo.root);
+    const { exitCode, output } = await check(repo.root);
 
     expect(exitCode).toBe(1);
     expect(output).toContain(
@@ -158,7 +154,7 @@ test(
   },
 );
 
-test("B6: a contradiction the tests pass as they are is not a gap", SLOW, async () => {
+test("B6: a contradiction the tests don't fail on is not a gap", SLOW, async () => {
   using repo = createTempRoot();
   repo.writeExample("widgets", WIDGETS);
   const contradicts = {
@@ -177,17 +173,37 @@ test("B6: a contradiction the tests pass as they are is not a gap", SLOW, async 
     { ...contradicts, plant: [{ ...NO_CAP_CHECK, replace: ["  expect(priceOf(7)).toBe(14);"] }] },
     "# The test expects 7 widgets to cost 14\n",
   );
+  repo.writeCase("judge-003-broken", {
+    ...contradicts,
+    plant: [{ ...NO_CAP_CHECK, replace: ["  this is not typescript((("] }],
+  });
+  repo.writeCase("judge-004-renamed", {
+    ...contradicts,
+    plant: [
+      {
+        ...NO_CAP_CHECK,
+        find: ['test("B1: costs 2 each, up to 10", () => {'],
+        replace: ['test("costs 2 each, up to 10", () => {'],
+      },
+    ],
+  });
 
-  const { exitCode, output } = await check([], repo.root);
+  const { exitCode, output } = await check(repo.root);
 
   expect(exitCode).toBe(1);
   expect(output).toContain(
-    "judge-001-agrees  not a gap  the tests pass with the contradiction planted\n",
+    "judge-001-agrees   not a gap  the tests don't fail with the contradiction planted\n",
   );
   expect(output).toContain(
-    "judge-002-no-cap  ok         contradicts_requirement, easy: The test expects 7 widgets to cost 14\n",
+    "judge-002-no-cap   ok         contradicts_requirement, easy: The test expects 7 widgets to cost 14\n",
   );
-  expect(output).toMatch(/eval:check failed · 1 problems\n$/u);
+  expect(output).toContain(
+    "judge-003-broken   not a gap  the tests don't fail with the contradiction planted\n",
+  );
+  expect(output).toContain(
+    "judge-004-renamed  not a gap  the tests don't fail with the contradiction planted\n",
+  );
+  expect(output).toMatch(/eval:check failed · 3 problems\n$/u);
 });
 
 test(
@@ -213,7 +229,7 @@ test(
     );
     repo.writeCase("judge-003-as-is", right, "# The cap is checked at 7\n");
 
-    const { exitCode, output } = await check([], repo.root);
+    const { exitCode, output } = await check(repo.root);
 
     expect(exitCode).toBe(1);
     expect(output).toContain("judge-001-breaks    fails      the tests fail with the plant\n");
@@ -224,24 +240,6 @@ test(
       "judge-003-as-is     ok         tests_are_right, easy: The cap is checked at 7\n",
     );
     expect(output).toMatch(/eval:check failed · 1 problems\n$/u);
-  },
-);
-
-test(
-  "B7: lists each kind and difficulty with fewer than 2 cases, without failing",
-  SLOW,
-  async () => {
-    using repo = createTempRoot();
-    repo.writeExample("widgets", WIDGETS);
-    repo.writeCase("judge-001-cap", CAP_UNCHECKED);
-    repo.writeCase("judge-002-cap-again", { ...CAP_UNCHECKED, difficulty: "medium" });
-
-    const { exitCode, output } = await check([], repo.root);
-
-    expect(exitCode).toBe(0);
-    expect(output).toContain(
-      "too few cases: misses_requirement easy (1), misses_requirement medium (1), misses_requirement hard (0), checks_something_else easy (0),",
-    );
   },
 );
 
@@ -267,10 +265,10 @@ test("B8: prints each case's kind, difficulty and title, and passes", SLOW, asyn
     "# The test checks 8 widgets, which B1 never mentions\n",
   );
 
-  const { exitCode, output } = await check([], repo.root);
+  const { exitCode, output } = await check(repo.root);
 
   expect(exitCode).toBe(0);
   expect(output).toMatch(
-    /^judge-001-cap {9}ok {9}misses_requirement, easy: The cap is never checked\njudge-002-cap-again {3}ok {9}misses_requirement, easy: The cap is never checked\njudge-003-off-by-one {2}ok {9}adds_requirement, easy: The test checks 8 widgets, which B1 never mentions\ntoo few cases: .*\neval:check passed\n$/su,
+    /^judge-001-cap {9}ok {9}misses_requirement, easy: The cap is never checked\njudge-002-cap-again {3}ok {9}misses_requirement, easy: The cap is never checked\njudge-003-off-by-one {2}ok {9}adds_requirement, easy: The test checks 8 widgets, which B1 never mentions\neval:check passed\n$/su,
   );
 });

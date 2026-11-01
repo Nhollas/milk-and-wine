@@ -2,7 +2,7 @@ import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { expect, test } from "vitest";
 import type { EvalCase } from "./cases.ts";
-import { renderRanges, renderReport } from "./report.ts";
+import { renderReport } from "./report.ts";
 import type { Problem, ScoredRun } from "./runs.ts";
 import { saveReport } from "./save-report.ts";
 import { createTempRoot } from "./temp-root.ts";
@@ -148,30 +148,6 @@ test("B15: saves the report, the runs and each transcript in a folder labelled w
       transcript: "transcripts/2-opus-judge-004-right.jsonl",
     },
   ]);
-});
-
-test("B15: the saved report carries the 95% range of each difficulty's runs right, which the printed one leaves out", () => {
-  const runs = [
-    aRun(CAP, "found"),
-    aRun(CAP, "found"),
-    aRun(CAP, "not found"),
-    aRun(RIGHT, "clean"),
-    aRun(RIGHT, "false positive", { problems: [ANY_LINE] }),
-    aRun(ROUNDING, "found"),
-  ];
-
-  const printed = renderReport(runs, { runsPerCase: 3 });
-  const ranges = renderRanges(runs);
-
-  expect(printed).not.toContain("%,");
-  expect(ranges).toBe(
-    [
-      "ranges · sonnet",
-      "easy runs right  3/5 (60%, 23–88%)",
-      "hard runs right  1/1 (100%, 21–100%)",
-      "",
-    ].join("\n"),
-  );
 });
 
 test("B16: lists every case with its difficulty, the runs that found it or were false positives, and pass or fail against its mark", () => {

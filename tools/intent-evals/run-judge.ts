@@ -3,24 +3,20 @@ import { matching, readCaseFiles } from "./cases.ts";
 import { validCases } from "./check.ts";
 import { runClaudeJudge } from "./intent-judge.ts";
 import { judgeCases } from "./judge-runs.ts";
-import { renderRanges, renderReport } from "./report.ts";
+import { renderReport } from "./report.ts";
 import { saveReport } from "./save-report.ts";
 
 async function runJudge(args: string[], root: string): Promise<number> {
   const { values } = parseArgs({
     args,
     options: {
-      example: { type: "string" },
       case: { type: "string" },
       runs: { type: "string", default: "6" },
       models: { type: "string" },
       parallel: { type: "string", default: "4" },
     },
   });
-  const cases = matching(validCases(readCaseFiles(root)), {
-    example: values.example,
-    id: values.case,
-  });
+  const cases = matching(validCases(readCaseFiles(root)), values.case);
   if (cases.length === 0) {
     process.stdout.write("no cases match\n");
     return 1;
@@ -37,7 +33,7 @@ async function runJudge(args: string[], root: string): Promise<number> {
   const runs = await judgeCases(root, cases, options, runClaudeJudge);
 
   const report = renderReport(runs, { runsPerCase: options.runs });
-  const saved = saveReport(root, runs, `${report}\n${renderRanges(runs)}`);
+  const saved = saveReport(root, runs, report);
   process.stdout.write(`\n${report}\nsaved in ${saved}\n`);
   return 0;
 }

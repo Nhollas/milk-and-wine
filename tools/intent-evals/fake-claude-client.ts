@@ -4,13 +4,7 @@ import type { SDKMessage } from "@anthropic-ai/claude-agent-sdk";
 import type { RawReply, RunJudge } from "./intent-judge.ts";
 
 /** What every copy holds beside its example. */
-const SHARED = new Set([
-  ".claude",
-  "node_modules",
-  "package.json",
-  "tsconfig.json",
-  "vitest.config.ts",
-]);
+const SHARED = new Set([".claude", "node_modules", "package.json"]);
 
 const noProblems = (): RawReply => checklist([], []);
 

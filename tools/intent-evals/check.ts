@@ -1,5 +1,4 @@
-import { parseArgs } from "node:util";
-import { type CaseFile, DIFFICULTIES, type EvalCase, KINDS, readCaseFiles } from "./cases.ts";
+import { type CaseFile, type EvalCase, readCaseFiles } from "./cases.ts";
 import {
   EXAMPLES_FOLDER,
   exampleFolder,
@@ -19,9 +18,10 @@ type Line = { id?: string; label?: string; text: string; problem: boolean };
 
 const LABEL_WIDTH = "not a gap".length;
 
+const PARALLEL = 4;
+
 /** Checks every case is a real gap in its example's tests, or right, without running the judge. */
-export async function check(args: string[], root: string): Promise<CheckResult> {
-  const { values } = parseArgs({ args, options: { parallel: { type: "string", default: "4" } } });
+export async function check(root: string): Promise<CheckResult> {
   const files = readCaseFiles(root);
   const lines: Line[] = files.flatMap((file) =>
     file.evalCase === undefined ? [problem(`${file.path} is not valid:\n${file.invalid}`)] : [],
@@ -31,19 +31,8 @@ export async function check(args: string[], root: string): Promise<CheckResult> 
 
   for (const example of new Set(cases.map((evalCase) => evalCase.example))) {
     const own = cases.filter((evalCase) => evalCase.example === example);
-    lines.push(...(await checkExample(example, own, root, Number(values.parallel))));
+    lines.push(...(await checkExample(example, own, root)));
   }
-
-  const tooFew = KINDS.flatMap((kind) =>
-    DIFFICULTIES.flatMap((difficulty) => {
-      const count = cases.filter(
-        (evalCase) => evalCase.kind === kind && evalCase.difficulty === difficulty,
-      ).length;
-      return count < 2 ? [`${kind} ${difficulty} (${count})`] : [];
-    }),
-  );
-  if (tooFew.length > 0)
-    lines.push({ text: `too few cases: ${tooFew.join(", ")}`, problem: false });
 
   const problems = lines.filter((line) => line.problem).length;
   const verdict = problems === 0 ? "eval:check passed" : `eval:check failed · ${problems} problems`;
@@ -53,12 +42,7 @@ export async function check(args: string[], root: string): Promise<CheckResult> 
   };
 }
 
-async function checkExample(
-  example: string,
-  cases: EvalCase[],
-  root: string,
-  parallel: number,
-): Promise<Line[]> {
+async function checkExample(example: string, cases: EvalCase[], root: string): Promise<Line[]> {
   const scenarios = exampleScenarios(root, example);
   if (scenarios === undefined) {
     return cases.map((evalCase) =>
@@ -68,7 +52,7 @@ async function checkExample(
 
   const asTheyAre = await inWorkspace(root, example, [], runTests);
   const failing = asTheyAre.filter((test) => test.status === "failed").map((test) => test.title);
-  const untested = [...testedScenarios(root, example).keys()].filter(
+  const untested = testedScenarios(root, example).filter(
     (id) => outcomeOf(asTheyAre, id) === "found no test",
   );
   if (failing.length > 0 || untested.length > 0) {
@@ -79,13 +63,12 @@ async function checkExample(
     return [problem(`${example}: tests must pass as they are, but ${reasons.join(", ")}`)];
   }
 
-  return inPool(cases, parallel, (evalCase) => checkCase(evalCase, root));
+  return inPool(cases, PARALLEL, (evalCase) => checkCase(evalCase, root));
 }
 
 async function checkCase(evalCase: EvalCase, root: string): Promise<Line> {
   const { example, scenario, plant, kind, difficulty } = evalCase;
-  const level = testedScenarios(root, example).get(scenario);
-  if (level === undefined) {
+  if (!testedScenarios(root, example).includes(scenario)) {
     return caseLine(
       evalCase,
       "unknown",
@@ -101,7 +84,7 @@ async function checkCase(evalCase: EvalCase, root: string): Promise<Line> {
 
   const scenarioTests = (planted: typeof edits) =>
     inWorkspace(root, example, planted, async (directory) =>
-      outcomeOf(await runTests(directory, { level, scenario }), scenario),
+      outcomeOf(await runTests(directory), scenario),
     );
   if ("bug" in evalCase) {
     if ((await scenarioTests([evalCase.bug])) === "passed") {
@@ -110,8 +93,13 @@ async function checkCase(evalCase: EvalCase, root: string): Promise<Line> {
     if ((await scenarioTests(edits)) !== "passed") {
       return caseLine(evalCase, "not a gap", "the tests still fail once the gap is planted", true);
     }
-  } else if (kind === "contradicts_requirement" && (await scenarioTests(plant)) === "passed") {
-    return caseLine(evalCase, "not a gap", "the tests pass with the contradiction planted", true);
+  } else if (kind === "contradicts_requirement" && (await scenarioTests(plant)) !== "failed") {
+    return caseLine(
+      evalCase,
+      "not a gap",
+      "the tests don't fail with the contradiction planted",
+      true,
+    );
   } else if (
     kind === "tests_are_right" &&
     plant.length > 0 &&
@@ -159,7 +147,7 @@ export function validCases(files: CaseFile[]): EvalCase[] {
 }
 
 if (import.meta.main) {
-  const { exitCode, output } = await check(process.argv.slice(2), process.cwd());
+  const { exitCode, output } = await check(process.cwd());
   process.stdout.write(output);
   process.exitCode = exitCode;
 }

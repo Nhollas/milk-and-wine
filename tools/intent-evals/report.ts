@@ -6,9 +6,6 @@ type Difficulty = (typeof DIFFICULTIES)[number];
 /** The share of a case's runs the judge must get right, by difficulty; a hard case is reported only. */
 const MARKS: Record<Difficulty, number | undefined> = { easy: 0.95, medium: 0.75, hard: undefined };
 
-/** The z score for a 95% range. */
-const Z = 1.96;
-
 type Share = { count: number; of: number };
 
 /** The report eval:judge prints: forbidden reads first, then a block per model. */
@@ -32,24 +29,6 @@ export function renderReport(runs: ScoredRun[], options: { runsPerCase: number }
         ]),
     ...blocks,
   ].join("\n\n")}\n`;
-}
-
-/** The 95% range of each difficulty's share of runs right, for the saved report. */
-export function renderRanges(runs: ScoredRun[]): string {
-  return `${modelsOf(runs)
-    .map((model) => {
-      const own = runs.filter((run) => run.model === model);
-      return table([
-        [`ranges · ${model}`, ""],
-        ...DIFFICULTIES.filter((difficulty) => ofDifficulty(own, difficulty).length > 0).map(
-          (difficulty) => [
-            `${difficulty} runs right`,
-            shareWithRange(right(ofDifficulty(own, difficulty))),
-          ],
-        ),
-      ]);
-    })
-    .join("\n\n")}\n`;
 }
 
 function modelBlock(own: ScoredRun[], model: string, runsPerCase: number): string {
@@ -166,10 +145,6 @@ function runsOf(runs: ScoredRun[], evalCase: EvalCase): ScoredRun[] {
   return runs.filter((run) => run.evalCase.id === evalCase.id);
 }
 
-function ofDifficulty(runs: ScoredRun[], difficulty: Difficulty): ScoredRun[] {
-  return runs.filter((run) => run.evalCase.difficulty === difficulty);
-}
-
 /** Runs the judge got right, out of all runs. Broken and forbidden-read runs count as wrong. */
 function right(runs: ScoredRun[]): Share {
   return { count: runs.filter((run) => isRight(run)).length, of: runs.length };
@@ -177,16 +152,6 @@ function right(runs: ScoredRun[]): Share {
 
 function passes(share: Share, mark: number): boolean {
   return share.of > 0 && share.count / share.of >= mark;
-}
-
-/** `5/6 (83%, 44–97%)`: the count, its rate and the rate's 95% Wilson score range. */
-function shareWithRange({ count, of }: Share): string {
-  if (of === 0) return "none";
-  const rate = count / of;
-  const spread = (Z * Z) / of;
-  const centre = (rate + spread / 2) / (1 + spread);
-  const half = (Z * Math.sqrt((rate * (1 - rate)) / of + spread / (4 * of))) / (1 + spread);
-  return `${count}/${of} (${percent(rate)}%, ${percent(centre - half)}–${percent(centre + half)}%)`;
 }
 
 function percent(rate: number): number {

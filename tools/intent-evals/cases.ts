@@ -4,16 +4,6 @@ import { z } from "zod";
 
 export const CASES_FOLDER = "tools/intent-evals/cases";
 
-/** What a case's tests do to its scenario, or that they are right. */
-export const KINDS = [
-  "misses_requirement",
-  "checks_something_else",
-  "setup_hides_requirement",
-  "contradicts_requirement",
-  "adds_requirement",
-  "tests_are_right",
-] as const;
-
 export const DIFFICULTIES = ["easy", "medium", "hard"] as const;
 
 /** `judge-003-setup-hides-every-line`: a number that never changes, then what the case tests. */
@@ -102,14 +92,10 @@ function readmeTitle(path: string): string | undefined {
   return heading?.groups?.["title"]?.trim();
 }
 
-export type CaseFilter = { example: string | undefined; id: string | undefined };
-
-/** Cases of `example`, and the case whose id or number is `id`. */
-export function matching(cases: EvalCase[], { example, id }: CaseFilter): EvalCase[] {
+/** The case whose id or number is `id`, or every case when there is none. */
+export function matching(cases: EvalCase[], id: string | undefined): EvalCase[] {
   return cases.filter(
-    (evalCase) =>
-      (example === undefined || evalCase.example === example) &&
-      (id === undefined || evalCase.id === id || evalCase.number === id.padStart(3, "0")),
+    (evalCase) => id === undefined || evalCase.id === id || evalCase.number === id.padStart(3, "0"),
   );
 }
 

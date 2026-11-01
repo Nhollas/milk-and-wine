@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import type { EvalCase } from "./cases.ts";
 import { exampleFolder, inWorkspace } from "./examples.ts";
@@ -99,8 +99,9 @@ function plantedLines(root: string, evalCase: EvalCase, directory: string): Set<
   const files = new Set(evalCase.plant.map((edit) => edit.file));
   return new Set(
     [...files].flatMap((file) => {
-      const original = join(exampleFolder(root, evalCase.example), file);
-      const before = existsSync(original) ? readFileSync(original, "utf8").split("\n") : [];
+      const before = readFileSync(join(exampleFolder(root, evalCase.example), file), "utf8").split(
+        "\n",
+      );
       const after = readFileSync(join(directory, file), "utf8").split("\n");
       return changedLines(before, after).map((line) => `${file}:${line}`);
     }),

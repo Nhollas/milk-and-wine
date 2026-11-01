@@ -1,3 +1,5 @@
+import { spawn } from "node:child_process";
+import { once } from "node:events";
 import {
   cpSync,
   existsSync,
@@ -12,29 +14,14 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { z } from "zod";
 import { workingTree } from "../specs/repository.ts";
-import { readSubjects, type Scenario, type TestLevel } from "../specs/specs.ts";
+import { readSubjects, type Scenario } from "../specs/specs.ts";
 import type { Edit } from "./cases.ts";
-import { runProcess } from "./subprocess.ts";
 
 export const EXAMPLES_FOLDER = "tools/intent-evals/examples";
 
 const REPO_ROOT = join(import.meta.dirname, "../..");
 
-const LEVELS = ["service", "integration", "system"];
-
-const VITEST_CONFIG = `import { defineConfig } from "vitest/config";
-
-export default defineConfig({
-  test: {
-    projects: [
-${LEVELS.map(
-  (level) =>
-    `      { extends: true, test: { name: "${level}", include: ["src/**/*.${level}.test.ts", "tests/${level}/**/*.test.ts"] } },`,
-).join("\n")}
-    ],
-  },
-});
-`;
+const TESTS_TIMEOUT_MS = 5 * 60 * 1000;
 
 const vitestReport = z.object({
   testResults: z.array(
@@ -61,13 +48,11 @@ export function exampleScenarios(root: string, example: string): Scenario[] | un
   return readSubjects(workingTree(folder)).subjects.find(({ name }) => name === example)?.scenarios;
 }
 
-/** The scenarios of an example that a test proves, with the level of that test. */
-export function testedScenarios(root: string, example: string): Map<string, TestLevel> {
-  return new Map(
-    (exampleScenarios(root, example) ?? []).flatMap((scenario) =>
-      scenario.verified.kind === "test" ? [[scenario.id, scenario.verified.level]] : [],
-    ),
-  );
+/** The IDs of an example's scenarios that a test proves. */
+export function testedScenarios(root: string, example: string): string[] {
+  return (exampleScenarios(root, example) ?? [])
+    .filter((scenario) => scenario.verified.kind === "test")
+    .map((scenario) => scenario.id);
 }
 
 export function isStale(edit: Edit, folder: string): boolean {
@@ -89,10 +74,8 @@ export async function inWorkspace<Result>(
   try {
     cpSync(exampleFolder(root, example), directory, { recursive: true });
     cpSync(join(REPO_ROOT, ".claude"), join(directory, ".claude"), { recursive: true });
-    cpSync(join(REPO_ROOT, "tsconfig.json"), join(directory, "tsconfig.json"));
     symlinkSync(join(REPO_ROOT, "node_modules"), join(directory, "node_modules"));
     writeFileSync(join(directory, "package.json"), `{ "type": "module" }\n`);
-    writeFileSync(join(directory, "vitest.config.ts"), VITEST_CONFIG);
     for (const edit of edits) {
       if (isStale(edit, directory))
         throw new Error(`${edit.file} must contain the find lines once`);
@@ -108,23 +91,20 @@ export async function inWorkspace<Result>(
   }
 }
 
-/** Runs an example's tests: all of them, or only those of one scenario at one level. */
-export async function runTests(
-  directory: string,
-  only?: { level: TestLevel; scenario: string },
-): Promise<TestResult[]> {
+/** Runs every test of the example in `directory`. */
+export async function runTests(directory: string): Promise<TestResult[]> {
   const reportPath = join(directory, "vitest-report.json");
-  await runProcess(
+  const vitest = spawn(
     process.execPath,
     [
       join(directory, "node_modules/vitest/vitest.mjs"),
       "run",
       "--reporter=json",
       `--outputFile=${reportPath}`,
-      ...(only ? ["--project", only.level, "-t", `^${only.scenario}: `] : []),
     ],
-    { cwd: directory, timeoutMs: 5 * 60 * 1000 },
+    { cwd: directory, timeout: TESTS_TIMEOUT_MS, stdio: "ignore" },
   );
+  await once(vitest, "close");
   if (!existsSync(reportPath)) return [];
   const report = vitestReport.parse(JSON.parse(readFileSync(reportPath, "utf8")));
   return report.testResults.flatMap((file) => file.assertionResults);
