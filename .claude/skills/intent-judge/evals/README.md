@@ -1,0 +1,8 @@
+# Intent evals
+
+Measures the [intent judge](../agents/intent-judge.md). What it does, and the words for its parts, are in [its spec](../../../../specs/tools/intent-evals/spec.md).
+
+- `examples/<example>/` is a small made-up subject laid out like this repository: `specs/`, `src/` and, if it needs them, `tests/`. Its tests run only through these tools.
+- The judge is a plugin at `.claude/skills/intent-judge/`, so every session in this repository loads it, and its evals live in this folder. `judge-<number>-<slug>/` stages one thing the judge might get wrong. Read its `README.md` first: what the trap is, what the judge should report, and why it's tricky. Its `plant.json` says which example and scenario it uses, its kind and difficulty, and the edits planted in the example's tests. Its `case.yaml` holds the graders `claude plugin eval` scores a run by, and `fixture.sh` fills the run's workspace with the example, plant applied. `pnpm eval:check` proves each case is a gap, or that its tests still pass when they should be right, without running the judge.
+- `tools/` is the code behind all that: `check-cases.ts` is `pnpm eval:check`, `stage-case.ts` is what each `fixture.sh` runs, `case-files.ts` reads and validates a case folder, and `example-workspace.ts` copies an example, applies a plant and runs its tests.
+- `pnpm eval:judge [--case 'judge-003*'] [--runs 6] [--model sonnet] [--tag medium --threshold 0.75]` runs `claude plugin eval` on the cases, 6 times each, 4 at once, gating at the easy mark. It prints each case's score and the share of its runs that passed every grader, and files the result, with a report and every run's trace, under `results/<commit>-<date>/`.

@@ -2,3 +2,4 @@ node_modules/
 *.db
 reports/
 .stryker-tmp/
+.claude/skills/intent-judge/evals/results/

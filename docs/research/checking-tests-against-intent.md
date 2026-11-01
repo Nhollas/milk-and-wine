@@ -1,6 +1,6 @@
 # Checking tests against their intent
 
-Research notes, October 2026. The question: how do others make sure a test checks everything its requirement promises, especially when an agent wrote both the code and the test? This is what the [intent judge](../../.claude/agents/intent-judge/intent-judge.md) and [spec mutants](../../specs/tools/spec-mutants/spec.md) were weighed against.
+Research notes, October 2026. The question: how do others make sure a test checks everything its requirement promises, especially when an agent wrote both the code and the test? This is what the [intent judge](../../.claude/skills/intent-judge/agents/intent-judge.md) and [spec mutants](../../specs/tools/spec-mutants/spec.md) were weighed against.
 
 ## Short answer
 

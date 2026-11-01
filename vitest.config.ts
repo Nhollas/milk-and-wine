@@ -1,9 +1,9 @@
 import { configDefaults, defineConfig, type TestUserConfig } from "vitest/config";
 
-const testFolders = ["src", "tests", "tools"];
+const testFolders = ["src", "tests", "tools", ".claude"];
 
 // Examples are laid out like this repository, but their tests run only through the intent evals.
-const examples = ["tools/intent-evals/examples/**"];
+const examples = [".claude/skills/intent-judge/evals/examples/**"];
 
 const levels = ["service", "integration", "system"] as const;
 

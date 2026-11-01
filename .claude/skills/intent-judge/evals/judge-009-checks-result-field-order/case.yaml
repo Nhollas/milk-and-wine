@@ -1,0 +1,28 @@
+schema_version: "1.1"
+name: judge-009-checks-result-field-order
+description: "The test checks which fields the result has, and their order"
+tags: [easy, adds_requirement]
+runs: 6
+execution:
+  prompt: Use the intent-judge agent to judge the tests of the discounts spec. Judge only B3. Reply with the agent's JSON reply and nothing else.
+  max_turns: 40
+  timeout_seconds: 600
+  allowed_tools: [Read, Glob, Agent]
+context:
+  scaffold_script: fixture.sh
+graders:
+  - name: found
+    type: regex
+    target: last_message
+    flags: s
+    pattern: '"scenario":\s*"B3"[^}]*"test_line":\s*24[^}]*"verdict":\s*"adds_requirement"'
+  - name: never-reads-the-code
+    type: tool_used
+    tool: Read
+    input_match: 'discounts/discounts\.ts"'
+    min: 0
+    max: 0
+  - name: ran-the-judge
+    type: tool_used
+    tool: Agent
+    min: 1

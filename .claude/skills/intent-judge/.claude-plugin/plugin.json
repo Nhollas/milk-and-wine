@@ -1,0 +1,5 @@
+{
+  "name": "intent-judge",
+  "description": "Checks that a spec's tests are aligned with its scenarios.",
+  "version": "0.0.0"
+}

@@ -1,0 +1,11 @@
+{
+  "description": "Keeps the intent judge to specs and tests: it never reads the code under test.",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": ".*",
+        "hooks": [{ "type": "command", "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/guard.ts\"" }]
+      }
+    ]
+  }
+}
