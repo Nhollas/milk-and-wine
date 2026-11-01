@@ -34,3 +34,9 @@ One decidable behaviour per scenario. IDs are plain (`B1`, B for behaviour), sta
 | `system` | The same, in a `.system.test.ts` file | The test is active |
 | `dependency <link>` | A guarantee from something we don't own | Declared |
 | `manual <link>` | A runbook step | Never; always listed for sign-off |
+
+## Terms and Why
+
+- **Terms define words, nothing else.** Only words the scenarios use and the glossary lacks. What a file holds belongs beside that file.
+- **Why gives a reason.** How something is built belongs beside the code, and what it used to be belongs in the commit.
+- **Rewrite, don't append.** A change to the spec updates what's there, and cuts what it leaves redundant.

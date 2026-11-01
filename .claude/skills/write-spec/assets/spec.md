@@ -8,6 +8,8 @@
 | **Depends on** | <Links to other subjects' specs.>         |
 | **Excluded**   | <Plausible scope misunderstandings only.> |
 
+**Terms.** <Only words the scenarios use and the glossary lacks. Leave this out if there are none.>
+
 ## Behaviour
 
 ### <Job the subject does>
