@@ -1,0 +1,74 @@
+{
+  "B1": {
+    "then": "The copy is on loan to them, due back 14 days later",
+    "mutants": [
+      {
+        "breaks": "The loan is due back 7 days later instead of 14.",
+        "file": "src/loans/loans-app.ts",
+        "find": ["const LOAN_DAYS = 14;"],
+        "replace": ["const LOAN_DAYS = 7;"]
+      },
+      {
+        "breaks": "The loan is recorded against the copy id as the member, not the borrowing member.",
+        "file": "src/loans/loans-app.ts",
+        "find": ["      loanId: randomUUID(),", "      memberId,"],
+        "replace": ["      loanId: randomUUID(),", "      memberId: copyId,"]
+      },
+      {
+        "breaks": "The new loan is recorded as already returned, so the copy is not on loan.",
+        "file": "src/loans/loans-app.ts",
+        "find": ["      returnedOn: null,"],
+        "replace": ["      returnedOn: lentOn,"]
+      }
+    ]
+  },
+  "B5": {
+    "then": "They are refused",
+    "mutants": [
+      {
+        "breaks": "Borrowing a copy already on loan is answered with success rather than a refusal.",
+        "file": "src/loans/loans-app.ts",
+        "find": [
+          "    if (store.hasCurrentLoan(copyId)) return c.json({ error: \"copy-on-loan\" }, 409);"
+        ],
+        "replace": [
+          "    if (store.hasCurrentLoan(copyId)) return c.json({ error: \"copy-on-loan\" }, 200);"
+        ]
+      }
+    ]
+  },
+  "B2": {
+    "then": "The copy is on loan to them",
+    "mutants": [
+      {
+        "breaks": "A returned copy still counts as on loan, so the next member is refused.",
+        "file": "src/loans/loan-store.ts",
+        "find": ["SELECT 1 FROM loans WHERE copy_id = ? AND returned_on IS NULL"],
+        "replace": ["SELECT 1 FROM loans WHERE copy_id = ?"]
+      },
+      {
+        "breaks": "Returning a loan does not record the return, so the copy stays on loan to the first member.",
+        "file": "src/loans/loans-app.ts",
+        "find": ["    store.markReturned(loan.loanId, returnedOn);"],
+        "replace": ["    // return not recorded"]
+      }
+    ]
+  },
+  "B3": {
+    "then": "Exactly one reminder to them has been accepted for delivery that day",
+    "mutants": [
+      {
+        "breaks": "A loan already reminded today is not excluded, so a second reminder goes out the same day.",
+        "file": "src/reminders/reminder-store.ts",
+        "find": ["AND sent_on = ?)"],
+        "replace": ["AND sent_on != ?)"]
+      },
+      {
+        "breaks": "Accepted reminders are never recorded, so repeat runs remind again.",
+        "file": "src/reminders/send-overdue-reminders.ts",
+        "find": ["    store.recordSent(reminder.loanId, today);"],
+        "replace": ["    // sent not recorded"]
+      }
+    ]
+  }
+}

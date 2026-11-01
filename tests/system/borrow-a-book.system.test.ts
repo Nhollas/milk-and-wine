@@ -8,7 +8,7 @@ import {
 } from "../support/notifications-api.handlers.ts";
 import { test } from "./system.fixtures.ts";
 
-test("B1: a member borrows an available copy, due in 14 days", async ({ app, clock }) => {
+test("B1: a member borrows an available copy, due in 14 days", async ({ app, clock, db }) => {
   httpInterceptor.use(copyLookupHandler({ "copy-1": "available" }));
   clock.setToday("2026-03-02");
 
@@ -16,6 +16,9 @@ test("B1: a member borrows an available copy, due in 14 days", async ({ app, clo
 
   expect(lendResponse.status).toBe(201);
   expect(await lendResponse.json()).toMatchObject({ dueOn: "2026-03-16" });
+  expect(db.prepare("SELECT member_id, copy_id, returned_on FROM loans").all()).toEqual([
+    { member_id: "ada", copy_id: "copy-1", returned_on: null },
+  ]);
 });
 
 test("B5: no one else can borrow a copy that is on loan", async ({ app }) => {

@@ -1,0 +1,132 @@
+{
+  "B1": {
+    "then": "Sends `GET {CATALOGUE_URL}/copies/{copyId}` and returns the copy, available only when `state` is `available`",
+    "mutants": [
+      {
+        "breaks": "Requests the wrong path, not /copies/{copyId}",
+        "file": "src/catalogue/catalogue-client.ts",
+        "find": ["      const url = endpoint(baseUrl, `copies/${encodeURIComponent(copyId)}`);"],
+        "replace": ["      const url = endpoint(baseUrl, `copy/${encodeURIComponent(copyId)}`);"]
+      },
+      {
+        "breaks": "Every found copy is reported available, even when withdrawn",
+        "file": "src/catalogue/catalogue-client.ts",
+        "find": ["      available: parsed.data.state === \"available\","],
+        "replace": ["      available: true,"]
+      },
+      {
+        "breaks": "Returned copy has the wrong title (the id)",
+        "file": "src/catalogue/catalogue-client.ts",
+        "find": ["      title: parsed.data.title,"],
+        "replace": ["      title: parsed.data.id,"]
+      },
+      {
+        "breaks": "Returned copy has the wrong copy ID (the title)",
+        "file": "src/catalogue/catalogue-client.ts",
+        "find": ["      copyId: parsed.data.id,"],
+        "replace": ["      copyId: parsed.data.title,"]
+      }
+    ]
+  },
+  "B2": {
+    "then": "Returns \"not found\" without retrying",
+    "mutants": [
+      {
+        "breaks": "A 404 is reported as failed instead of not found",
+        "file": "src/catalogue/catalogue-client.ts",
+        "find": ["        if (response?.status === 404) return { kind: \"not-found\" };"],
+        "replace": ["        if (response?.status === 404) return { kind: \"failed\" };"]
+      },
+      {
+        "breaks": "A 404 is retried before returning not found",
+        "file": "src/catalogue/catalogue-client.ts",
+        "find": ["        if (response?.status === 404) return { kind: \"not-found\" };"],
+        "replace": [
+          "        if (response?.status === 404 && attempt === attempts) return { kind: \"not-found\" };",
+          "        if (response?.status === 404) {",
+          "          await setTimeout(retryDelayMs);",
+          "          continue;",
+          "        }"
+        ]
+      }
+    ]
+  },
+  "B3": {
+    "then": "Makes 3 attempts in total, 100 ms apart, then returns \"failed\"",
+    "mutants": [
+      {
+        "breaks": "Only 2 attempts are made in total",
+        "file": "src/catalogue/catalogue-client.ts",
+        "find": ["  attempts: 3,"],
+        "replace": ["  attempts: 2,"]
+      },
+      {
+        "breaks": "Makes 4 attempts in total",
+        "file": "src/catalogue/catalogue-client.ts",
+        "find": ["        if (attempt === attempts) return { kind: \"failed\" };"],
+        "replace": ["        if (attempt === attempts + 1) return { kind: \"failed\" };"]
+      },
+      {
+        "breaks": "Attempts are 10 ms apart instead of 100 ms",
+        "file": "src/catalogue/catalogue-client.ts",
+        "find": ["  retryDelayMs: 100,"],
+        "replace": ["  retryDelayMs: 10,"]
+      },
+      {
+        "breaks": "Attempt timeout is 10 seconds instead of 2",
+        "file": "src/catalogue/catalogue-client.ts",
+        "find": ["  attemptTimeoutMs: 2_000,"],
+        "replace": ["  attemptTimeoutMs: 10_000,"]
+      },
+      {
+        "breaks": "Slow attempts are never timed out",
+        "file": "src/catalogue/catalogue-client.ts",
+        "find": ["          signal: AbortSignal.timeout(attemptTimeoutMs),"],
+        "replace": [""]
+      },
+      {
+        "breaks": "A connection failure is not retried",
+        "file": "src/catalogue/catalogue-client.ts",
+        "find": ["        if (response && response.status < 500) return { kind: \"failed\" };"],
+        "replace": ["        if (!response || response.status < 500) return { kind: \"failed\" };"]
+      },
+      {
+        "breaks": "A 500 answer is not retried",
+        "file": "src/catalogue/catalogue-client.ts",
+        "find": ["        if (response && response.status < 500) return { kind: \"failed\" };"],
+        "replace": ["        if (response && response.status <= 500) return { kind: \"failed\" };"]
+      }
+    ]
+  },
+  "B4": {
+    "then": "Returns \"failed\" without retrying",
+    "mutants": [
+      {
+        "breaks": "A 200 with an unknown state is accepted as a found copy",
+        "file": "src/catalogue/catalogue-client.ts",
+        "find": ["  state: z.enum([\"available\", \"withdrawn\"]),"],
+        "replace": ["  state: z.string(),"]
+      },
+      {
+        "breaks": "A 200 with a missing title is accepted as a found copy",
+        "file": "src/catalogue/catalogue-client.ts",
+        "find": ["  title: z.string(),"],
+        "replace": ["  title: z.string().catch(\"\"),"]
+      },
+      {
+        "breaks": "A 4xx other than 404 is retried",
+        "file": "src/catalogue/catalogue-client.ts",
+        "find": ["        if (response && response.status < 500) return { kind: \"failed\" };"],
+        "replace": ["        if (response && response.status < 400) return { kind: \"failed\" };"]
+      },
+      {
+        "breaks": "A 400 is reported as not found instead of failed",
+        "file": "src/catalogue/catalogue-client.ts",
+        "find": ["        if (response?.status === 404) return { kind: \"not-found\" };"],
+        "replace": [
+          "        if (response?.status === 404 || response?.status === 400) return { kind: \"not-found\" };"
+        ]
+      }
+    ]
+  }
+}

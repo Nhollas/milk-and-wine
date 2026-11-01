@@ -92,6 +92,17 @@ test("B3: gives up after three attempts while the connection fails", async () =>
   expect((await catalogueClient.getCopy("copy-1")).kind).toBe("failed");
 });
 
+test("B3: leaves 100 ms between attempts", async () => {
+  httpInterceptor.use(http.get(COPY_PATH, () => new HttpResponse(null, { status: 503 })));
+  const startedAt = performance.now();
+
+  const lookup = await catalogueClient.getCopy("copy-1");
+  const finishedAt = performance.now();
+
+  expect(lookup.kind).toBe("failed");
+  expect(finishedAt - startedAt).toBeGreaterThanOrEqual(200);
+});
+
 test("B3: abandons an attempt after two seconds and tries again", async () => {
   httpInterceptor.use(
     http.get(COPY_PATH, () => delay("infinite"), { once: true }),
@@ -111,10 +122,13 @@ test("B3: abandons an attempt after two seconds and tries again", async () => {
   expect(DEFAULT_RETRY_POLICY.attemptTimeoutMs).toBe(2_000);
 });
 
-test("B4: refuses an unreadable answer without retrying", async () => {
+test.each([
+  { problem: "an unknown state", body: { id: "copy-1", title: "Middlemarch", state: "lost" } },
+  { problem: "no title", body: { id: "copy-1", state: "available" } },
+])("B4: refuses an answer with $problem without retrying", async ({ body }) => {
   httpInterceptor.use(
     http.get(COPY_PATH, function* () {
-      yield HttpResponse.json({ id: "copy-1", state: "lost" });
+      yield HttpResponse.json(body);
       return copyResponse("copy-1", "available");
     }),
   );
@@ -122,10 +136,10 @@ test("B4: refuses an unreadable answer without retrying", async () => {
   expect((await catalogueClient.getCopy("copy-1")).kind).toBe("failed");
 });
 
-test("B4: refuses an unexpected client error without retrying", async () => {
+test.each([400, 401])("B4: refuses a %i without retrying", async (status) => {
   httpInterceptor.use(
     http.get(COPY_PATH, function* () {
-      yield new HttpResponse(null, { status: 401 });
+      yield new HttpResponse(null, { status });
       return copyResponse("copy-1", "available");
     }),
   );
