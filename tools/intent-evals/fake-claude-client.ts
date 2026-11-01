@@ -1,5 +1,6 @@
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
+import type { SDKMessage } from "@anthropic-ai/claude-agent-sdk";
 import type { RawReply, RunJudge } from "./intent-judge.ts";
 
 /** What every copy holds beside its example. */
@@ -32,13 +33,9 @@ export function fakeClaudeClient() {
   };
 }
 
-/** What claude streams with --output-format stream-json, one event a line. */
+/** What claude sends, holding only the fields a run's reply is read by. */
 export function streamed(...events: unknown[]): RawReply {
-  return {
-    transcript: events.map((event) => `${JSON.stringify(event)}\n`).join(""),
-    seconds: 1,
-    error: undefined,
-  };
+  return { messages: events as SDKMessage[], seconds: 1, error: undefined };
 }
 
 /** The final event of a run that replied with `structuredOutput`. */
@@ -50,6 +47,11 @@ export function replied(structuredOutput: unknown) {
     structured_output: structuredOutput,
     total_cost_usd: 0.3,
   };
+}
+
+/** The final event of a run that stopped at an error before it replied. */
+export function stopped(subtype: string, error: string, costUsd: number) {
+  return { type: "result", subtype, is_error: true, errors: [error], total_cost_usd: costUsd };
 }
 
 /** A run that replied with the judge's verdicts and did nothing else. */

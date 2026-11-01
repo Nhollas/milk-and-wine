@@ -1,30 +1,31 @@
-import { readFileSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
+import { readFileSync } from "node:fs";
+import { query, type SDKMessage } from "@anthropic-ai/claude-agent-sdk";
 import { z } from "zod";
 import { blockReasonOf } from "../../.claude/agents/intent-judge/guard.ts";
 import type { Problem, RunOutcome } from "./runs.ts";
-import { runProcess } from "./subprocess.ts";
 
 export const JUDGE_FILE = ".claude/agents/intent-judge/intent-judge.md";
 
 const BUDGET_USD = 2;
 
-// `--agent` doesn't run the hooks in the agent's own frontmatter, so the guard is passed here.
-const GUARD_SETTINGS = JSON.stringify({
+const TIMEOUT_MS = 15 * 60 * 1000;
+
+// An agent on the main thread doesn't run the hooks in its own frontmatter, so the guard is passed here.
+const GUARD_SETTINGS = {
   hooks: {
     PreToolUse: [
       {
         matcher: ".*",
         hooks: [
           {
-            type: "command",
+            type: "command" as const,
             command: 'node "$CLAUDE_PROJECT_DIR/.claude/agents/intent-judge/guard.ts"',
           },
         ],
       },
     ],
   },
-});
+};
 
 const location = { test_file: z.string().nullable(), test_line: z.number().nullable() };
 
@@ -56,39 +57,12 @@ const reply = z.object({
   additional_checks: z.array(additionalCheck),
 });
 
-const toolUse = z.object({
-  type: z.literal("tool_use"),
-  id: z.string(),
-  name: z.string(),
-  input: z.record(z.string(), z.unknown()),
-});
-
-const toolResult = z.object({
-  type: z.literal("tool_result"),
-  tool_use_id: z.string(),
-  is_error: z.boolean().optional(),
-});
-
-const message = z.object({
-  type: z.enum(["assistant", "user"]),
-  message: z.object({ content: z.unknown() }),
-});
-
-const finalResult = z.object({
-  type: z.literal("result"),
-  subtype: z.string().optional(),
-  result: z.string().optional(),
-  is_error: z.boolean().optional(),
-  structured_output: z.unknown().optional(),
-  total_cost_usd: z.number().optional(),
-});
-
-/** What the CLI gave back for one run of the judge, before anything reads it. */
+/** What claude gave back for one run of the judge, before anything reads it. */
 export type RawReply = {
-  /** Everything claude streamed, one JSON object a line. */
-  transcript: string;
+  /** Everything claude sent, in order. */
+  messages: SDKMessage[];
   seconds: number;
-  /** Why claude didn't run at all. */
+  /** Why claude stopped, which matters only if it stopped without a result. */
   error: string | undefined;
 };
 
@@ -123,65 +97,46 @@ export function promptFor(subject: string, scenarios: string[]): string {
   return `Judge the tests of the ${subject} spec.${only}`;
 }
 
-/** The real judge: the Claude Code CLI running the intent-judge agent, behind its guard. */
+/** The real judge: the Agent SDK running the intent-judge agent, behind its guard. */
 export const runClaudeJudge: RunJudge = async (directory, { prompt, model }) => {
-  if (model !== undefined) {
-    const judgeFile = join(directory, JUDGE_FILE);
-    const definition = readFileSync(judgeFile, "utf8");
-    writeFileSync(judgeFile, definition.replace(/^model: .+$/mu, `model: ${model}`));
-  }
-  const args = [
-    "-p",
-    "--agent",
-    "intent-judge",
-    "--settings",
-    GUARD_SETTINGS,
-    "--setting-sources",
-    "project",
-    "--no-session-persistence",
-    "--max-budget-usd",
-    String(BUDGET_USD),
-    "--json-schema",
-    JSON.stringify(z.toJSONSchema(reply, { target: "draft-07" })),
-    "--output-format",
-    "stream-json",
-    "--verbose",
-    prompt,
-  ];
+  const abortController = new AbortController();
+  const timeout = setTimeout(() => {
+    abortController.abort();
+  }, TIMEOUT_MS);
   const started = performance.now();
+  const messages: SDKMessage[] = [];
+  let error: string | undefined;
   try {
-    const { stdout } = await runProcess("claude", args, {
-      cwd: directory,
-      timeoutMs: 15 * 60 * 1000,
+    const stream = query({
+      prompt,
+      options: {
+        cwd: directory,
+        agent: "intent-judge",
+        systemPrompt: { type: "preset", preset: "claude_code" },
+        settings: GUARD_SETTINGS,
+        settingSources: ["project"],
+        persistSession: false,
+        maxBudgetUsd: BUDGET_USD,
+        outputFormat: {
+          type: "json_schema",
+          schema: z.toJSONSchema(reply, { target: "draft-07" }),
+        },
+        abortController,
+        ...(model === undefined ? {} : { model }),
+      },
     });
-    return { transcript: stdout, seconds: (performance.now() - started) / 1000, error: undefined };
-  } catch (error) {
-    return {
-      transcript: "",
-      seconds: (performance.now() - started) / 1000,
-      error: `claude didn't run: ${String(error)}`,
-    };
+    for await (const message of stream) messages.push(message);
+  } catch (thrown) {
+    error = `claude stopped: ${String(thrown)}`;
+  } finally {
+    clearTimeout(timeout);
   }
+  return { messages, seconds: (performance.now() - started) / 1000, error };
 };
 
 /** Reads a raw reply from a run in `directory`: a forbidden read first, then a broken run, then its problems. */
 export function readReply(raw: RawReply, directory: string): Reply {
-  if (raw.error !== undefined) {
-    return { costUsd: 0, problems: undefined, outcome: "broken", failure: raw.error };
-  }
-  const events = raw.transcript
-    .split("\n")
-    .filter(Boolean)
-    .flatMap((line) => {
-      try {
-        return [JSON.parse(line) as unknown];
-      } catch {
-        return [];
-      }
-    });
-  const final = events
-    .map((event) => finalResult.safeParse(event))
-    .find((parsed) => parsed.success)?.data;
+  const final = raw.messages.find((message) => message.type === "result");
   const costUsd = final?.total_cost_usd ?? 0;
   const broken = (failure: string): Reply => ({
     costUsd,
@@ -190,26 +145,21 @@ export function readReply(raw: RawReply, directory: string): Reply {
     failure,
   });
 
-  const breach = guardBreach(events, directory);
+  const breach = guardBreach(raw.messages, directory);
   if (breach !== undefined) {
     return { costUsd, problems: undefined, outcome: "forbidden read", failure: breach };
   }
-  if (final === undefined) return broken("claude ended without a result");
-  if (reachedBudget(final)) return broken(`the call reached its $${BUDGET_USD} spending limit`);
-  if (final.is_error === true || (final.subtype !== undefined && final.subtype !== "success")) {
-    return broken(final.result ?? final.subtype ?? "claude failed");
+  if (final === undefined) return broken(raw.error ?? "claude ended without a result");
+  if (final.subtype === "error_max_budget_usd") {
+    return broken(`the call reached its $${BUDGET_USD} spending limit`);
   }
+  if (final.subtype !== "success") return broken(final.errors.join("\n"));
+  if (final.is_error) return broken(final.result);
   const parsed = reply.safeParse(final.structured_output);
   if (!parsed.success) {
     return broken(`the reply doesn't match the reply schema:\n${z.prettifyError(parsed.error)}`);
   }
   return { costUsd, problems: problemsIn(parsed.data) };
-}
-
-// Claude Code ends a run stopped by --max-budget-usd with a result whose subtype is
-// `error_max_budget_usd`; older versions said so only in the result text. Either counts.
-function reachedBudget(final: z.infer<typeof finalResult>): boolean {
-  return /budget/iu.test(final.subtype ?? "") || /budget/iu.test(final.result ?? "");
 }
 
 /** A requirement not aligned is a problem on its words; a check that adds a requirement is one on what it checks. */
@@ -238,29 +188,30 @@ function problem(
 }
 
 /** A judge that read what the guard forbids has seen the code, so its findings mean nothing. */
-function guardBreach(events: unknown[], directory: string): string | undefined {
-  const blocks = events.flatMap((event) => {
-    const parsed = message.safeParse(event);
-    return parsed.success && Array.isArray(parsed.data.message.content)
-      ? (parsed.data.message.content as unknown[])
-      : [];
-  });
+function guardBreach(messages: SDKMessage[], directory: string): string | undefined {
+  const calls = messages
+    .flatMap((message) => (message.type === "assistant" ? message.message.content : []))
+    .filter((block) => block.type === "tool_use");
   const refused = new Set(
-    blocks.flatMap((block) => {
-      const result = toolResult.safeParse(block);
-      return result.success && result.data.is_error === true ? [result.data.tool_use_id] : [];
-    }),
+    messages
+      .flatMap((message) =>
+        message.type === "user" && typeof message.message.content !== "string"
+          ? message.message.content
+          : [],
+      )
+      .flatMap((block) =>
+        block.type === "tool_result" && block.is_error === true ? [block.tool_use_id] : [],
+      ),
   );
-  for (const block of blocks) {
-    const call = toolUse.safeParse(block);
-    if (!call.success || refused.has(call.data.id)) continue;
+  for (const block of calls) {
+    if (refused.has(block.id)) continue;
     const hookInput = JSON.stringify({
-      tool_name: call.data.name,
-      tool_input: call.data.input,
+      tool_name: block.name,
+      tool_input: block.input,
       cwd: directory,
     });
     if (blockReasonOf(hookInput, directory) !== undefined) {
-      return `the guard let a forbidden ${call.data.name} through: ${JSON.stringify(call.data.input)}`;
+      return `the guard let a forbidden ${block.name} through: ${JSON.stringify(block.input)}`;
     }
   }
   return undefined;

@@ -8,6 +8,7 @@ import {
   read,
   readResult,
   replied,
+  stopped,
   streamed,
   unmetRequirement,
 } from "./fake-claude-client.ts";
@@ -215,8 +216,8 @@ test.each([
   ],
   [
     "claude not running",
-    { transcript: "", seconds: 0, error: "claude didn't run: spawn claude ENOENT" },
-    "claude didn't run: spawn claude ENOENT",
+    { messages: [], seconds: 0, error: "claude stopped: spawn claude ENOENT" },
+    "claude stopped: spawn claude ENOENT",
     0,
   ],
   [
@@ -225,15 +226,16 @@ test.each([
     "API Error: 500",
     0,
   ],
+  [
+    "claude stopping at an error",
+    streamed(stopped("error_max_turns", "Reached 40 turns", 1.2)),
+    "Reached 40 turns",
+    1.2,
+  ],
   ["claude ending without a result", streamed(), "claude ended without a result", 0],
   [
     "the $2 spending limit",
-    streamed({
-      type: "result",
-      subtype: "error_max_budget_usd",
-      is_error: true,
-      total_cost_usd: 2.04,
-    }),
+    streamed(stopped("error_max_budget_usd", "Reached maximum budget ($2)", 2.04)),
     "the call reached its $2 spending limit",
     2.04,
   ],

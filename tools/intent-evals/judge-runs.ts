@@ -48,7 +48,7 @@ async function judgeOnce(
         model: model ?? modelOf(join(directory, JUDGE_FILE)),
         costUsd: reply.costUsd,
         seconds: raw.seconds,
-        transcript: raw.transcript,
+        transcript: raw.messages.map((message) => `${JSON.stringify(message)}\n`).join(""),
       };
       if (reply.problems === undefined) {
         return { ...run, outcome: reply.outcome, problems: [], failure: reply.failure };
