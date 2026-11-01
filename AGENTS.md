@@ -3,6 +3,10 @@
 - Nothing is released and nobody uses this yet. Make breaking changes outright: rename, remove and reshape in place, with no migrations, shims or backwards-compatible paths.
 - Nothing here is settled. The specs, the tooling and the code are experiments, open to challenge, including the parts that already work. Don't treat what exists as fact or hold back from changing it. A question about them is a question, not a decision.
 
+## Trunk-based development
+
+- Commit straight to `main`. Don't create a branch unless you're asked to.
+
 ## Specs
 
 - Behaviour is specified in `specs/**/spec.md`. A scenario may be proposed: specced, not built. It is delivered only once an active test of the kind its Verified names has its ID in the title, so check for that test before relying on a scenario.
