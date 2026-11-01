@@ -1,7 +1,7 @@
 {
   "example": "discounts",
   "scenario": "B1",
-  "kind": "setup-hides-requirement",
+  "kind": "setup_hides_requirement",
   "difficulty": "medium",
   "quote": "every line",
   "plant": [

@@ -78,7 +78,7 @@ async function judgeOnce(
 
 /** When the tests are right any problem is a false positive; on a planted case one that is its gap finds it. */
 function outcomeOf(evalCase: EvalCase, problems: Problem[], lines: Set<string>): RunOutcome {
-  if (evalCase.kind === "tests-are-right") {
+  if (evalCase.kind === "tests_are_right") {
     return problems.length === 0 ? "clean" : "false positive";
   }
   return problems.some((problem) => isTheGap(problem, evalCase, lines)) ? "found" : "not found";
@@ -86,16 +86,16 @@ function outcomeOf(evalCase: EvalCase, problems: Problem[], lines: Set<string>):
 
 /** The judge may point at a test by its path in the workspace, which is gone once the run ends. */
 function inExample(problem: Problem, directory: string): Problem {
-  const where =
-    problem.where !== null && problem.where.startsWith(`${directory}/`)
-      ? problem.where.slice(directory.length + 1)
-      : problem.where;
-  return { ...problem, where };
+  const file =
+    problem.file !== null && problem.file.startsWith(`${directory}/`)
+      ? problem.file.slice(directory.length + 1)
+      : problem.file;
+  return { ...problem, file };
 }
 
-/** The lines an adds-requirement case's plant changed, in each file it edits, as `path:line`. */
+/** The lines an adds_requirement case's plant changed, in each file it edits, as `path:line`. */
 function plantedLines(root: string, evalCase: EvalCase, directory: string): Set<string> {
-  if (evalCase.kind !== "adds-requirement") return new Set();
+  if (evalCase.kind !== "adds_requirement") return new Set();
   const files = new Set(evalCase.plant.map((edit) => edit.file));
   return new Set(
     [...files].flatMap((file) => {
@@ -126,16 +126,7 @@ function changedLines(before: string[], after: string[]): number[] {
 function isTheGap(problem: Problem, evalCase: EvalCase, lines: Set<string>): boolean {
   if (problem.scenario !== evalCase.scenario) return false;
   if ("quote" in evalCase) return plain(problem.says).includes(plain(evalCase.quote));
-  const { file, line } = pointsAt(problem.where);
-  return line !== null && lines.has(`${file}:${line}`);
-}
-
-/** The test file and line a problem's `where` points at, as `path:line`, or a path, or nothing. */
-function pointsAt(where: string | null): { file: string | null; line: number | null } {
-  if (where === null) return { file: null, line: null };
-  const match = /^(.+?):(\d+)(?:[-–:]\d+)?$/u.exec(where.trim());
-  if (match?.[1] === undefined) return { file: where.trim(), line: null };
-  return { file: match[1], line: Number(match[2]) };
+  return problem.line !== null && lines.has(`${problem.file}:${problem.line}`);
 }
 
 // The judge quotes the scenario's words, so compare them without markdown, quotes and spacing.

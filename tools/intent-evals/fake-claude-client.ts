@@ -52,25 +52,51 @@ export function replied(structuredOutput: unknown) {
   };
 }
 
-/** A run that replied with the judge's checklist and did nothing else. */
-export function checklist(parts: unknown[], extras: unknown[]): RawReply {
-  return streamed(replied({ parts, extras }));
+/** A run that replied with the judge's verdicts and did nothing else. */
+export function checklist(requirements: unknown[], additionalChecks: unknown[]): RawReply {
+  return streamed(replied({ requirements, additional_checks: additionalChecks }));
 }
 
-export function unalignedPart(
-  part: string,
-  { scenario = "B1", checkedBy = null }: { scenario?: string; checkedBy?: string | null } = {},
+type Where = { scenario?: string; file?: string | null; line?: number | null };
+
+/** A requirement the judge found unchecked, unless `verdict` says otherwise. */
+export function unmetRequirement(
+  requirement: string,
+  {
+    scenario = "B1",
+    file = null,
+    line = null,
+    verdict = "misses_requirement",
+  }: Where & { verdict?: string } = {},
 ) {
-  return { scenario, part, "checked by": checkedBy, aligned: false, why: "no test checks it" };
+  return {
+    scenario,
+    requirement,
+    test_file: file,
+    test_line: line,
+    reasoning: "no test checks it",
+    verdict,
+  };
 }
 
-/** Something the judge noted that a scenario doesn't say, marked extra unless `extra` says otherwise. */
-export function extraCheck(
-  checks: string,
-  where: string,
-  { scenario = "B1", extra = true }: { scenario?: string; extra?: boolean } = {},
+/** A check the judge found beyond the scenario, adding a requirement unless `verdict` says otherwise. */
+export function additionalCheck(
+  check: string,
+  {
+    scenario = "B1",
+    file = null,
+    line = null,
+    verdict = "adds_requirement",
+  }: Where & { verdict?: string } = {},
 ) {
-  return { scenario, checks, where, extra, why: "the scenario doesn't say it" };
+  return {
+    scenario,
+    check,
+    test_file: file,
+    test_line: line,
+    reasoning: "the scenario doesn't say it",
+    verdict,
+  };
 }
 
 export function read(id: string, filePath: string) {

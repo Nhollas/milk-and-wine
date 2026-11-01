@@ -1,7 +1,7 @@
 {
   "example": "discounts",
   "scenario": "B1",
-  "kind": "misses-requirement",
+  "kind": "misses_requirement",
   "difficulty": "easy",
   "quote": "totals the lines",
   "plant": [

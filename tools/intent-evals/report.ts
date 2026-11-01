@@ -79,7 +79,7 @@ function casesTable(own: ScoredRun[]): string {
       const runs = runsOf(own, evalCase);
       const mark = MARKS[evalCase.difficulty];
       const result =
-        evalCase.kind === "tests-are-right"
+        evalCase.kind === "tests_are_right"
           ? `false positives ${runs.filter((run) => run.outcome === "false positive").length}/${runs.length}`
           : `found ${right(runs).count}/${runs.length}`;
       return [
@@ -92,17 +92,17 @@ function casesTable(own: ScoredRun[]): string {
   ]);
 }
 
-/** Under each tests-are-right case with false positives, each problem once, with how many runs reported it. */
+/** Under each tests_are_right case with false positives, each problem once, with how many runs reported it. */
 function falsePositives(own: ScoredRun[]): string[] {
   return casesOf(own).flatMap((evalCase) => {
     const reported = reportedProblems(runsOf(own, evalCase));
-    if (evalCase.kind !== "tests-are-right" || reported.length === 0) return [];
+    if (evalCase.kind !== "tests_are_right" || reported.length === 0) return [];
     return [
       [
         `false positives on ${evalCase.id}`,
         ...reported.map(
           ([problem, times]) =>
-            `  ${problem.scenario} "${problem.says}"${problem.where === null ? "" : ` at ${problem.where}`}${times === 1 ? "" : `  ×${times}`}`,
+            `  ${problem.scenario} ${problem.verdict} "${problem.says}"${at(problem)}${times === 1 ? "" : `  ×${times}`}`,
         ),
       ].join("\n"),
     ];
@@ -133,12 +133,23 @@ function passRate(own: ScoredRun[]): string {
 function reportedProblems(runs: ScoredRun[]): [Problem, number][] {
   const seen = new Map<string, [Problem, number]>();
   for (const problem of runs.flatMap((run) => run.problems)) {
-    const key = JSON.stringify([problem.scenario, problem.says, problem.where]);
+    const key = JSON.stringify([
+      problem.scenario,
+      problem.verdict,
+      problem.says,
+      problem.file,
+      problem.line,
+    ]);
     const entry = seen.get(key);
     if (entry === undefined) seen.set(key, [problem, 1]);
     else entry[1]++;
   }
   return [...seen.values()];
+}
+
+function at({ file, line }: Problem): string {
+  if (file === null) return "";
+  return line === null ? ` at ${file}` : ` at ${file}:${line}`;
 }
 
 function modelsOf(runs: ScoredRun[]): string[] {

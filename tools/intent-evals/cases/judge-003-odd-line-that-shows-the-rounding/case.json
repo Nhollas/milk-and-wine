@@ -1,7 +1,7 @@
 {
   "example": "discounts",
   "scenario": "B1",
-  "kind": "tests-are-right",
+  "kind": "tests_are_right",
   "difficulty": "medium",
   "plant": [
     {

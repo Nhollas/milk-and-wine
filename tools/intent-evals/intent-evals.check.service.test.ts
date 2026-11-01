@@ -8,7 +8,7 @@ const SLOW = { timeout: 120_000 };
 const CAP_UNCHECKED = {
   example: "widgets",
   scenario: "B1",
-  kind: "misses-requirement",
+  kind: "misses_requirement",
   difficulty: "easy",
   quote: "up to 10",
   plant: [NO_CAP_CHECK],
@@ -16,7 +16,7 @@ const CAP_UNCHECKED = {
 };
 
 const ALL_KINDS_EMPTY =
-  "misses-requirement easy (0), misses-requirement medium (0), misses-requirement hard (0), checks-something-else easy (0), checks-something-else medium (0), checks-something-else hard (0), setup-hides-requirement easy (0), setup-hides-requirement medium (0), setup-hides-requirement hard (0), contradicts-requirement easy (0), contradicts-requirement medium (0), contradicts-requirement hard (0), adds-requirement easy (0), adds-requirement medium (0), adds-requirement hard (0), tests-are-right easy (0), tests-are-right medium (0), tests-are-right hard (0)";
+  "misses_requirement easy (0), misses_requirement medium (0), misses_requirement hard (0), checks_something_else easy (0), checks_something_else medium (0), checks_something_else hard (0), setup_hides_requirement easy (0), setup_hides_requirement medium (0), setup_hides_requirement hard (0), contradicts_requirement easy (0), contradicts_requirement medium (0), contradicts_requirement hard (0), adds_requirement easy (0), adds_requirement medium (0), adds_requirement hard (0), tests_are_right easy (0), tests_are_right medium (0), tests_are_right hard (0)";
 
 test(
   "B1: reports a case folder misnamed, without a README heading, or whose JSON doesn't match the schema",
@@ -121,7 +121,7 @@ test(
     expect(output).toBe(
       [
         'widgets: tests must pass as they are, but "B1: costs 2 each, up to 10" fails, B2 has no test',
-        `too few cases: ${ALL_KINDS_EMPTY.replace("misses-requirement easy (0)", "misses-requirement easy (1)")}`,
+        `too few cases: ${ALL_KINDS_EMPTY.replace("misses_requirement easy (0)", "misses_requirement easy (1)")}`,
         "eval:check failed · 1 problems",
         "",
       ].join("\n"),
@@ -141,7 +141,7 @@ test(
     });
     repo.writeCase("judge-002-still-caught", {
       ...CAP_UNCHECKED,
-      kind: "checks-something-else",
+      kind: "checks_something_else",
       plant: [{ ...NO_CAP_CHECK, replace: ["  expect(priceOf(7)).toBeLessThanOrEqual(10);"] }],
     });
 
@@ -164,7 +164,7 @@ test("B6: a contradiction the tests pass as they are is not a gap", SLOW, async 
   const contradicts = {
     example: "widgets",
     scenario: "B1",
-    kind: "contradicts-requirement",
+    kind: "contradicts_requirement",
     difficulty: "easy",
     quote: "up to 10",
   };
@@ -185,13 +185,13 @@ test("B6: a contradiction the tests pass as they are is not a gap", SLOW, async 
     "judge-001-agrees  not a gap  the tests pass with the contradiction planted\n",
   );
   expect(output).toContain(
-    "judge-002-no-cap  ok         contradicts-requirement, easy: The test expects 7 widgets to cost 14\n",
+    "judge-002-no-cap  ok         contradicts_requirement, easy: The test expects 7 widgets to cost 14\n",
   );
   expect(output).toMatch(/eval:check failed · 1 problems\n$/u);
 });
 
 test(
-  "B25: a tests-are-right case whose plant breaks the tests fails, and one that keeps them passing is ok",
+  "B25: a tests_are_right case whose plant breaks the tests fails, and one that keeps them passing is ok",
   SLOW,
   async () => {
     using repo = createTempRoot();
@@ -199,7 +199,7 @@ test(
     const right = {
       example: "widgets",
       scenario: "B1",
-      kind: "tests-are-right",
+      kind: "tests_are_right",
       difficulty: "easy",
     };
     repo.writeCase("judge-001-breaks", {
@@ -218,10 +218,10 @@ test(
     expect(exitCode).toBe(1);
     expect(output).toContain("judge-001-breaks    fails      the tests fail with the plant\n");
     expect(output).toContain(
-      "judge-002-at-eight  ok         tests-are-right, easy: The cap is checked at 8\n",
+      "judge-002-at-eight  ok         tests_are_right, easy: The cap is checked at 8\n",
     );
     expect(output).toContain(
-      "judge-003-as-is     ok         tests-are-right, easy: The cap is checked at 7\n",
+      "judge-003-as-is     ok         tests_are_right, easy: The cap is checked at 7\n",
     );
     expect(output).toMatch(/eval:check failed · 1 problems\n$/u);
   },
@@ -240,7 +240,7 @@ test(
 
     expect(exitCode).toBe(0);
     expect(output).toContain(
-      "too few cases: misses-requirement easy (1), misses-requirement medium (1), misses-requirement hard (0), checks-something-else easy (0),",
+      "too few cases: misses_requirement easy (1), misses_requirement medium (1), misses_requirement hard (0), checks_something_else easy (0),",
     );
   },
 );
@@ -255,7 +255,7 @@ test("B8: prints each case's kind, difficulty and title, and passes", SLOW, asyn
     {
       example: "widgets",
       scenario: "B1",
-      kind: "adds-requirement",
+      kind: "adds_requirement",
       difficulty: "easy",
       plant: [
         {
@@ -271,6 +271,6 @@ test("B8: prints each case's kind, difficulty and title, and passes", SLOW, asyn
 
   expect(exitCode).toBe(0);
   expect(output).toMatch(
-    /^judge-001-cap {9}ok {9}misses-requirement, easy: The cap is never checked\njudge-002-cap-again {3}ok {9}misses-requirement, easy: The cap is never checked\njudge-003-off-by-one {2}ok {9}adds-requirement, easy: The test checks 8 widgets, which B1 never mentions\ntoo few cases: .*\neval:check passed\n$/su,
+    /^judge-001-cap {9}ok {9}misses_requirement, easy: The cap is never checked\njudge-002-cap-again {3}ok {9}misses_requirement, easy: The cap is never checked\njudge-003-off-by-one {2}ok {9}adds_requirement, easy: The test checks 8 widgets, which B1 never mentions\ntoo few cases: .*\neval:check passed\n$/su,
   );
 });

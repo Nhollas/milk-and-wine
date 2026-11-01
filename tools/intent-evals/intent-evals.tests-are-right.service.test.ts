@@ -1,7 +1,12 @@
 import { join } from "node:path";
 import { expect, test } from "vitest";
 import type { EvalCase } from "./cases.ts";
-import { checklist, extraCheck, fakeClaudeClient, unalignedPart } from "./fake-claude-client.ts";
+import {
+  additionalCheck,
+  checklist,
+  fakeClaudeClient,
+  unmetRequirement,
+} from "./fake-claude-client.ts";
 import { judgeCases } from "./judge-runs.ts";
 import { createTempRoot } from "./temp-root.ts";
 
@@ -24,7 +29,7 @@ const CAP_RIGHT: EvalCase = {
   number: "001",
   title: "The cap is checked at 7",
   example: "widgets",
-  kind: "tests-are-right",
+  kind: "tests_are_right",
   difficulty: "easy",
   scenario: "B1",
   plant: [],
@@ -35,7 +40,7 @@ const SLOW = { timeout: 60_000 };
 const ONCE = { runs: 1, models: ["sonnet"], parallel: 1 };
 
 test(
-  "B9, B13: a tests-are-right case runs on its example as it is, and is clean when nothing is reported",
+  "B9, B13: a tests_are_right case runs on its example as it is, and is clean when nothing is reported",
   SLOW,
   async () => {
     using repo = createTempRoot();
@@ -52,7 +57,7 @@ test(
 );
 
 test(
-  "B13: a tests-are-right case's run that reports anything is a false positive, and keeps its problems",
+  "B13: a tests_are_right case's run that reports anything is a false positive, and keeps its problems",
   SLOW,
   async () => {
     using repo = createTempRoot();
@@ -60,8 +65,8 @@ test(
     const claude = fakeClaudeClient();
     claude.replyWith((directory) =>
       checklist(
-        [unalignedPart("up to 10", { checkedBy: join(directory, `${TESTS_FILE}:2`) })],
-        [extraCheck("a type", `${TESTS_FILE}:3`)],
+        [unmetRequirement("up to 10", { file: join(directory, TESTS_FILE), line: 2 })],
+        [additionalCheck("a type", { file: TESTS_FILE, line: 3 })],
       ),
     );
 
@@ -69,8 +74,14 @@ test(
 
     expect(run?.outcome).toBe("false positive");
     expect(run?.problems).toEqual([
-      { scenario: "B1", says: "up to 10", where: `${TESTS_FILE}:2` },
-      { scenario: "B1", says: "a type", where: `${TESTS_FILE}:3` },
+      {
+        scenario: "B1",
+        verdict: "misses_requirement",
+        says: "up to 10",
+        file: TESTS_FILE,
+        line: 2,
+      },
+      { scenario: "B1", verdict: "adds_requirement", says: "a type", file: TESTS_FILE, line: 3 },
     ]);
   },
 );

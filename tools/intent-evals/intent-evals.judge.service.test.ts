@@ -2,14 +2,14 @@ import { join } from "node:path";
 import { expect, test } from "vitest";
 import type { EvalCase } from "./cases.ts";
 import {
+  additionalCheck,
   checklist,
-  extraCheck,
   fakeClaudeClient,
   read,
   readResult,
   replied,
   streamed,
-  unalignedPart,
+  unmetRequirement,
 } from "./fake-claude-client.ts";
 import { judgeCases } from "./judge-runs.ts";
 import { createTempRoot } from "./temp-root.ts";
@@ -25,7 +25,7 @@ const CAP_UNCHECKED: EvalCase = {
   number: "001",
   title: "The test no longer checks the cap",
   example: "widgets",
-  kind: "contradicts-requirement",
+  kind: "contradicts_requirement",
   difficulty: "easy",
   scenario: "B1",
   quote: "up to 10",
@@ -38,7 +38,7 @@ const TYPE_CHECKED: EvalCase = {
   number: "002",
   title: "The test checks the price is a number",
   example: "widgets",
-  kind: "adds-requirement",
+  kind: "adds_requirement",
   difficulty: "easy",
   scenario: "B1",
   plant: [
@@ -133,7 +133,7 @@ test.each([
     using repo = createTempRoot();
     repo.writeExample("widgets", WIDGETS);
     const claude = fakeClaudeClient();
-    claude.replyWith(checklist([unalignedPart(says, { scenario })], []));
+    claude.replyWith(checklist([unmetRequirement(says, { scenario })], []));
 
     const [run] = await judgeCases(repo.root, [CAP_UNCHECKED], ONCE, claude.run);
 
@@ -142,17 +142,18 @@ test.each([
 );
 
 test.each([
-  [`${TESTS_FILE}:7`, "found"],
-  [`${TESTS_FILE}:6`, "not found"],
-  ["src/widgets/widgets.ts:7", "not found"],
+  [TESTS_FILE, 7, "found"],
+  [TESTS_FILE, 6, "not found"],
+  ["src/widgets/widgets.ts", 7, "not found"],
+  [TESTS_FILE, null, "not found"],
 ])(
-  "B10: an extra on B1 at %s, for an added requirement planted at line 7, is %s",
+  "B10: an added check on B1 at %s line %s, for a requirement planted at line 7, is %s",
   SLOW,
-  async (where, outcome) => {
+  async (file, line, outcome) => {
     using repo = createTempRoot();
     repo.writeExample("widgets", WIDGETS);
     const claude = fakeClaudeClient();
-    claude.replyWith(checklist([], [extraCheck("a type", where)]));
+    claude.replyWith(checklist([], [additionalCheck("a type", { file, line })]));
 
     const [run] = await judgeCases(repo.root, [TYPE_CHECKED], ONCE, claude.run);
 
@@ -168,7 +169,7 @@ test(
     repo.writeExample("widgets", WIDGETS);
     const claude = fakeClaudeClient();
     claude.replyWith((directory) =>
-      checklist([], [extraCheck("a type", join(directory, `${TESTS_FILE}:7`))]),
+      checklist([], [additionalCheck("a type", { file: join(directory, TESTS_FILE), line: 7 })]),
     );
 
     const [run] = await judgeCases(repo.root, [TYPE_CHECKED], ONCE, claude.run);
@@ -178,16 +179,25 @@ test(
 );
 
 test.each([
-  ["a part marked aligned", [{ ...unalignedPart("up to 10"), aligned: true }], []],
-  ["an extra marked not extra", [], [extraCheck("a type", `${TESTS_FILE}:7`, { extra: false })]],
+  ["a requirement judged aligned", [unmetRequirement("up to 10", { verdict: "aligned" })], []],
+  [
+    "a check judged setup_only",
+    [],
+    [additionalCheck("a type", { file: TESTS_FILE, line: 7, verdict: "setup_only" })],
+  ],
+  [
+    "a check judged boundary_of_requirement",
+    [],
+    [additionalCheck("a type", { file: TESTS_FILE, line: 7, verdict: "boundary_of_requirement" })],
+  ],
 ])(
   "B26: %s is not a problem, so a planted case's run is not found",
   SLOW,
-  async (_, parts, extras) => {
+  async (_, requirements, checks) => {
     using repo = createTempRoot();
     repo.writeExample("widgets", WIDGETS);
     const claude = fakeClaudeClient();
-    claude.replyWith(checklist(parts, extras));
+    claude.replyWith(checklist(requirements, checks));
 
     const [run] = await judgeCases(repo.root, [TYPE_CHECKED], ONCE, claude.run);
 
@@ -199,7 +209,7 @@ test.each([
 test.each([
   [
     "a reply that doesn't match the reply schema",
-    streamed(replied({ parts: "none", extras: [] })),
+    streamed(replied({ requirements: "none", additional_checks: [] })),
     "the reply doesn't match the reply schema",
     0.3,
   ],
@@ -255,7 +265,7 @@ test(
       streamed(
         read("read-1", "src/widgets/widgets.ts"),
         readResult("read-1", false),
-        replied({ parts: [unalignedPart("up to 10")], extras: [] }),
+        replied({ requirements: [unmetRequirement("up to 10")], additional_checks: [] }),
       ),
     );
 
@@ -276,7 +286,7 @@ test("B12: a read the guard refused is not a forbidden read", SLOW, async () => 
     streamed(
       read("read-1", "src/widgets/widgets.ts"),
       readResult("read-1", true),
-      replied({ parts: [unalignedPart("up to 10")], extras: [] }),
+      replied({ requirements: [unmetRequirement("up to 10")], additional_checks: [] }),
     ),
   );
 

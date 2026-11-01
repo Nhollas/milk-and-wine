@@ -18,39 +18,47 @@ Read `specs/**/<subject>/spec.md`. For each scenario verified by a test (service
 
 You can't read the code under test, and you don't read `mutants.json`. Work from the scenarios and the tests only.
 
-Split each judged scenario's Given and Then into its parts: every case, unit, boundary and qualifier, quoted in the scenario's own words. "Applies the discount to every line, rounded down to the penny" has at least three parts: the discount, every line, and rounded down to the penny. For each part, find the setup and assertion in the scenario's tests that check it, and say whether they are aligned with it. A part isn't aligned when:
+Split each judged scenario's Given and Then into its requirements: every case, unit, boundary and qualifier, quoted in the scenario's own words. "Applies the discount to every line, rounded down to the penny" has at least three: the discount, every line, and rounded down to the penny. For each requirement, find the setup and assertion in the scenario's tests that check it, reason about what they show, and give a verdict:
 
-- no test checks it, or the test checks something else in its place;
-- the test's setup can't show it, such as an order with a single line for "every line";
-- the test contradicts it.
+- `aligned`: a test checks it;
+- `misses_requirement`: no test checks it;
+- `checks_something_else`: a test checks something near it in its place;
+- `setup_hides_requirement`: the test's setup can't show it, such as an order with a single line for "every line";
+- `contradicts_requirement`: a test expects the opposite.
 
-Then list anything a scenario's tests check that the scenario doesn't say, and mark it extra.
+Then list each additional check: anything in a scenario's tests that the scenario doesn't say, with a verdict:
 
-A test can check a scenario by showing where its rule stops applying. For "applies no discount to an order placed today", a test that an order placed yesterday does get the discount is checking the word "today", so it's aligned and isn't an extra.
+- `adds_requirement`: an assertion the scenario doesn't ask for;
+- `setup_only`: a value the test needs to run, which no assertion is about;
+- `boundary_of_requirement`: an assertion that shows where the scenario's rule stops applying. For "applies no discount to an order placed today", a test that an order placed yesterday does get the discount is checking the word "today".
 
-Judge a scenario by its own tests. Another scenario's test covers a part only if that scenario promises the same thing.
+Judge a scenario by its own tests. Another scenario's test covers a requirement only if that scenario promises the same thing.
 
 Reply as JSON and nothing else.
 
 ```json
 {
-  "parts": [
+  "requirements": [
     {
       "scenario": "B4",
-      "part": "every line",
-      "checked by": "path:line, or null when no test checks it",
-      "aligned": false,
-      "why": "what the test checks, and why it is or isn't the part"
+      "requirement": "every line",
+      "test_file": "src/discounts/discounts.service.test.ts",
+      "test_line": 12,
+      "reasoning": "what the test's setup and assertion show about this requirement",
+      "verdict": "aligned"
     }
   ],
-  "extras": [
+  "additional_checks": [
     {
       "scenario": "B4",
-      "checks": "what the test checks that the scenario doesn't say",
-      "where": "path:line",
-      "extra": true,
-      "why": "why the scenario doesn't ask for it, or why it is only setup"
+      "check": "what the test checks that the scenario doesn't say",
+      "test_file": "src/discounts/discounts.service.test.ts",
+      "test_line": 17,
+      "reasoning": "why the scenario doesn't ask for it, or why it is setup or a boundary",
+      "verdict": "adds_requirement"
     }
   ]
 }
 ```
+
+`test_file` and `test_line` are null when no test checks the requirement.

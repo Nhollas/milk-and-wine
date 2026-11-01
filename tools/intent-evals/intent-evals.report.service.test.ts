@@ -16,10 +16,10 @@ function aCase(id: string, kind: EvalCase["kind"], difficulty: EvalCase["difficu
     difficulty,
     scenario: "B1",
   };
-  if (kind === "tests-are-right") return { ...target, kind, plant: [] };
+  if (kind === "tests_are_right") return { ...target, kind, plant: [] };
   const planted = { ...target, plant: [] };
-  if (kind === "adds-requirement") return { ...planted, kind };
-  if (kind === "contradicts-requirement") return { ...planted, kind, quote: "a quote" };
+  if (kind === "adds_requirement") return { ...planted, kind };
+  if (kind === "contradicts_requirement") return { ...planted, kind, quote: "a quote" };
   return { ...planted, kind, quote: "a quote", bug: { file: "a.ts", find: ["a"], replace: [] } };
 }
 
@@ -43,14 +43,26 @@ function aRun(
 
 const TESTS_FILE = "src/widgets/widgets.service.test.ts";
 
-const ROUNDED_DOWN: Problem = { scenario: "B1", says: "rounded down", where: `${TESTS_FILE}:9` };
+const ROUNDED_DOWN: Problem = {
+  scenario: "B1",
+  verdict: "setup_hides_requirement",
+  says: "rounded down",
+  file: TESTS_FILE,
+  line: 9,
+};
 
-const ANY_LINE: Problem = { scenario: "B2", says: "any line", where: null };
+const ANY_LINE: Problem = {
+  scenario: "B2",
+  verdict: "misses_requirement",
+  says: "any line",
+  file: null,
+  line: null,
+};
 
-const CAP = aCase("judge-001-cap", "misses-requirement", "easy");
-const FREE = aCase("judge-002-free", "contradicts-requirement", "medium");
-const ROUNDING = aCase("judge-003-rounding", "adds-requirement", "hard");
-const RIGHT = aCase("judge-004-right", "tests-are-right", "easy");
+const CAP = aCase("judge-001-cap", "misses_requirement", "easy");
+const FREE = aCase("judge-002-free", "contradicts_requirement", "medium");
+const ROUNDING = aCase("judge-003-rounding", "adds_requirement", "hard");
+const RIGHT = aCase("judge-004-right", "tests_are_right", "easy");
 
 test("B12: lists forbidden-read runs before anything else", () => {
   const runs = [
@@ -65,7 +77,7 @@ test("B12: lists forbidden-read runs before anything else", () => {
   );
 });
 
-test("B14: lists each problem a tests-are-right case's runs reported once under the case, with how many runs reported it", () => {
+test("B14: lists each problem a tests_are_right case's runs reported once under the case, with how many runs reported it", () => {
   const runs = [
     aRun(CAP, "found"),
     aRun(RIGHT, "false positive", { problems: [ROUNDED_DOWN, ANY_LINE] }),
@@ -80,8 +92,8 @@ test("B14: lists each problem a tests-are-right case's runs reported once under 
       "judge-004-right  easy        false positives 2/3  ✗ below 95%",
       "",
       "false positives on judge-004-right",
-      '  B1 "rounded down" at src/widgets/widgets.service.test.ts:9  ×2',
-      '  B2 "any line"',
+      '  B1 setup_hides_requirement "rounded down" at src/widgets/widgets.service.test.ts:9  ×2',
+      '  B2 misses_requirement "any line"',
       "",
       "pass rate",
     ].join("\n"),
@@ -114,7 +126,7 @@ test("B15: saves the report, the runs and each transcript in a folder labelled w
     {
       case: "judge-001-cap",
       example: "widgets",
-      kind: "misses-requirement",
+      kind: "misses_requirement",
       difficulty: "easy",
       model: "sonnet",
       outcome: "found",
@@ -126,11 +138,11 @@ test("B15: saves the report, the runs and each transcript in a folder labelled w
     {
       case: "judge-004-right",
       example: "widgets",
-      kind: "tests-are-right",
+      kind: "tests_are_right",
       difficulty: "easy",
       model: "opus",
       outcome: "false positive",
-      problems: [{ scenario: "B2", says: "any line", where: null }],
+      problems: [ANY_LINE],
       costUsd: 0,
       seconds: 0,
       transcript: "transcripts/2-opus-judge-004-right.jsonl",

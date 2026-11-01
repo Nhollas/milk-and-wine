@@ -1,9 +1,15 @@
 import type { EvalCase } from "./cases.ts";
 
-/** One problem the judge reports: the scenario's words it is about, and the test line it points at. */
-export type Problem = { scenario: string; says: string; where: string | null };
+/** One problem the judge reports: its verdict, the words it is about, and the test line it points at. */
+export type Problem = {
+  scenario: string;
+  verdict: string;
+  says: string;
+  file: string | null;
+  line: number | null;
+};
 
-/** A planted case's run finds its gap or not; a tests-are-right case's run is clean or a false positive. */
+/** A planted case's run finds its gap or not; a tests_are_right case's run is clean or a false positive. */
 export type RunOutcome =
   | "found"
   | "not found"

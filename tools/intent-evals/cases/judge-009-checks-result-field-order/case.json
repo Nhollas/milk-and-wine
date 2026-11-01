@@ -1,7 +1,7 @@
 {
   "example": "discounts",
   "scenario": "B3",
-  "kind": "adds-requirement",
+  "kind": "adds_requirement",
   "difficulty": "easy",
   "plant": [
     {

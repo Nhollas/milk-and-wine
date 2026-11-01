@@ -1,7 +1,7 @@
 {
   "example": "discounts",
   "scenario": "B2",
-  "kind": "contradicts-requirement",
+  "kind": "contradicts_requirement",
   "difficulty": "easy",
   "quote": "Takes nothing off",
   "plant": [

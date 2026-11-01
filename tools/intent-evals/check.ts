@@ -110,10 +110,10 @@ async function checkCase(evalCase: EvalCase, root: string): Promise<Line> {
     if ((await scenarioTests(edits)) !== "passed") {
       return caseLine(evalCase, "not a gap", "the tests still fail once the gap is planted", true);
     }
-  } else if (kind === "contradicts-requirement" && (await scenarioTests(plant)) === "passed") {
+  } else if (kind === "contradicts_requirement" && (await scenarioTests(plant)) === "passed") {
     return caseLine(evalCase, "not a gap", "the tests pass with the contradiction planted", true);
   } else if (
-    kind === "tests-are-right" &&
+    kind === "tests_are_right" &&
     plant.length > 0 &&
     (await scenarioTests(plant)) !== "passed"
   ) {

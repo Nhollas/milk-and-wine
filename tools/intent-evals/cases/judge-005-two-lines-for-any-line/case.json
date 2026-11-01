@@ -1,6 +1,6 @@
 {
   "example": "discounts",
   "scenario": "B2",
-  "kind": "tests-are-right",
+  "kind": "tests_are_right",
   "difficulty": "easy"
 }

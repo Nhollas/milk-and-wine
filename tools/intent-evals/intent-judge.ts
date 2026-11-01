@@ -26,24 +26,35 @@ const GUARD_SETTINGS = JSON.stringify({
   },
 });
 
-const part = z.object({
+const location = { test_file: z.string().nullable(), test_line: z.number().nullable() };
+
+const requirement = z.object({
   scenario: z.string(),
-  part: z.string(),
-  "checked by": z.string().nullable(),
-  aligned: z.boolean(),
-  why: z.string(),
+  requirement: z.string(),
+  ...location,
+  reasoning: z.string(),
+  verdict: z.enum([
+    "aligned",
+    "misses_requirement",
+    "checks_something_else",
+    "setup_hides_requirement",
+    "contradicts_requirement",
+  ]),
 });
 
-const extra = z.object({
+const additionalCheck = z.object({
   scenario: z.string(),
-  checks: z.string(),
-  where: z.string(),
-  extra: z.boolean(),
-  why: z.string(),
+  check: z.string(),
+  ...location,
+  reasoning: z.string(),
+  verdict: z.enum(["adds_requirement", "setup_only", "boundary_of_requirement"]),
 });
 
-// The judge accounts for every part of a scenario, so a part it skipped can't pass for one it approved.
-const reply = z.object({ parts: z.array(part), extras: z.array(extra) });
+// The judge accounts for every requirement, so one it skipped can't pass for one it approved.
+const reply = z.object({
+  requirements: z.array(requirement),
+  additional_checks: z.array(additionalCheck),
+});
 
 const toolUse = z.object({
   type: z.literal("tool_use"),
@@ -201,16 +212,29 @@ function reachedBudget(final: z.infer<typeof finalResult>): boolean {
   return /budget/iu.test(final.subtype ?? "") || /budget/iu.test(final.result ?? "");
 }
 
-/** A part marked not aligned is a problem on its words; one marked extra is a problem on what it checks. */
-function problemsIn({ parts, extras }: z.infer<typeof reply>): Problem[] {
+/** A requirement not aligned is a problem on its words; a check that adds a requirement is one on what it checks. */
+function problemsIn({ requirements, additional_checks }: z.infer<typeof reply>): Problem[] {
   return [
-    ...parts
-      .filter((each) => !each.aligned)
-      .map((each) => ({ scenario: each.scenario, says: each.part, where: each["checked by"] })),
-    ...extras
-      .filter((each) => each.extra)
-      .map((each) => ({ scenario: each.scenario, says: each.checks, where: each.where })),
+    ...requirements
+      .filter((each) => each.verdict !== "aligned")
+      .map((each) => problem(each, each.requirement)),
+    ...additional_checks
+      .filter((each) => each.verdict === "adds_requirement")
+      .map((each) => problem(each, each.check)),
   ];
+}
+
+function problem(
+  each: { scenario: string; verdict: string; test_file: string | null; test_line: number | null },
+  says: string,
+): Problem {
+  return {
+    scenario: each.scenario,
+    verdict: each.verdict,
+    says,
+    file: each.test_file,
+    line: each.test_line,
+  };
 }
 
 /** A judge that read what the guard forbids has seen the code, so its findings mean nothing. */

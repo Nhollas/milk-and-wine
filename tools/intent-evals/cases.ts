@@ -6,12 +6,12 @@ export const CASES_FOLDER = "tools/intent-evals/cases";
 
 /** What a case's tests do to its scenario, or that they are right. */
 export const KINDS = [
-  "misses-requirement",
-  "checks-something-else",
-  "setup-hides-requirement",
-  "contradicts-requirement",
-  "adds-requirement",
-  "tests-are-right",
+  "misses_requirement",
+  "checks_something_else",
+  "setup_hides_requirement",
+  "contradicts_requirement",
+  "adds_requirement",
+  "tests_are_right",
 ] as const;
 
 export const DIFFICULTIES = ["easy", "medium", "hard"] as const;
@@ -38,21 +38,21 @@ const planted = { ...target, plant: z.array(edit).min(1) };
 const caseFile = z.discriminatedUnion("kind", [
   z.strictObject({
     ...planted,
-    kind: z.enum(["misses-requirement", "checks-something-else", "setup-hides-requirement"]),
+    kind: z.enum(["misses_requirement", "checks_something_else", "setup_hides_requirement"]),
     quote: z.string().min(1),
     bug: edit,
   }),
   z.strictObject({
     ...planted,
-    kind: z.literal("contradicts-requirement"),
+    kind: z.literal("contradicts_requirement"),
     quote: z.string().min(1),
   }),
-  z.strictObject({ ...planted, kind: z.literal("adds-requirement") }),
+  z.strictObject({ ...planted, kind: z.literal("adds_requirement") }),
   // The tests are right, so the judge should report nothing. The plant, if any, changes the tests
   // while keeping them right.
   z.strictObject({
     ...target,
-    kind: z.literal("tests-are-right"),
+    kind: z.literal("tests_are_right"),
     plant: z.array(edit).default([]),
   }),
 ]);
