@@ -1,7 +1,7 @@
 import { join } from "node:path";
 import { expect, test } from "vitest";
 import type { EvalCase } from "./cases.ts";
-import { checklist, fakeClaudeClient, unalignedPart } from "./fake-claude-client.ts";
+import { checklist, extraCheck, fakeClaudeClient, unalignedPart } from "./fake-claude-client.ts";
 import { judgeCases } from "./judge-runs.ts";
 import { createTempRoot } from "./temp-root.ts";
 
@@ -61,7 +61,7 @@ test(
     claude.replyWith((directory) =>
       checklist(
         [unalignedPart("up to 10", { checkedBy: join(directory, `${TESTS_FILE}:2`) })],
-        [{ scenario: "B1", checks: "a type", where: `${TESTS_FILE}:3` }],
+        [extraCheck("a type", `${TESTS_FILE}:3`)],
       ),
     );
 

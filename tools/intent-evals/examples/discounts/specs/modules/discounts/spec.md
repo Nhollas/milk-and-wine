@@ -13,7 +13,7 @@ Prices an order's lines in pence, taking a loyalty discount off orders that were
 | ID | Given | When | Then | Verified |
 | --- | --- | --- | --- | --- |
 | B1 | An order with several lines, placed before today | It's priced | Takes 10% off every line, rounded down to the penny, and totals the lines | service |
-| B2 | An order placed today | It's priced | Takes nothing off any line | service |
+| B2 | An order placed today | It's priced | Takes nothing off any line, and totals them | service |
 | B3 | An order with no lines | It's priced | Has no priced lines and totals 0 | service |
 
 **Why**

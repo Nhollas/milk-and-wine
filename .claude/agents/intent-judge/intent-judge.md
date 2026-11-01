@@ -24,7 +24,7 @@ Split each judged scenario's Given and Then into its parts: every case, unit, bo
 - the test's setup can't show it, such as an order with a single line for "every line";
 - the test contradicts it.
 
-Then list anything a scenario's tests check that the scenario doesn't say.
+Then list anything a scenario's tests assert that the scenario doesn't say, and mark it extra. A value the setup uses, such as the date an order needs, is checked only by an assertion about it; if you note one, mark it not extra and say why.
 
 A test can check a scenario by showing where its rule stops applying. For "applies no discount to an order placed today", a test that an order placed yesterday does get the discount is checking the word "today", so it's aligned and isn't an extra.
 
@@ -47,7 +47,9 @@ Reply as JSON and nothing else.
     {
       "scenario": "B4",
       "checks": "what the test checks that the scenario doesn't say",
-      "where": "path:line"
+      "where": "path:line",
+      "extra": true,
+      "why": "why the scenario doesn't ask for it, or why it is only setup"
     }
   ]
 }

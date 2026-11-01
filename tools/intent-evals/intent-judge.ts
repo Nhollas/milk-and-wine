@@ -38,6 +38,8 @@ const extra = z.object({
   scenario: z.string(),
   checks: z.string(),
   where: z.string(),
+  extra: z.boolean(),
+  why: z.string(),
 });
 
 // The judge accounts for every part of a scenario, so a part it skipped can't pass for one it approved.
@@ -199,13 +201,15 @@ function reachedBudget(final: z.infer<typeof finalResult>): boolean {
   return /budget/iu.test(final.subtype ?? "") || /budget/iu.test(final.result ?? "");
 }
 
-/** An unaligned part is a problem on its words; an extra is a problem on what the test checks. */
+/** A part marked not aligned is a problem on its words; one marked extra is a problem on what it checks. */
 function problemsIn({ parts, extras }: z.infer<typeof reply>): Problem[] {
   return [
     ...parts
       .filter((each) => !each.aligned)
       .map((each) => ({ scenario: each.scenario, says: each.part, where: each["checked by"] })),
-    ...extras.map((each) => ({ scenario: each.scenario, says: each.checks, where: each.where })),
+    ...extras
+      .filter((each) => each.extra)
+      .map((each) => ({ scenario: each.scenario, says: each.checks, where: each.where })),
   ];
 }
 

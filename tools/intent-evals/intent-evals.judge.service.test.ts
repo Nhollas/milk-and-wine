@@ -3,6 +3,7 @@ import { expect, test } from "vitest";
 import type { EvalCase } from "./cases.ts";
 import {
   checklist,
+  extraCheck,
   fakeClaudeClient,
   read,
   readResult,
@@ -151,7 +152,7 @@ test.each([
     using repo = createTempRoot();
     repo.writeExample("widgets", WIDGETS);
     const claude = fakeClaudeClient();
-    claude.replyWith(checklist([], [{ scenario: "B1", checks: "a type", where }]));
+    claude.replyWith(checklist([], [extraCheck("a type", where)]));
 
     const [run] = await judgeCases(repo.root, [TYPE_CHECKED], ONCE, claude.run);
 
@@ -167,15 +168,31 @@ test(
     repo.writeExample("widgets", WIDGETS);
     const claude = fakeClaudeClient();
     claude.replyWith((directory) =>
-      checklist(
-        [],
-        [{ scenario: "B1", checks: "a type", where: join(directory, `${TESTS_FILE}:7`) }],
-      ),
+      checklist([], [extraCheck("a type", join(directory, `${TESTS_FILE}:7`))]),
     );
 
     const [run] = await judgeCases(repo.root, [TYPE_CHECKED], ONCE, claude.run);
 
     expect(run?.outcome).toBe("found");
+  },
+);
+
+test.each([
+  ["a part marked aligned", [{ ...unalignedPart("up to 10"), aligned: true }], []],
+  ["an extra marked not extra", [], [extraCheck("a type", `${TESTS_FILE}:7`, { extra: false })]],
+])(
+  "B26: %s is not a problem, so a planted case's run is not found",
+  SLOW,
+  async (_, parts, extras) => {
+    using repo = createTempRoot();
+    repo.writeExample("widgets", WIDGETS);
+    const claude = fakeClaudeClient();
+    claude.replyWith(checklist(parts, extras));
+
+    const [run] = await judgeCases(repo.root, [TYPE_CHECKED], ONCE, claude.run);
+
+    expect(run?.outcome).toBe("not found");
+    expect(run?.problems).toEqual([]);
   },
 );
 

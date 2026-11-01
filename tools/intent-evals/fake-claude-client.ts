@@ -64,6 +64,15 @@ export function unalignedPart(
   return { scenario, part, "checked by": checkedBy, aligned: false, why: "no test checks it" };
 }
 
+/** Something the judge noted that a scenario doesn't say, marked extra unless `extra` says otherwise. */
+export function extraCheck(
+  checks: string,
+  where: string,
+  { scenario = "B1", extra = true }: { scenario?: string; extra?: boolean } = {},
+) {
+  return { scenario, checks, where, extra, why: "the scenario doesn't say it" };
+}
+
 export function read(id: string, filePath: string) {
   return {
     type: "assistant",
