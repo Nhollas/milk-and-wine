@@ -76,19 +76,53 @@ test("B16: skips a scenario whose tests fail, or don't exist, with no mutant pla
   });
 });
 
-test("B17: marks a mutant killed when a scenario test fails, and survived when they all pass", () => {
+test("B17: marks a mutant killed when a scenario test fails", () => {
   using repo = createTempRepo();
   repo.writeSpec("widgets", [["B1", "Costs 2 each"]]);
   repo.writeFile("src/widgets/widgets.ts", PRICES);
   repo.writeFile("src/widgets/widgets.service.test.ts", PRICES_TESTS);
-  repo.writeMutants("widgets", {
-    B1: { then: "Costs 2 each", mutants: [TIMES_THREE, FREE_AT_SEVEN] },
-  });
+  repo.writeMutants("widgets", { B1: { then: "Costs 2 each", mutants: [TIMES_THREE] } });
 
   const { output } = replay(["widgets"], repo.root);
 
   expect(output).toContain("    killed    the price is 3 each\n");
+});
+
+test("B27: marks a mutant survived when a scenario's tests all pass", () => {
+  using repo = createTempRepo();
+  repo.writeSpec("widgets", [["B1", "Costs 2 each"]]);
+  repo.writeFile("src/widgets/widgets.ts", PRICES);
+  repo.writeFile("src/widgets/widgets.service.test.ts", PRICES_TESTS);
+  repo.writeMutants("widgets", { B1: { then: "Costs 2 each", mutants: [FREE_AT_SEVEN] } });
+
+  const { output } = replay(["widgets"], repo.root);
+
   expect(output).toContain("    survived  7 widgets are free\n");
+});
+
+test("B28: doesn't count a test whose title starts with another scenario's ID", () => {
+  using repo = createTempRepo();
+  repo.writeSpec("widgets", [["B1", "Costs 2 each"]]);
+  repo.writeFile("src/widgets/widgets.ts", PRICES);
+  repo.writeFile(
+    "src/widgets/widgets.service.test.ts",
+    `import { expect, test } from "vitest";
+import { priceOf } from "./widgets.ts";
+
+test("B1: costs something", () => {
+  expect(priceOf(3)).toBeGreaterThan(0);
+});
+
+test("B2: costs 2 each", () => {
+  expect(priceOf(3)).toBe(6);
+});
+`,
+  );
+  repo.writeMutants("widgets", { B1: { then: "Costs 2 each", mutants: [TIMES_THREE] } });
+
+  const { output } = replay(["widgets"], repo.root);
+
+  expect(output).toContain("    survived  the price is 3 each\n");
 });
 
 test("B21: reports a stale mutant without planting it", () => {
@@ -137,7 +171,7 @@ test("B22: prints each scenario's Then, then each mutant as killed or survived, 
   });
 });
 
-test("B22: passes when every mutant is killed", () => {
+test("B29: passes when every mutant is killed", () => {
   using repo = createTempRepo();
   repo.writeSpec("widgets", [["B1", "Costs 2 each"]]);
   repo.writeFile("src/widgets/widgets.ts", PRICES);

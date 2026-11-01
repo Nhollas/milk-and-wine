@@ -16,7 +16,7 @@ test("B1: costs 2 each", () => {
 });
 `;
 
-test("B1: reports an unknown subject or a missing mutants.json", () => {
+test("B1: reports an unknown subject", () => {
   using repo = createTempRepo();
   repo.writeSpec("widgets", [["B1", "Costs 2 each"]]);
 
@@ -24,6 +24,12 @@ test("B1: reports an unknown subject or a missing mutants.json", () => {
     exitCode: 1,
     output: "unknown subject: gadgets\n",
   });
+});
+
+test("B26: reports a missing mutants.json", () => {
+  using repo = createTempRepo();
+  repo.writeSpec("widgets", [["B1", "Costs 2 each"]]);
+
   expect(check(["widgets"], repo.root)).toEqual({
     exitCode: 1,
     output: "no mutants for widgets: expected specs/modules/widgets/mutants.json\n",

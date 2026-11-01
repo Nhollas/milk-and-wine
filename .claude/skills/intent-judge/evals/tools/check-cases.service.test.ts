@@ -15,28 +15,50 @@ const CAP_UNCHECKED = {
   bug: NO_CAP,
 };
 
-test(
-  "B1: reports a case folder misnamed, without a README heading, or whose JSON doesn't match the schema",
-  SLOW,
-  async () => {
-    using repo = createTempRoot();
-    repo.writeExample("widgets", WIDGETS);
-    repo.writeCase("judge-001-weakened", { ...CAP_UNCHECKED, kind: "weakened" });
-    repo.writeCase("judge-002-not-json", "{ not json");
-    repo.writeCase("judge-003-no-heading", CAP_UNCHECKED, "The cap is never checked.\n");
-    repo.writeCase("b1-cap", CAP_UNCHECKED);
+test("B1: reports a misnamed case folder", SLOW, async () => {
+  using repo = createTempRoot();
+  repo.writeExample("widgets", WIDGETS);
+  repo.writeCase("b1-cap", CAP_UNCHECKED);
 
-    const { exitCode, output } = await check(repo.root);
+  const { exitCode, output } = await check(repo.root);
 
-    expect(exitCode).toBe(1);
-    expect(output).toMatch(
-      /^\.claude\/skills\/intent-judge\/evals\/b1-cap is not valid:\nthe folder must be named judge-<number>-<slug>\n\.claude\/skills\/intent-judge\/evals\/judge-001-weakened is not valid:\nplant\.json: .*kind.*\n\.claude\/skills\/intent-judge\/evals\/judge-002-not-json is not valid:\nplant\.json: .*\n\.claude\/skills\/intent-judge\/evals\/judge-003-no-heading is not valid:\nREADME\.md must start with a # heading\n/su,
-    );
-    expect(output).toMatch(/eval:check failed · 4 problems\n$/u);
-  },
-);
+  expect(exitCode).toBe(1);
+  expect(output).toMatch(
+    /^\.claude\/skills\/intent-judge\/evals\/b1-cap is not valid:\nthe folder must be named judge-<number>-<slug>\n/su,
+  );
+  expect(output).toMatch(/eval:check failed · 1 problems\n$/u);
+});
 
-test("B1: reports two cases sharing a number", SLOW, async () => {
+test("B27: reports a case without a README heading", SLOW, async () => {
+  using repo = createTempRoot();
+  repo.writeExample("widgets", WIDGETS);
+  repo.writeCase("judge-003-no-heading", CAP_UNCHECKED, "The cap is never checked.\n");
+
+  const { exitCode, output } = await check(repo.root);
+
+  expect(exitCode).toBe(1);
+  expect(output).toMatch(
+    /^\.claude\/skills\/intent-judge\/evals\/judge-003-no-heading is not valid:\nREADME\.md must start with a # heading\n/su,
+  );
+  expect(output).toMatch(/eval:check failed · 1 problems\n$/u);
+});
+
+test("B28: reports a case whose JSON doesn't match the format", SLOW, async () => {
+  using repo = createTempRoot();
+  repo.writeExample("widgets", WIDGETS);
+  repo.writeCase("judge-001-weakened", { ...CAP_UNCHECKED, kind: "weakened" });
+  repo.writeCase("judge-002-not-json", "{ not json");
+
+  const { exitCode, output } = await check(repo.root);
+
+  expect(exitCode).toBe(1);
+  expect(output).toMatch(
+    /^\.claude\/skills\/intent-judge\/evals\/judge-001-weakened is not valid:\nplant\.json: .*kind.*\n\.claude\/skills\/intent-judge\/evals\/judge-002-not-json is not valid:\nplant\.json: .*\n/su,
+  );
+  expect(output).toMatch(/eval:check failed · 2 problems\n$/u);
+});
+
+test("B29: reports two cases sharing a number", SLOW, async () => {
   using repo = createTempRoot();
   repo.writeExample("widgets", WIDGETS);
   repo.writeCase("judge-001-cap", CAP_UNCHECKED);
@@ -125,34 +147,38 @@ test(
   },
 );
 
-test(
-  "B5: a bug the tests miss alone, or still catch once the gap is planted, is not a gap",
-  SLOW,
-  async () => {
-    using repo = createTempRoot();
-    repo.writeExample("widgets", WIDGETS);
-    repo.writeCase("judge-001-harmless-bug", {
-      ...CAP_UNCHECKED,
-      bug: { ...NO_CAP, replace: ["  return Math.min(quantity * 2, 10) + 0;"] },
-    });
-    repo.writeCase("judge-002-still-caught", {
-      ...CAP_UNCHECKED,
-      kind: "checks_something_else",
-      plant: [{ ...NO_CAP_CHECK, replace: ["  expect(priceOf(7)).toBeLessThanOrEqual(10);"] }],
-    });
+test("B5: a bug the tests miss alone is not a gap", SLOW, async () => {
+  using repo = createTempRoot();
+  repo.writeExample("widgets", WIDGETS);
+  repo.writeCase("judge-001-harmless", {
+    ...CAP_UNCHECKED,
+    bug: { ...NO_CAP, replace: ["  return Math.min(quantity * 2, 10) + 0;"] },
+  });
 
-    const { exitCode, output } = await check(repo.root);
+  const { exitCode, output } = await check(repo.root);
 
-    expect(exitCode).toBe(1);
-    expect(output).toContain(
-      "judge-001-harmless-bug  not a gap  the tests pass with the bug alone\n",
-    );
-    expect(output).toContain(
-      "judge-002-still-caught  not a gap  the tests still fail once the gap is planted\n",
-    );
-    expect(output).toMatch(/eval:check failed · 2 problems\n$/u);
-  },
-);
+  expect(exitCode).toBe(1);
+  expect(output).toContain("judge-001-harmless  not a gap  the tests pass with the bug alone\n");
+  expect(output).toMatch(/eval:check failed · 1 problems\n$/u);
+});
+
+test("B30: a bug the tests still catch once the gap is planted is not a gap", SLOW, async () => {
+  using repo = createTempRoot();
+  repo.writeExample("widgets", WIDGETS);
+  repo.writeCase("judge-002-still-caught", {
+    ...CAP_UNCHECKED,
+    kind: "checks_something_else",
+    plant: [{ ...NO_CAP_CHECK, replace: ["  expect(priceOf(7)).toBeLessThanOrEqual(10);"] }],
+  });
+
+  const { exitCode, output } = await check(repo.root);
+
+  expect(exitCode).toBe(1);
+  expect(output).toContain(
+    "judge-002-still-caught  not a gap  the tests still fail once the gap is planted\n",
+  );
+  expect(output).toMatch(/eval:check failed · 1 problems\n$/u);
+});
 
 test("B6: a contradiction the tests don't fail on is not a gap", SLOW, async () => {
   using repo = createTempRoot();

@@ -1,6 +1,6 @@
 # Spec mutants
 
-Checks that a spec's tests fail when the code breaks a promise their scenarios make, by planting committed mutants and replaying only that scenario's tests, for engineers, reviewers and agents.
+Checks that a spec's tests fail when the code breaks a requirement of their scenarios, by planting committed mutants and replaying only that scenario's tests, for engineers, reviewers and agents.
 
 | Scope |  |
 | --- | --- |
@@ -8,7 +8,7 @@ Checks that a spec's tests fail when the code breaks a promise their scenarios m
 | **Depends on** | `tools/specs`, to read scenarios. Vitest, to run a scenario's tests. TypeScript, to typecheck `src/`. |
 | **Excluded** | Writing mutants. The `mutant-writer` agent writes them; this tool only checks and replays what it wrote. |
 
-**Terms.** A _mutant_ is a small, deliberate bug in `src/`, kept in a subject's `mutants.json`, that should break one promise of a scenario's Then. Its `breaks` is the plain sentence saying which promise, such as "the reminder isn't recorded". A mutant is _killed_ when its scenario's tests fail with it planted, and _survived_ when they pass.
+**Terms.** A _mutant_ is a small, deliberate bug in `src/`, kept in a subject's `mutants.json`, that should break one requirement of a scenario's Then. Its `breaks` is the plain sentence saying which requirement, such as "the reminder isn't recorded", and its `find` is the lines of its file that it replaces. A mutant is _killed_ when its scenario's tests fail with it planted, and _survived_ when they pass.
 
 ## Behaviour
 
@@ -16,8 +16,9 @@ Checks that a spec's tests fail when the code breaks a promise their scenarios m
 
 | ID | Given | When | Then | Verified |
 | --- | --- | --- | --- | --- |
-| B1 | No spec folder has the name given, or the folder has no `mutants.json` | `spec:mutants:check <subject>` or `spec:mutants <subject>` runs | Prints `unknown subject: <subject>` or `no mutants for <subject>: expected <path>`, and exits `1` | service |
-| B2 | A subject's `mutants.json` doesn't match the mutants schema | Either command runs for that subject | Prints `<path> is not valid:` and each schema error, and exits `1` | service |
+| B1 | No spec folder has the name given | `spec:mutants:check <subject>` or `spec:mutants <subject>` runs | Prints `unknown subject: <subject>`, and exits `1` | service |
+| B26 | The subject's spec folder has no `mutants.json` | `spec:mutants:check <subject>` or `spec:mutants <subject>` runs | Prints `no mutants for <subject>: expected <path>`, and exits `1` | service |
+| B2 | A subject's `mutants.json` doesn't match the `mutants.json` format | Either command runs for that subject | Prints `<path> is not valid:` and each error, naming the field, and exits `1` | service |
 
 ### Checking mutants
 
@@ -34,21 +35,24 @@ Checks that a spec's tests fail when the code breaks a promise their scenarios m
 
 | ID | Given | When | Then | Verified |
 | --- | --- | --- | --- | --- |
-| B15 | A scenario's Then differs from the `then` copy stored in its entry | `spec:mutants <subject>` runs | Reports `then-changed` with the ID and shows both, as `was … now …`, replays none of that scenario's mutants, and exits `1` | service |
-| B16 | A scenario's tests fail, or none exist, with no mutant planted | `spec:mutants <subject>` runs | Reports that its tests must pass with no mutant planted and what they did instead, replays none of that scenario's mutants, and exits `1` | service |
-| B17 | A mutant is planted, and its scenario's tests run: only those at the scenario's level whose title starts with its ID | The tests finish | The mutant is `killed` if any of them fails, and `survived` if they all pass | service |
+| B15 | A scenario's Then differs from the `then` stored in its entry | `spec:mutants <subject>` runs | Reports `then-changed` with the ID and shows both, as `was … now …`, replays none of that scenario's mutants, and exits `1` | service |
+| B16 | A scenario's tests fail, or none exist, with no mutant planted | `spec:mutants <subject>` runs | Reports `its tests must pass with no mutant planted, but they failed`, or `but there are none`, replays none of that scenario's mutants, and exits `1` | service |
+| B17 | At least one of a scenario's tests fails with a mutant planted | `spec:mutants <subject>` replays the mutant | The mutant is `killed` | service |
+| B27 | All of a scenario's tests pass with a mutant planted | `spec:mutants <subject>` replays the mutant | The mutant is `survived` | service |
+| B28 | A test of a kind other than the scenario's Verified names, or whose title doesn't start with its ID, would fail with a mutant planted, and the scenario's tests pass | `spec:mutants <subject>` replays the mutant | The mutant is `survived`: only tests of the kind its Verified names whose title starts with its ID run | service |
 | B21 | A mutant's `find` lines don't appear exactly once in its file, or the file is gone | `spec:mutants <subject>` runs | Reports `stale` for it, doesn't plant it, and exits `1` | service |
-| B22 | Every mutant to replay has a status | `spec:mutants <subject>` finishes | Prints each scenario's current Then, read from the spec, then one line per mutant with `killed` or `survived` and its `breaks`, and exits `1` if any mutant survived, `0` otherwise | service |
+| B22 | Every mutant to replay has a status, and at least one `survived` | `spec:mutants <subject>` finishes | Prints each scenario's current Then, read from the spec, then one line per mutant with `killed` or `survived` and its `breaks`, and exits `1` | service |
+| B29 | Nothing B15, B16 or B21 reports, and every mutant is `killed` | `spec:mutants <subject>` finishes | Prints each scenario's current Then, read from the spec, then one line per mutant with `killed` and its `breaks`, and exits `0` | service |
 | B25 | `spec:mutants <subject>` is planting mutants | The run finishes, fails or is stopped | No file under `src/` changes on disk at any point | service |
 
 **Why**
 
-- **B25:** Planting through a Vite `transform` in a replay-only Vitest config applies the mutant as its module loads, so nothing is written to `src/` and an interrupted run leaves nothing behind.
+- **B25:** A run can be stopped at any point, and one that wrote to `src/` could leave a planted bug there.
 
 ## Limitations
 
 - A mutant is judged only against its own scenario's tests. A test for another scenario that would catch it doesn't count.
-- Rewording a scenario's Then needs its mutants rewritten, because the `then` copy must match it word for word.
+- Rewording a scenario's Then needs its mutants rewritten, because the stored `then` must match it word for word.
 - A mutant planted in code nothing calls any more, left behind by a refactor, is reported `survived`, though the test isn't at fault.
 
 ## Open questions
