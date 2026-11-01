@@ -4,7 +4,7 @@ import { endpoint } from "../http.ts";
 
 type Copy = { copyId: string; title: string; available: boolean };
 
-type CopyLookup = { kind: "found"; copy: Copy } | { kind: "not-found" } | { kind: "unavailable" };
+type CopyLookup = { kind: "found"; copy: Copy } | { kind: "not-found" } | { kind: "failed" };
 
 export type CatalogueClient = { getCopy(copyId: string): Promise<CopyLookup> };
 
@@ -38,8 +38,8 @@ export function createCatalogueClient(
 
         if (response?.status === 404) return { kind: "not-found" };
         if (response?.ok === true) return copyLookup(response);
-        if (response && response.status < 500) return { kind: "unavailable" };
-        if (attempt === attempts) return { kind: "unavailable" };
+        if (response && response.status < 500) return { kind: "failed" };
+        if (attempt === attempts) return { kind: "failed" };
         await setTimeout(retryDelayMs);
       }
     },
@@ -48,7 +48,7 @@ export function createCatalogueClient(
 
 async function copyLookup(response: Response): Promise<CopyLookup> {
   const parsed = copyResponseSchema.safeParse(await response.json().catch(() => undefined));
-  if (!parsed.success) return { kind: "unavailable" };
+  if (!parsed.success) return { kind: "failed" };
   return {
     kind: "found",
     copy: {

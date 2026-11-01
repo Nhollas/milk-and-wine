@@ -11,7 +11,7 @@ export function openDatabase(path: string): DatabaseSync {
       due_on TEXT NOT NULL,
       returned_on TEXT
     );
-    CREATE UNIQUE INDEX IF NOT EXISTS one_open_loan_per_copy ON loans (copy_id) WHERE returned_on IS NULL;
+    CREATE UNIQUE INDEX IF NOT EXISTS one_current_loan_per_copy ON loans (copy_id) WHERE returned_on IS NULL;
     CREATE TABLE IF NOT EXISTS reminders (
       loan_id TEXT NOT NULL REFERENCES loans (loan_id),
       sent_on TEXT NOT NULL,

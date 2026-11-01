@@ -2,7 +2,7 @@
 
 How specs, changes and tests fit together in this repository. Specs exist so people and agents agree on behaviour before it's built, and keep agreeing after. If a person can't skim one, it has failed at its main job.
 
-Write or change a spec with the `/write-spec` skill.
+Agree a spec with the `/write-spec` skill. [The spec rules](.claude/rules/specs.md) load whenever Claude reads or edits a spec, so they hold for any change to one.
 
 ## 1. Milk and wine
 
@@ -16,7 +16,7 @@ Write or change a spec with the `/write-spec` skill.
   │ adds   borrow-a-book B4+      │ ───────▶ │ B8   renews          proposed │
   │ delivery: 3 MRs               │          │ B9   refuses renewal proposed │
   │ change-only checks            │          │                               │
-  │ before deleting: checklist    │          │ what we promise, right now    │
+  │ before deleting: checklist    │          │ what must hold, right now     │
   └───────────────────────────────┘          └───────────────────────────────┘
      born with the work                         lives with the code
      deleted with its last scenario                  refined over time
@@ -31,8 +31,8 @@ A change spec never owns a requirement. It points at scenarios, carries the Jira
  ┌─────┬────────────────────┬──────────────────┬──────────────────────┬────────────┐
  │ ID  │ Given              │ When             │ Then                 │ Verified   │
  ├─────┼────────────────────┼──────────────────┼──────────────────────┼────────────┤
- │ B2  │ the copy has an    │ POST /loans      │ responds 409         │ service    │
- │     │ open loan          │ arrives for it   │ copy-on-loan and     │            │
+ │ B2  │ the copy has a     │ POST /loans      │ responds 409         │ service    │
+ │     │ current loan       │ arrives for it   │ copy-on-loan and     │            │
  │     │                    │                  │ creates no loan      │            │
  └─────┴────────────────────┴──────────────────┴──────────────────────┴────────────┘
     ▲     ▲                    ▲                  ▲                      ▲
@@ -65,12 +65,12 @@ That's why [loans](specs/modules/loans/spec.md) lists B10 first: it was split ou
              └──────┬───────┘        └──────┬───────┘
                     ▼                       ▼
   folder     specs/journeys/         specs/modules/
-  boundary   the member              the module's edges
+  boundary   the member              the module's interface
   proof      system test             service, integration
   example    borrow-a-book B3        loans B2
 ```
 
-A scenario is a promise someone checks. The subject decides where you observe it and how it's proven.
+A scenario is one behaviour someone checks. The subject decides where you observe it and how it's proven.
 
 ## 4. Status is computed, never typed
 

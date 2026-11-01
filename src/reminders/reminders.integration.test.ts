@@ -49,11 +49,11 @@ test.each([
   { status: 304, reason: "304" },
   { status: 400, reason: "400" },
   { status: 503, reason: "503" },
-])("B5: treats a $status as refused", async ({ status, reason }) => {
+])("B11: treats a $status as failed", async ({ status, reason }) => {
   httpInterceptor.use(http.post(NOTIFICATIONS_PATH, () => new HttpResponse(null, { status })));
 
   expect(await notificationsClient.sendOverdueReminder(reminder)).toEqual({
-    kind: "refused",
+    kind: "failed",
     reason: expect.stringContaining(reason),
   });
 });
@@ -74,11 +74,11 @@ test("B5: keeps the path NOTIFY_URL has", async () => {
   expect(paths).toEqual(["/api/notifications"]);
 });
 
-test("B5: treats a failed connection as refused", async () => {
+test("B12: treats an unreachable API as failed", async () => {
   httpInterceptor.use(http.post(NOTIFICATIONS_PATH, () => HttpResponse.error()));
 
   expect(await notificationsClient.sendOverdueReminder(reminder)).toEqual({
-    kind: "refused",
+    kind: "failed",
     reason: expect.stringContaining("unreachable"),
   });
 });

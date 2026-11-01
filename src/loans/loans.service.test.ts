@@ -109,7 +109,7 @@ test("B5: refuses to lend while the catalogue is unavailable", async ({
   expect(db.prepare("SELECT * FROM loans").all()).toEqual([]);
 });
 
-test("B6: takes back an open loan so the copy can be lent again", async ({
+test("B6: takes back a current loan so the copy can be lent again", async ({
   app,
   fakeCatalogue,
   clock,
@@ -134,10 +134,14 @@ test("B6: takes back an open loan so the copy can be lent again", async ({
   expect(secondLendResponse.status).toBe(201);
 });
 
-test("B7: refuses to take back an unknown or already returned loan", async ({
-  app,
-  fakeCatalogue,
-}) => {
+test("B7: refuses to take back an unknown loan", async ({ app }) => {
+  const unknownLoanReturnResponse = await app.request("/loans/no-such-loan/return", postJson());
+
+  expect(unknownLoanReturnResponse.status).toBe(404);
+  expect(await unknownLoanReturnResponse.json()).toEqual({ error: "loan-not-found" });
+});
+
+test("B13: refuses to take back a loan already returned", async ({ app, fakeCatalogue }) => {
   fakeCatalogue.addCopies({ "copy-1": "available" });
   const lendResponse = await app.request(
     "/loans",
@@ -146,18 +150,17 @@ test("B7: refuses to take back an unknown or already returned loan", async ({
   const { loanId } = (await lendResponse.json()) as { loanId: string };
   await app.request(`/loans/${loanId}/return`, postJson());
 
-  const unknownLoanReturnResponse = await app.request("/loans/no-such-loan/return", postJson());
   const secondReturnResponse = await app.request(`/loans/${loanId}/return`, postJson());
 
-  expect(unknownLoanReturnResponse.status).toBe(404);
-  expect(await unknownLoanReturnResponse.json()).toEqual({ error: "loan-not-found" });
   expect(secondReturnResponse.status).toBe(409);
   expect(await secondReturnResponse.json()).toEqual({ error: "already-returned" });
 });
 
-test.todo("B8: renews an open loan to 14 days past its due date");
+test.todo("B8: renews a current loan to 14 days past its due date");
 
-test.todo("B9: refuses to renew an overdue loan or one renewed twice");
+test.todo("B9: refuses to renew an overdue loan");
+
+test.todo("B14: refuses to renew a loan already renewed twice");
 
 test("B11: reports healthy without touching the catalogue or the database", async ({ app, db }) => {
   db.close();

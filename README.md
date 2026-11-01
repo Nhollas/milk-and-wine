@@ -2,7 +2,7 @@
 
 Specs come in two kinds. Wine gets better with age: a behaviour spec that lasts and is refined as the system grows. Milk goes off: a change spec that exists to deliver one piece of work and is thrown out once it's done. This repository is about the wine, and how to make people and agents trust it.
 
-The ideas are tried out on a small library service: members borrow copies, get reminded when they're late, and bring them back.
+The ideas are tried out on a small library app: members borrow copies of books, get reminded when they're overdue, and bring them back.
 
 For why this repository exists, see [INTENT.md](INTENT.md).
 
@@ -20,7 +20,7 @@ pnpm check
 
 [INTENT.md](INTENT.md) says why this exists and what's being tested. [SPEC-DRIVEN-DEVELOPMENT.md](SPEC-DRIVEN-DEVELOPMENT.md) shows the process, mostly as diagrams. Specs live under `specs/`, with the code and its tests under `src/` and `tools/`.
 
-## Running the service
+## Running the app
 
 ```bash
 DATABASE_PATH=loans.db CATALOGUE_URL=https://catalogue.example pnpm start:loans

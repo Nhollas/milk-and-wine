@@ -74,18 +74,6 @@
         ]
       },
       {
-        "breaks": "Sends nothing for that loan (is returned)",
-        "file": "src/reminders/reminder-store.ts",
-        "find": ["           WHERE returned_on IS NULL AND due_on < ?"],
-        "replace": ["           WHERE due_on < ?"]
-      },
-      {
-        "breaks": "Sends nothing for that loan (isn't overdue)",
-        "file": "src/reminders/reminder-store.ts",
-        "find": ["           WHERE returned_on IS NULL AND due_on < ?"],
-        "replace": ["           WHERE returned_on IS NULL AND due_on <= ?"]
-      },
-      {
         "breaks": "Sends nothing for that loan (another loan's reminder today blocks this one)",
         "file": "src/reminders/reminder-store.ts",
         "find": [
@@ -96,7 +84,7 @@
     ]
   },
   "B3": {
-    "then": "Records nothing for that loan, logs `reminder.failed` at `warn` with `loanId` and the refusal's `error`, doesn't ask again for that loan in this run, and carries on with the other loans",
+    "then": "Records nothing for that loan and doesn't ask again for it in this run",
     "mutants": [
       {
         "breaks": "Records nothing for that loan",
@@ -105,64 +93,18 @@
         "replace": ["      store.recordSent(reminder.loanId, today);", "      continue;"]
       },
       {
-        "breaks": "logs `reminder.failed`",
-        "file": "src/reminders/send-overdue-reminders.ts",
-        "find": [
-          "      logger.warn(\"reminder.failed\", { loanId: reminder.loanId, error: delivery.reason });"
-        ],
-        "replace": [
-          "      logger.warn(\"reminder.refused\", { loanId: reminder.loanId, error: delivery.reason });"
-        ]
-      },
-      {
-        "breaks": "at `warn`",
-        "file": "src/reminders/send-overdue-reminders.ts",
-        "find": [
-          "      logger.warn(\"reminder.failed\", { loanId: reminder.loanId, error: delivery.reason });"
-        ],
-        "replace": [
-          "      logger.info(\"reminder.failed\", { loanId: reminder.loanId, error: delivery.reason });"
-        ]
-      },
-      {
-        "breaks": "with `loanId`",
-        "file": "src/reminders/send-overdue-reminders.ts",
-        "find": [
-          "      logger.warn(\"reminder.failed\", { loanId: reminder.loanId, error: delivery.reason });"
-        ],
-        "replace": [
-          "      logger.warn(\"reminder.failed\", { loanId: reminder.memberId, error: delivery.reason });"
-        ]
-      },
-      {
-        "breaks": "the refusal's `error`",
-        "file": "src/reminders/send-overdue-reminders.ts",
-        "find": [
-          "      logger.warn(\"reminder.failed\", { loanId: reminder.loanId, error: delivery.reason });"
-        ],
-        "replace": [
-          "      logger.warn(\"reminder.failed\", { loanId: reminder.loanId, error: \"refused\" });"
-        ]
-      },
-      {
-        "breaks": "carries on with the other loans",
-        "file": "src/reminders/send-overdue-reminders.ts",
-        "find": ["      continue;"],
-        "replace": ["      break;"]
-      },
-      {
         "breaks": "doesn't ask again for that loan in this run",
         "file": "src/reminders/send-overdue-reminders.ts",
         "find": ["    const delivery = await notificationsClient.sendOverdueReminder(reminder);"],
         "replace": [
           "    let delivery = await notificationsClient.sendOverdueReminder(reminder);",
-          "    if (delivery.kind === \"refused\") delivery = await notificationsClient.sendOverdueReminder(reminder);"
+          "    if (delivery.kind === \"failed\") delivery = await notificationsClient.sendOverdueReminder(reminder);"
         ]
       }
     ]
   },
   "B4": {
-    "then": "Logs `reminders.finished` at `info` with `sent` and `failed` counts",
+    "then": "Logs `reminders.finished` at `info` with `accepted` and `failed` counts",
     "mutants": [
       {
         "breaks": "Logs `reminders.finished`",
@@ -177,9 +119,9 @@
         "replace": ["  logger.warn(\"reminders.finished\", { ...counts });"]
       },
       {
-        "breaks": "with `sent` count",
+        "breaks": "with `accepted` count",
         "file": "src/reminders/send-overdue-reminders.ts",
-        "find": ["    counts.sent++;"],
+        "find": ["    counts.accepted++;"],
         "replace": []
       },
       {
@@ -200,13 +142,16 @@
       {
         "breaks": "The job has handled every overdue loan (logs after each reminder too)",
         "file": "src/reminders/send-overdue-reminders.ts",
-        "find": ["    counts.sent++;"],
-        "replace": ["    counts.sent++;", "    logger.info(\"reminders.finished\", { ...counts });"]
+        "find": ["    counts.accepted++;"],
+        "replace": [
+          "    counts.accepted++;",
+          "    logger.info(\"reminders.finished\", { ...counts });"
+        ]
       }
     ]
   },
   "B5": {
-    "then": "Sends `POST {NOTIFY_URL}/notifications` with JSON `{ \"memberId\", \"template\": \"loan-overdue\", \"data\": { \"loanId\", \"dueOn\" } }`; any `2xx` counts as accepted, and any other answer or a failed connection as refused, with a reason naming the status or saying the API was unreachable",
+    "then": "Sends `POST {NOTIFY_URL}/notifications` with JSON `{ \"memberId\", \"template\": \"loan-overdue\", \"data\": { \"loanId\", \"dueOn\" } }` and counts it as accepted",
     "mutants": [
       {
         "breaks": "`POST`",
@@ -273,60 +218,148 @@
         "replace": ["      if (response.status !== 200)"]
       },
       {
-        "breaks": "any other answer ... as refused",
-        "file": "src/reminders/notifications-client.ts",
-        "find": ["      if (!response.ok)"],
-        "replace": ["      if (response.status >= 500)"]
-      },
-      {
-        "breaks": "a failed connection as refused",
-        "file": "src/reminders/notifications-client.ts",
-        "find": ["      }).catch(() => undefined);"],
-        "replace": ["      });"]
-      },
-      {
-        "breaks": "with a reason naming the status",
-        "file": "src/reminders/notifications-client.ts",
-        "find": [
-          "        return { kind: \"refused\", reason: `Notifications API answered ${response.status}` };"
-        ],
-        "replace": [
-          "        return { kind: \"refused\", reason: \"Notifications API refused the request\" };"
-        ]
-      },
-      {
-        "breaks": "or saying the API was unreachable",
-        "file": "src/reminders/notifications-client.ts",
-        "find": [
-          "      if (!response) return { kind: \"refused\", reason: \"Notifications API unreachable\" };"
-        ],
-        "replace": [
-          "      if (!response) return { kind: \"refused\", reason: \"Notifications API failed\" };"
-        ]
-      },
-      {
         "breaks": "any `2xx` counts as accepted (only 200, 202 and 204)",
         "file": "src/reminders/notifications-client.ts",
         "find": ["      if (!response.ok)"],
         "replace": ["      if (![200, 202, 204].includes(response.status))"]
       },
       {
-        "breaks": "any other answer ... as refused (a 3xx is accepted)",
+        "breaks": "`{NOTIFY_URL}/notifications` (drops NOTIFY_URL's path)",
+        "file": "src/reminders/notifications-client.ts",
+        "find": ["      const response = await fetch(endpoint(baseUrl, \"notifications\"), {"],
+        "replace": ["      const response = await fetch(new URL(\"/notifications\", baseUrl), {"]
+      }
+    ]
+  },
+  "B7": {
+    "then": "Sends nothing for that loan",
+    "mutants": [
+      {
+        "breaks": "Sends nothing for that loan (is returned)",
+        "file": "src/reminders/reminder-store.ts",
+        "find": ["           WHERE returned_on IS NULL AND due_on < ?"],
+        "replace": ["           WHERE due_on < ?"]
+      }
+    ]
+  },
+  "B8": {
+    "then": "Sends nothing for that loan",
+    "mutants": [
+      {
+        "breaks": "Sends nothing for that loan (isn't overdue)",
+        "file": "src/reminders/reminder-store.ts",
+        "find": ["           WHERE returned_on IS NULL AND due_on < ?"],
+        "replace": ["           WHERE returned_on IS NULL AND due_on <= ?"]
+      }
+    ]
+  },
+  "B9": {
+    "then": "Logs `reminder.failed` at `warn` with `loanId` and the failure's `error`",
+    "mutants": [
+      {
+        "breaks": "logs `reminder.failed`",
+        "file": "src/reminders/send-overdue-reminders.ts",
+        "find": [
+          "      logger.warn(\"reminder.failed\", { loanId: reminder.loanId, error: delivery.reason });"
+        ],
+        "replace": [
+          "      logger.warn(\"reminder.refused\", { loanId: reminder.loanId, error: delivery.reason });"
+        ]
+      },
+      {
+        "breaks": "at `warn`",
+        "file": "src/reminders/send-overdue-reminders.ts",
+        "find": [
+          "      logger.warn(\"reminder.failed\", { loanId: reminder.loanId, error: delivery.reason });"
+        ],
+        "replace": [
+          "      logger.info(\"reminder.failed\", { loanId: reminder.loanId, error: delivery.reason });"
+        ]
+      },
+      {
+        "breaks": "with `loanId`",
+        "file": "src/reminders/send-overdue-reminders.ts",
+        "find": [
+          "      logger.warn(\"reminder.failed\", { loanId: reminder.loanId, error: delivery.reason });"
+        ],
+        "replace": [
+          "      logger.warn(\"reminder.failed\", { loanId: reminder.memberId, error: delivery.reason });"
+        ]
+      },
+      {
+        "breaks": "the failure's `error`",
+        "file": "src/reminders/send-overdue-reminders.ts",
+        "find": [
+          "      logger.warn(\"reminder.failed\", { loanId: reminder.loanId, error: delivery.reason });"
+        ],
+        "replace": [
+          "      logger.warn(\"reminder.failed\", { loanId: reminder.loanId, error: \"refused\" });"
+        ]
+      }
+    ]
+  },
+  "B10": {
+    "then": "Still asks the Notifications API to notify the other loans' members",
+    "mutants": [
+      {
+        "breaks": "carries on with the other loans",
+        "file": "src/reminders/send-overdue-reminders.ts",
+        "find": ["      continue;"],
+        "replace": ["      break;"]
+      }
+    ]
+  },
+  "B11": {
+    "then": "Counts it as failed, with a reason naming the status",
+    "mutants": [
+      {
+        "breaks": "any other answer ... as failed",
+        "file": "src/reminders/notifications-client.ts",
+        "find": ["      if (!response.ok)"],
+        "replace": ["      if (response.status >= 500)"]
+      },
+      {
+        "breaks": "with a reason naming the status",
+        "file": "src/reminders/notifications-client.ts",
+        "find": [
+          "        return { kind: \"failed\", reason: `Notifications API answered ${response.status}` };"
+        ],
+        "replace": [
+          "        return { kind: \"failed\", reason: \"Notifications API refused the request\" };"
+        ]
+      },
+      {
+        "breaks": "any other answer ... as failed (a 3xx is accepted)",
         "file": "src/reminders/notifications-client.ts",
         "find": ["      if (!response.ok)"],
         "replace": ["      if (response.status >= 400)"]
       },
       {
-        "breaks": "any other answer ... as refused (a 5xx is accepted)",
+        "breaks": "any other answer ... as failed (a 5xx is accepted)",
         "file": "src/reminders/notifications-client.ts",
         "find": ["      if (!response.ok)"],
         "replace": ["      if (response.status >= 400 && response.status < 500)"]
+      }
+    ]
+  },
+  "B12": {
+    "then": "Counts it as failed, with a reason saying the API was unreachable",
+    "mutants": [
+      {
+        "breaks": "a failed connection as failed",
+        "file": "src/reminders/notifications-client.ts",
+        "find": ["      }).catch(() => undefined);"],
+        "replace": ["      });"]
       },
       {
-        "breaks": "`{NOTIFY_URL}/notifications` (drops NOTIFY_URL's path)",
+        "breaks": "or saying the API was unreachable",
         "file": "src/reminders/notifications-client.ts",
-        "find": ["      const response = await fetch(endpoint(baseUrl, \"notifications\"), {"],
-        "replace": ["      const response = await fetch(new URL(\"/notifications\", baseUrl), {"]
+        "find": [
+          "      if (!response) return { kind: \"failed\", reason: \"Notifications API unreachable\" };"
+        ],
+        "replace": [
+          "      if (!response) return { kind: \"failed\", reason: \"Notifications API failed\" };"
+        ]
       }
     ]
   }

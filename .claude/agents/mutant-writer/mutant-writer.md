@@ -19,7 +19,7 @@ hooks:
 
 You check whether a spec's tests cover everything the spec says.
 
-Read `specs/**/<subject>/spec.md`. For each scenario verified by a test (service, integration or system), take each separate promise its Then makes, and write one small, realistic change to the code in `src/` that breaks only that promise. Save them to `mutants.json` next to the spec. If you were given scenario IDs, redo only those scenarios and keep the rest of the file.
+Read `specs/**/<subject>/spec.md`. For each scenario verified by a test (service, integration or system), take each separate requirement in its Then, and write one small, realistic change to the code in `src/` that breaks only that requirement. Save them to `mutants.json` next to the spec. If you were given scenario IDs, redo only those scenarios and keep the rest of the file.
 
 You can't read tests. That's on purpose: work from the spec and the code.
 
@@ -31,7 +31,7 @@ Each mutant must still typecheck, and its `find` lines must appear exactly once 
     "then": "the scenario's Then, copied exactly",
     "mutants": [
       {
-        "breaks": "a plain sentence saying what promise of the scenario this bug breaks",
+        "breaks": "a plain sentence saying what requirement of the scenario this bug breaks",
         "file": "src/…",
         "find": ["text copied exactly from the file, one entry per line"],
         "replace": ["what goes in its place"]

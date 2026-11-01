@@ -11,7 +11,7 @@ export type SendOverdueRemindersOptions = {
   logger: Logger;
 };
 
-export type ReminderCounts = { sent: number; failed: number };
+export type ReminderCounts = { accepted: number; failed: number };
 
 export async function sendOverdueReminders({
   db,
@@ -21,17 +21,17 @@ export async function sendOverdueReminders({
 }: SendOverdueRemindersOptions): Promise<ReminderCounts> {
   const store = createReminderStore(db);
   const today = utcDate(clock());
-  const counts: ReminderCounts = { sent: 0, failed: 0 };
+  const counts: ReminderCounts = { accepted: 0, failed: 0 };
 
   for (const reminder of store.remindersDue(today)) {
     const delivery = await notificationsClient.sendOverdueReminder(reminder);
-    if (delivery.kind === "refused") {
+    if (delivery.kind === "failed") {
       counts.failed++;
       logger.warn("reminder.failed", { loanId: reminder.loanId, error: delivery.reason });
       continue;
     }
     store.recordSent(reminder.loanId, today);
-    counts.sent++;
+    counts.accepted++;
   }
 
   logger.info("reminders.finished", { ...counts });

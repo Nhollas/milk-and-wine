@@ -30,10 +30,10 @@ export function createLoansApp({ db, catalogueClient, clock }: LoansAppOptions):
     if (!parsed.success) return c.json({ error: "invalid-request" }, 400);
     const { memberId, copyId } = parsed.data;
 
-    if (store.hasOpenLoan(copyId)) return c.json({ error: "copy-on-loan" }, 409);
+    if (store.hasCurrentLoan(copyId)) return c.json({ error: "copy-on-loan" }, 409);
 
     const lookup = await catalogueClient.getCopy(copyId);
-    if (lookup.kind === "unavailable") return c.json({ error: "catalogue-unavailable" }, 503);
+    if (lookup.kind === "failed") return c.json({ error: "catalogue-unavailable" }, 503);
     if (lookup.kind === "not-found") return c.json({ error: "copy-not-found" }, 404);
     if (!lookup.copy.available) return c.json({ error: "copy-withdrawn" }, 422);
 

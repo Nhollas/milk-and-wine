@@ -8,31 +8,29 @@ import {
 } from "../support/notifications-api.handlers.ts";
 import { test } from "./system.fixtures.ts";
 
-test("B1: a member borrows an available copy, due in 14 days, and no one else can borrow it", async ({
-  app,
-  clock,
-}) => {
+test("B1: a member borrows an available copy, due in 14 days", async ({ app, clock }) => {
   httpInterceptor.use(copyLookupHandler({ "copy-1": "available" }));
   clock.setToday("2026-03-02");
 
-  const firstLendResponse = await app.request(
-    "/loans",
-    postJson({ memberId: "ada", copyId: "copy-1" }),
-  );
+  const lendResponse = await app.request("/loans", postJson({ memberId: "ada", copyId: "copy-1" }));
+
+  expect(lendResponse.status).toBe(201);
+  expect(await lendResponse.json()).toMatchObject({ dueOn: "2026-03-16" });
+});
+
+test("B5: no one else can borrow a copy that is on loan", async ({ app }) => {
+  httpInterceptor.use(copyLookupHandler({ "copy-1": "available" }));
+  await app.request("/loans", postJson({ memberId: "ada", copyId: "copy-1" }));
+
   const secondLendResponse = await app.request(
     "/loans",
     postJson({ memberId: "grace", copyId: "copy-1" }),
   );
 
-  expect(firstLendResponse.status).toBe(201);
-  expect(await firstLendResponse.json()).toMatchObject({ dueOn: "2026-03-16" });
   expect(secondLendResponse.status).toBe(409);
 });
 
-test("B2: once a member returns a copy, the secondLendResponse member can borrow it", async ({
-  app,
-  clock,
-}) => {
+test("B2: once a member returns a copy, another member can borrow it", async ({ app, clock }) => {
   httpInterceptor.use(copyLookupHandler({ "copy-1": "available" }));
   clock.setToday("2026-03-02");
   const lendResponse = await app.request("/loans", postJson({ memberId: "ada", copyId: "copy-1" }));
@@ -76,4 +74,6 @@ test("B3: a member who keeps a copy past its due date gets one reminder that day
   ]);
 });
 
-test.todo("B4: a renewed loan is due 14 days later and gets no reminder before then");
+test.todo("B4: a renewed loan is due 14 days later");
+
+test.todo("B6: a renewed loan gets no reminder before its new due date");

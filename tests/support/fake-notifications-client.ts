@@ -6,13 +6,13 @@ import type {
 export function fakeNotificationsClient() {
   const asked: OverdueReminder[] = [];
   const sent: OverdueReminder[] = [];
-  const refusals = new Map<string, string>();
+  const failures = new Map<string, string>();
 
   const notificationsClient: NotificationsClient = {
     async sendOverdueReminder(reminder) {
       asked.push(reminder);
-      const reason = refusals.get(reminder.loanId);
-      if (reason !== undefined) return { kind: "refused", reason };
+      const reason = failures.get(reminder.loanId);
+      if (reason !== undefined) return { kind: "failed", reason };
       sent.push(reminder);
       return { kind: "accepted" };
     },
@@ -22,11 +22,11 @@ export function fakeNotificationsClient() {
     ...notificationsClient,
     asked,
     sent,
-    refuseFor(loanId: string, reason: string) {
-      refusals.set(loanId, reason);
+    failFor(loanId: string, reason: string) {
+      failures.set(loanId, reason);
     },
-    stopRefusing(loanId: string) {
-      refusals.delete(loanId);
+    stopFailing(loanId: string) {
+      failures.delete(loanId);
     },
   };
 }

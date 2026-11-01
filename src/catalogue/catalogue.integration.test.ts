@@ -64,7 +64,7 @@ test("B3: gives up after three attempts while the catalogue keeps failing", asyn
     }),
   );
 
-  expect((await catalogueClient.getCopy("copy-1")).kind).toBe("unavailable");
+  expect((await catalogueClient.getCopy("copy-1")).kind).toBe("failed");
 });
 
 test("B3: still answers when the third attempt succeeds", async () => {
@@ -89,7 +89,7 @@ test("B3: gives up after three attempts while the connection fails", async () =>
     }),
   );
 
-  expect((await catalogueClient.getCopy("copy-1")).kind).toBe("unavailable");
+  expect((await catalogueClient.getCopy("copy-1")).kind).toBe("failed");
 });
 
 test("B3: abandons an attempt after two seconds and tries again", async () => {
@@ -119,7 +119,7 @@ test("B4: refuses an unreadable answer without retrying", async () => {
     }),
   );
 
-  expect((await catalogueClient.getCopy("copy-1")).kind).toBe("unavailable");
+  expect((await catalogueClient.getCopy("copy-1")).kind).toBe("failed");
 });
 
 test("B4: refuses an unexpected client error without retrying", async () => {
@@ -130,5 +130,5 @@ test("B4: refuses an unexpected client error without retrying", async () => {
     }),
   );
 
-  expect((await catalogueClient.getCopy("copy-1")).kind).toBe("unavailable");
+  expect((await catalogueClient.getCopy("copy-1")).kind).toBe("failed");
 });

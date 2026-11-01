@@ -27,7 +27,7 @@ const loanRecord = z
 
 export function createLoanStore(db: DatabaseSync) {
   return {
-    hasOpenLoan(copyId: string): boolean {
+    hasCurrentLoan(copyId: string): boolean {
       return (
         db.prepare("SELECT 1 FROM loans WHERE copy_id = ? AND returned_on IS NULL").get(copyId) !==
         undefined

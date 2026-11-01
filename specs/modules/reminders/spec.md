@@ -1,6 +1,6 @@
 # Reminders
 
-Reminds members about overdue loans, once a day, through the organisation's Notifications API.
+Reminds members about overdue loans, once a day, through the organisation's Notifications API. A loan is current until its copy is returned.
 
 | Scope |  |
 | --- | --- |
@@ -10,21 +10,27 @@ Reminds members about overdue loans, once a day, through the organisation's Noti
 
 ## Behaviour
 
-### Sending overdue reminders
+### Sending reminders
 
 | ID | Given | When | Then | Verified |
 | --- | --- | --- | --- | --- |
-| B1 | An open loan's `dueOn` is before today (UTC), and it has no reminder recorded today | The reminders job runs | Asks the Notifications API to notify the loan's member, then records a reminder for today | service |
-| B2 | An open loan already has a reminder recorded today, or is returned, or isn't overdue | The reminders job runs | Sends nothing for that loan | service |
-| B3 | The Notifications API refuses a reminder | The job sends a reminder | Records nothing for that loan, logs `reminder.failed` at `warn` with `loanId` and the refusal's `error`, doesn't ask again for that loan in this run, and carries on with the other loans | service |
-| B6 | Several loans are overdue | The reminders job runs | Handles them oldest `dueOn` first | service |
-| B4 | The job has handled every overdue loan | The job finishes | Logs `reminders.finished` at `info` with `sent` and `failed` counts | service |
+| B1 | A current loan's `dueOn` is before today (UTC), and it has no reminder recorded today | The reminders job runs | Asks the Notifications API to notify the loan's member, then records a reminder for today | service |
+| B2 | A current loan already has a reminder recorded today | The reminders job runs | Sends nothing for that loan | service |
+| B7 | A loan's copy has been returned | The reminders job runs | Sends nothing for that loan | service |
+| B8 | A current loan's `dueOn` is today (UTC) or later | The reminders job runs | Sends nothing for that loan | service |
+| B3 | The Notifications API doesn't accept a reminder | The job sends a reminder | Records nothing for that loan and doesn't ask again for it in this run | service |
+| B9 | The Notifications API doesn't accept a reminder | The job sends a reminder | Logs `reminder.failed` at `warn` with `loanId` and the failure's `error` | service |
+| B10 | The Notifications API doesn't accept a reminder, and other loans are overdue | The job sends a reminder | Still asks the Notifications API to notify the other loans' members | service |
+| B6 | Several loans are overdue | The reminders job runs | Asks the Notifications API to notify their members, oldest `dueOn` first | service |
+| B4 | The job has handled every overdue loan | The job finishes | Logs `reminders.finished` at `info` with `accepted` and `failed` counts | service |
 
 ### Calling the Notifications API
 
 | ID | Given | When | Then | Verified |
 | --- | --- | --- | --- | --- |
-| B5 | A reminder is due | The job sends it | Sends `POST {NOTIFY_URL}/notifications` with JSON `{ "memberId", "template": "loan-overdue", "data": { "loanId", "dueOn" } }`; any `2xx` counts as accepted, and any other answer or a failed connection as refused, with a reason naming the status or saying the API was unreachable | integration |
+| B5 | The job has a reminder to send, and the API answers any `2xx` | The job sends it | Sends `POST {NOTIFY_URL}/notifications` with JSON `{ "memberId", "template": "loan-overdue", "data": { "loanId", "dueOn" } }` and counts it as accepted | integration |
+| B11 | The job has a reminder to send, and the API answers anything but a `2xx` | The job sends it | Counts it as failed, with a reason naming the status | integration |
+| B12 | The job has a reminder to send, and the connection to the API fails | The job sends it | Counts it as failed, with a reason saying the API was unreachable | integration |
 
 **Why**
 
@@ -32,7 +38,7 @@ Reminds members about overdue loans, once a day, through the organisation's Noti
 
 ## Limitations
 
-- The reminder is recorded after the Notifications API accepts it. If the job stops between the two, the member gets a second reminder the next day.
+- If the job stops after the Notifications API accepts a reminder but before recording it, the member gets a second reminder the next day.
 
 ## Open questions
 
