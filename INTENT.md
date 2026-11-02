@@ -16,9 +16,9 @@ To try the ideas out, the repository has a small playground app. It's a library 
 
 What I want to come away with is a written understanding of why each idea is kept, and what it was weighed against. The app and its tooling are how I test that understanding. They aren't the point of it.
 
-## How a reviewer trusts a change
+## Review checks
 
-Two checks, both for confidence at review. They started as trials and are now part of the approach. Each is held to targets it has to keep meeting. A check that falls short gets improved first, and is dropped only if it can't be brought back up to them.
+Two checks, both for confidence at review. Each must keep meeting its targets, and one that falls short is improved before it's dropped.
 
 Each behaviour of the app is written in a spec as acceptance criteria, in the form given a starting situation, when something happens, then what should result. Each test says which criteria it proves.
 
