@@ -16,9 +16,9 @@ To try the ideas out, the repository has a small playground app. It's a library 
 
 What I want to come away with is a written understanding of why each idea is kept, and what it was weighed against. The app and its tooling are how I test that understanding. They aren't the point of it.
 
-## What I'm testing now
+## How a reviewer trusts a change
 
-Two experiments, both for confidence at review.
+Two checks, both for confidence at review. They started as trials and are now part of the approach. Each is held to targets it has to keep meeting. A check that falls short gets improved first, and is dropped only if it can't be brought back up to them.
 
 Each behaviour of the app is written in a spec as acceptance criteria, in the form given a starting situation, when something happens, then what should result. Each test says which criteria it proves.
 
@@ -26,7 +26,7 @@ Each behaviour of the app is written in a spec as acceptance criteria, in the fo
 
 Does each test check what its acceptance criteria say? An agent reads each test beside the criteria it claims to prove. It reports anything the criteria ask for that the test doesn't check, anything the test checks that the criteria don't ask for, and anything the test expects that contradicts them.
 
-I'll keep the judge if it meets these targets.
+The judge has to meet these targets.
 
 | Measure                                                                 | Target          |
 | ----------------------------------------------------------------------- | --------------- |
@@ -38,7 +38,7 @@ I'll keep the judge if it meets these targets.
 
 Would the tests catch a bug? For each spec, an agent writes small, deliberate bugs into the code, each meant to break one thing the acceptance criteria ask for. A bug the tests miss means they're too weak to protect that behaviour. Only tests the intent judge has already passed count, so a miss points at a weak test rather than one that checks the wrong thing.
 
-I'll keep the mutants if they meet these targets.
+The mutants have to meet these targets.
 
 | Measure                                         | Target                                 |
 | ----------------------------------------------- | -------------------------------------- |
