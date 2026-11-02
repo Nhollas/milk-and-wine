@@ -4,7 +4,6 @@
     "tools/spec-mutants/replay-config.ts",
     ".claude/agents/mutant-writer/guard.ts",
     ".claude/agents/mutant-writer/check-before-stop.ts",
-    ".claude/hooks/protect-glossary.ts",
     ".claude/skills/intent-judge/hooks/guard.ts",
     ".claude/skills/intent-judge/evals/tools/stage-case.ts"
   ],
