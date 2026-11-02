@@ -1,6 +1,6 @@
 # Intent evals
 
-Measures how well the [intent judge](../../../.claude/skills/intent-judge/agents/intent-judge.md) finds where tests don't match their scenarios. It plants gaps in examples and checks whether the judge reports them, and gives it tests that are right and checks that it reports nothing. It's for whoever decides whether to keep the judge, how to word it and which model runs it.
+Measures how well the [intent judge](../../../.claude/skills/intent-judge/agents/intent-judge.md) finds where tests don't match their scenarios. It plants gaps in examples and checks whether the judge reports them, and gives it tests that are right and checks that it reports nothing. It's for whoever looks after the judge: how to word it, which model runs it, and whether it still meets its targets.
 
 | Scope |  |
 | --- | --- |
