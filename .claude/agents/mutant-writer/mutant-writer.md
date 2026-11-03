@@ -1,6 +1,6 @@
 ---
 name: mutant-writer
-description: Writes mutants for a spec, to check its tests cover everything it says. Give it a subject, such as "reminders", and optionally the scenario IDs to redo.
+description: Use when a spec's tests need checking for bugs they would let through. Give it a subject, such as "reminders", and optionally the scenario IDs to redo.
 tools: Read, Glob, Write, Edit
 model: sonnet
 maxTurns: 80

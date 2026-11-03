@@ -1,6 +1,6 @@
 ---
 name: standards-reviewer
-description: Reviews a change against the coding standards and ADRs, and checks its evidence. Give it the base commit and the evidence.
+description: Use when a change needs reviewing against the coding standards and ADRs, and its evidence checking. Give it the base commit and the evidence.
 tools: Read, Glob, Grep, Bash
 model: sonnet
 maxTurns: 60

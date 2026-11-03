@@ -70,25 +70,11 @@ Redraw the map after each change, and iterate until the user approves the breakd
 
 ### 6. Publish the tickets
 
-Create each ticket as a sub-issue in dependency order (blockers first), so each ticket's blocking edges can reference real numbers:
+Create each ticket as a sub-issue from [the ticket template](assets/ticket.md), in dependency order (blockers first), so each ticket's blocking edges can reference real numbers:
 
 ```sh
 gh issue create --title <title> --body-file <body> --parent <n> --blocked-by <numbers>
 ```
-
-<ticket-template>
-
-## What to build
-
-The end-to-end behaviour this ticket makes work, from the user's perspective, not layer-by-layer implementation.
-
-## Scenarios
-
-- [ ] `<subject> <ID>`: <the scenario in a few words>
-
-For a prefactoring ticket: "None: behaviour is unchanged."
-
-</ticket-template>
 
 Avoid specific file paths or code snippets: they go stale fast.
 

@@ -1,6 +1,6 @@
 ---
 name: implementer
-description: Makes a spec's failing tests pass with the smallest change, and records the evidence. Give it a subject, such as "loans", and the scenario IDs.
+description: Use when a spec's scenarios have failing tests that need code to pass them. Give it a subject, such as "loans", and the scenario IDs.
 tools: Read, Glob, Grep, Write, Edit, Bash
 model: inherit
 maxTurns: 120

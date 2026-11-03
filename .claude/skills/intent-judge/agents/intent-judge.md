@@ -1,6 +1,6 @@
 ---
 name: intent-judge
-description: Checks that a spec's tests are aligned with its scenarios. Give it a subject, such as "reminders", and optionally the scenario IDs to judge.
+description: Use when a spec's tests need checking against what their scenarios say. Give it a subject, such as "reminders", and optionally the scenario IDs to judge.
 tools: Read, Glob, StructuredOutput
 model: sonnet
 maxTurns: 40
