@@ -48,4 +48,4 @@ Each teammate is an agent definition, so its tools, model and instructions are f
 
 ## What's built
 
-`/grill`, `/write-spec`, `/to-tickets`, the intent judge and the mutant writer exist. `/foreman`, the test writer, the implementer and the standards reviewer are still to come.
+`/grill`, `/write-spec`, `/to-tickets` and all five teammates exist. `/foreman` is still to come.
