@@ -1,0 +1,65 @@
+{
+  "title": "Reserve a copy that's on loan",
+  "parts": [
+    {
+      "id": "desk",
+      "name": "Front-desk app",
+      "note": "calls our APIs",
+      "column": 0,
+      "row": 0,
+      "exists": true
+    },
+    {
+      "id": "reservations",
+      "name": "Reservations",
+      "note": "module",
+      "column": 1,
+      "row": 0,
+      "exists": false
+    },
+    {
+      "id": "notifications",
+      "name": "Notifications API",
+      "note": "external",
+      "column": 2,
+      "row": 0,
+      "exists": true
+    },
+    { "id": "loans", "name": "Loans", "note": "module", "column": 1, "row": 1, "exists": true },
+    {
+      "id": "catalogue",
+      "name": "Catalogue",
+      "note": "external",
+      "column": 2,
+      "row": 1,
+      "exists": true
+    }
+  ],
+  "links": [
+    { "from": "desk", "to": "loans", "exists": true },
+    { "from": "loans", "to": "catalogue", "exists": true },
+    { "from": "desk", "to": "reservations", "exists": false },
+    { "from": "reservations", "to": "loans", "exists": false },
+    { "from": "loans", "to": "reservations", "exists": false },
+    { "from": "reservations", "to": "notifications", "exists": false }
+  ],
+  "slices": [
+    {
+      "title": "Reserve a copy on loan",
+      "delivers": ["reservations B1", "reservations B2"],
+      "adds": ["reservations", "desk>reservations", "reservations>loans"]
+    },
+    {
+      "title": "Hold a returned copy for its reservation",
+      "delivers": ["loans B16", "loans B17"],
+      "blockedBy": [1],
+      "adds": ["loans>reservations"]
+    },
+    {
+      "title": "Tell the member their copy is ready",
+      "delivers": ["reservations B3"],
+      "blockedBy": [2],
+      "adds": ["reservations>notifications"]
+    }
+  ]
+}

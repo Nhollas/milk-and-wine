@@ -5,7 +5,8 @@
     ".claude/agents/mutant-writer/guard.ts",
     ".claude/agents/mutant-writer/check-before-stop.ts",
     ".claude/skills/intent-judge/hooks/guard.ts",
-    ".claude/skills/intent-judge/evals/tools/stage-case.ts"
+    ".claude/skills/intent-judge/evals/tools/stage-case.ts",
+    ".claude/skills/to-tickets/scripts/draw-slice-map.ts"
   ],
   "project": ["src/**/*.ts", "tests/**/*.ts", "tools/**/*.ts", ".claude/**/*.ts"]
 }

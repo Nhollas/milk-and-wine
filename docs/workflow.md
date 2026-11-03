@@ -28,7 +28,7 @@ Run `/to-tickets` with the parent issue. It slices the change vertically, so eac
 
 Before anything is created, it draws a slice map: the system, what each ticket adds to it, and the order they land in. You say what to merge, split or reorder until the map is right. Then it creates each ticket as a sub-issue of the parent, with native blocking links, and attaches the map to the parent issue.
 
-It needs GitHub CLI 2.94 or later, for `--parent`, `--blocked-by` and `--attach`.
+It needs GitHub CLI 2.94 or later, for `--parent`, `--blocked-by` and `--attach`, and `rsvg-convert` to turn the map into a PNG (`brew install librsvg`).
 
 ## 3. Deliver each ticket
 
@@ -48,4 +48,4 @@ Each teammate is an agent definition, so its tools, model and instructions are f
 
 ## What's built
 
-`/grill`, `/write-spec`, the intent judge and the mutant writer exist. `/to-tickets`, `/foreman`, the test writer, the implementer and the standards reviewer are still to come.
+`/grill`, `/write-spec`, `/to-tickets`, the intent judge and the mutant writer exist. `/foreman`, the test writer, the implementer and the standards reviewer are still to come.
