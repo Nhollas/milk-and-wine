@@ -1,6 +1,6 @@
 # Coding standards
 
-These are defaults, not laws. When a case genuinely doesn't fit, deviate and say why in the MR.
+These are defaults, not laws. When a case genuinely doesn't fit, deviate and say why in the PR.
 
 ## Naming
 

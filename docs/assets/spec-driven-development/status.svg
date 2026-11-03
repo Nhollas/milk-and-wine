@@ -8,9 +8,9 @@
 <circle cx="270" cy="60" r="7" fill="#0d1117" stroke="#9198a1" stroke-width="2"></circle>
 <circle cx="440" cy="60" r="7" fill="#0d1117" stroke="#9198a1" stroke-width="2"></circle>
 <circle cx="610" cy="60" r="7" fill="#0d1117" stroke="#9198a1" stroke-width="2"></circle>
-<text x="270" y="88" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="12px" fill="#9198a1">MR 1: adds them, proposed</text>
-<text x="440" y="88" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="12px" fill="#9198a1">MR 2: delivers accounts B2</text>
-<text x="610" y="88" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="12px" fill="#9198a1">MR 3: delivers B5, B6</text>
+<text x="270" y="88" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="12px" fill="#9198a1">PR 1: adds them, proposed</text>
+<text x="440" y="88" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="12px" fill="#9198a1">PR 2: delivers accounts B2</text>
+<text x="610" y="88" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="12px" fill="#9198a1">PR 3: delivers B5, B6</text>
 
 <text x="20" y="128" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="14px" fill="#f0f6fc">accounts B2</text>
 <rect x="270" y="114" width="170" height="18" rx="4" fill="#262c36" stroke="#3d444d"></rect>

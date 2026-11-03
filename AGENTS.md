@@ -3,9 +3,10 @@
 - Nothing is released and nobody uses this yet. Make breaking changes outright: rename, remove and reshape in place, with no migrations, shims or backwards-compatible paths.
 - Nothing here is settled. The specs, the tooling and the code are experiments, open to challenge, including the parts that already work. Don't treat what exists as fact or hold back from changing it. A question about them is a question, not a decision.
 
-## Trunk-based development
+## Branches and PRs
 
-- Commit straight to `main`. Don't create a branch unless you're asked to.
+- A spec change and each ticket land as their own PR, on their own branch, as [the workflow](docs/workflow.md) describes. A ticket's PR closes its sub-issue.
+- Commit anything else straight to `main`. Don't create a branch for it unless you're asked to.
 
 ## Specs
 

@@ -10,7 +10,7 @@ My general thinking is that a spec is where people write down what a system shou
 
 I've tried tools like GitHub Spec Kit, and their specs haven't aged well. Each is written for one change and kept in the codebase afterwards, where it soon becomes unreadable. An agent needs a spec while it builds, but once the change is done, I don't see what value keeping it has.
 
-So I think of specs as two different things, and keep them apart. A **change spec** describes one piece of work. It says why we're doing it and what it will change, and it's useful only while the work is happening. Once the work has shipped, it's deleted. A **behaviour spec** describes what one part of the system does today. It lives next to the code and changes whenever the behaviour does, so it's useful for as long as the system exists.
+So I think of specs as two different things, and keep them apart. A **change spec** describes one piece of work. It says why we're doing it and what it will change, and it's useful only while the work is happening. So it never goes in the codebase: it's an issue on GitHub, broken down into tickets, and closed once the work has shipped. A **behaviour spec** describes what one part of the system does today. It lives next to the code and changes whenever the behaviour does, so it's useful for as long as the system exists.
 
 I call them milk and wine, because one goes off and the other ages.
 
@@ -23,7 +23,7 @@ The third level, spec-as-source, has people edit only the spec and never the cod
 | If you know | What's the same | What's different |
 | --- | --- | --- |
 | [GitHub Spec Kit](https://github.com/github/spec-kit) or [Kiro](https://kiro.dev) | A spec is written and agreed before an agent builds anything | Their specs mostly live for one change. Here the spec that matters is the behaviour spec, which outlives the change |
-| [OpenSpec](https://github.com/Fission-AI/OpenSpec) | Lasting specs are kept apart from change proposals, which are archived once the work is done | An OpenSpec change carries its own copy of the requirements. Here a change spec only points at scenarios in a behaviour spec, and is deleted once the work ships |
+| [OpenSpec](https://github.com/Fission-AI/OpenSpec) | Lasting specs are kept apart from change proposals, which are archived once the work is done | An OpenSpec change carries its own copy of the requirements. Here a change spec only points at scenarios in a behaviour spec, and lives in the issue tracker rather than the codebase |
 | [Tessl](https://tessl.io) | Specs live next to the code for the long run | Tessl explores generating the code from the spec. Here code is written as normal |
 | [Behaviour-driven development](https://en.wikipedia.org/wiki/Given-When-Then) | Each scenario is written as a Given, When and Then | There's no Gherkin runtime or step definitions. Scenarios sit in a table in a markdown file, and ordinary tests name the scenario they prove |
 | [Mutation testing](https://stryker-mutator.io/docs/) | Plant a bug in the code and see if the tests notice | Bugs are planted only against what a scenario says, and only after the intent judge has passed the test |
@@ -32,9 +32,9 @@ The third level, spec-as-source, has people edit only the spec and never the cod
 
 To make this concrete, let's follow one change through a sign-up API. It's a made-up example, picked because everyone has signed up for something. The change makes sign-up refuse an email address that another account already uses.
 
-The work starts with a change spec. It says why the work is happening, links to its ticket, and says what the API should do differently once it's done.
+The work starts with a change spec, an issue on GitHub. It says why the work is happening and what the API should do differently once it's done.
 
-That last part goes into the behaviour spec for accounts, which describes everything about creating accounts, rather than into the change spec. Each statement in a behaviour spec is called a **scenario**, and this change adds one, numbered B2. The change spec just points at B2, so deleting the change spec later loses nothing.
+That last part goes into the behaviour spec for accounts, which describes everything about creating accounts, rather than into the change spec. Each statement in a behaviour spec is called a **scenario**, and this change adds one, numbered B2. The change spec just points at B2, so closing the issue later loses nothing.
 
 ![A change spec, milk, points at accounts B2 in a behaviour spec, wine](assets/spec-driven-development/milk-and-wine.svg)
 
@@ -146,3 +146,7 @@ The judge runs first. If a mutant gets past a test the judge hasn't passed, ther
 Neither check can find a behaviour that's missing from both the code and the tests. Only a person reading the scenario can do that.
 
 How each check works is written up for the [intent judge](../.claude/skills/intent-judge/agents/intent-judge.md) and the [spec mutants](../specs/tools/spec-mutants/spec.md). The targets each one has to hit are in [INTENT.md](../INTENT.md#review-checks).
+
+## 9. Delivering a change
+
+The intent judge and spec mutants are two steps in how a change gets from an idea to merged code. [The workflow](workflow.md) covers the rest: agreeing the spec in a shared doc, slicing the change into tickets, and the teammates that deliver each ticket.
