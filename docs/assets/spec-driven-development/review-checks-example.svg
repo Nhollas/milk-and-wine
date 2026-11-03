@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 300" role="img" aria-labelledby="t d">
+<title id="t">Each check catches what the other can't</title>
+<desc id="d">For accounts B2's requirement &#34;creates no account&#34;: a test asserting only the 409 misses it, and the judge reports that, so mutants wait. A test asserting one account is left is aligned, but a mutant that overwrites Sam's account with Alex's survives. A test asserting the account left is Sam's is aligned, and the mutant is killed.</desc>
+<rect x="0.0" y="0.0" width="760.0" height="300.0" rx="12" fill="#0d1117"></rect><text x="20" y="28" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="14px" fill="#f0f6fc"><tspan font-size="12px" fill="#9198a1">Requirement of accounts B2: </tspan><tspan font-weight="600">&#34;creates no account&#34;</tspan></text>
+<text x="40" y="62" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="14px" fill="#f0f6fc" font-weight="600">The B2 test asserts</text>
+<text x="390" y="62" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="14px" fill="#d2a8ff" font-weight="600">Intent judge</text>
+<text x="620" y="62" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="14px" fill="#ffa657" font-weight="600">Spec mutants</text>
+
+<rect x="20" y="74" width="720" height="64" rx="10" fill="#151b23" stroke="#3d444d"></rect>
+<text x="40" y="111" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="14px" fill="#f0f6fc">Only the 409</text>
+<rect x="290" y="92" width="200" height="28" rx="14" fill="#3c0d10" stroke="#f85149"></rect>
+<text x="390" y="111" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="14px" fill="#ffa198">misses &#34;creates no account&#34;</text>
+<rect x="520" y="92" width="200" height="28" rx="14" fill="#262c36" stroke="#3d444d"></rect>
+<text x="620" y="110" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="12px" fill="#9198a1">not run: fix the test first</text>
+
+<rect x="20" y="146" width="720" height="76" rx="10" fill="#151b23" stroke="#3d444d"></rect>
+<text x="40" y="183" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="14px" fill="#f0f6fc">One account is left</text>
+<rect x="340" y="164" width="100" height="28" rx="14" fill="#04260f" stroke="#2ea043"></rect>
+<text x="390" y="183" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="14px" fill="#7ee787">aligned</text>
+<rect x="570" y="156" width="100" height="28" rx="14" fill="#3c0d10" stroke="#f85149"></rect>
+<text x="620" y="175" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="14px" fill="#ffa198">survived</text>
+<text x="620" y="206" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="12px" fill="#9198a1">bug overwrites Sam's account</text>
+<text x="620" y="218" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="12px" fill="#9198a1">with Alex's: still one account</text>
+
+<rect x="20" y="230" width="720" height="64" rx="10" fill="#151b23" stroke="#3d444d"></rect>
+<text x="40" y="267" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="14px" fill="#f0f6fc">The account left is Sam's</text>
+<rect x="340" y="248" width="100" height="28" rx="14" fill="#04260f" stroke="#2ea043"></rect>
+<text x="390" y="267" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="14px" fill="#7ee787">aligned</text>
+<rect x="570" y="248" width="100" height="28" rx="14" fill="#04260f" stroke="#2ea043"></rect>
+<text x="620" y="267" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="14px" fill="#7ee787">killed</text>
+</svg>

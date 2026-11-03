@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 240" role="img" aria-labelledby="t d">
+<title id="t">One scenario, one behaviour</title>
+<desc id="d">A scenario that validates the email, checks it is free and creates the account holds three behaviours. Split, it becomes B3, refuses an invalid email; B2, refuses an email in use; and B1, creates an account.</desc>
+<rect x="0.0" y="0.0" width="760.0" height="240.0" rx="12" fill="#0d1117"></rect><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#818b98"></path></marker></defs>
+
+<rect x="20" y="64" width="280" height="80" rx="12" fill="#3c0d10" stroke="#f85149"></rect>
+<text x="40" y="94" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="14px" fill="#ffa198" font-weight="600">One scenario</text>
+<text x="40" y="116" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="14px" fill="#f0f6fc">Validates the email, checks</text>
+<text x="40" y="134" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="14px" fill="#f0f6fc">it's free, creates the account</text>
+<text x="160" y="174" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="14px" fill="#ffa198" font-weight="600">Three behaviours in one scenario</text>
+<text x="160" y="194" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="12px" fill="#9198a1">No one test, or ticket, can own it</text>
+
+<path d="M300 104C360 104 360 44 418 44" marker-end="url(#a)" stroke="#9198a1" stroke-width="1.5" fill="none"></path>
+<path d="M300 104H418" marker-end="url(#a)" stroke="#9198a1" stroke-width="1.5" fill="none"></path>
+<path d="M300 104C360 104 360 164 418 164" marker-end="url(#a)" stroke="#9198a1" stroke-width="1.5" fill="none"></path>
+
+<rect x="420" y="22" width="320" height="44" rx="10" fill="#04260f" stroke="#2ea043"></rect>
+<text x="440" y="49" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="14px" fill="#f0f6fc"><tspan font-weight="600" fill="#7ee787">B3</tspan>  refuses an invalid email</text>
+<rect x="420" y="82" width="320" height="44" rx="10" fill="#04260f" stroke="#2ea043"></rect>
+<text x="440" y="109" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="14px" fill="#f0f6fc"><tspan font-weight="600" fill="#7ee787">B2</tspan>  refuses an email in use</text>
+<rect x="420" y="142" width="320" height="44" rx="10" fill="#04260f" stroke="#2ea043"></rect>
+<text x="440" y="169" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="14px" fill="#f0f6fc"><tspan font-weight="600" fill="#7ee787">B1</tspan>  creates an account</text>
+<text x="580" y="214" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="12px" fill="#9198a1">One behaviour each: one test, one ticket</text>
+</svg>

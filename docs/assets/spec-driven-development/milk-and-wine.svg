@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 320" role="img" aria-labelledby="t d">
+<title id="t">Milk and wine</title>
+<desc id="d">A change spec, milk, points at accounts B2 in a behaviour spec, wine. The change spec is born with the work and deleted once it ships. The behaviour spec lives with the code.</desc>
+<rect x="0.0" y="0.0" width="760.0" height="320.0" rx="12" fill="#0d1117"></rect><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#818b98"></path></marker></defs>
+
+<rect x="20" y="30" width="300" height="200" rx="12" fill="#0c2d6b" stroke="#4493f8"></rect>
+<path d="M282 46h18v6l6 9v30h-30v-30l6-9z" stroke-width="1.5" fill="#0c2d6b" stroke="#4493f8"></path>
+<text x="40" y="62" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="14px" fill="#a5d6ff" font-weight="600">Change spec</text>
+<text x="40" y="80" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="12px" fill="#9198a1">milk</text>
+<text x="40" y="110" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="12px" fill="#9198a1">changes/refuse-taken-emails · ACC-42</text>
+<text x="40" y="140" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="14px" fill="#f0f6fc">Why we're doing it</text>
+<text x="40" y="166" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="14px" fill="#f0f6fc">Adds accounts B2</text>
+<text x="40" y="192" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="14px" fill="#f0f6fc">Delivered in 1 MR</text>
+
+<rect x="440" y="30" width="300" height="200" rx="12" fill="#3a1a2e" stroke="#db61a2"></rect>
+<path d="M706 40h8v18l7 9v28h-22v-28l7-9z" stroke-width="1.5" fill="#3a1a2e" stroke="#db61a2"></path>
+<text x="460" y="62" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="14px" fill="#ffadda" font-weight="600">Behaviour spec</text>
+<text x="460" y="80" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="12px" fill="#9198a1">wine</text>
+<text x="460" y="110" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="12px" fill="#9198a1">specs/modules/accounts/spec.md</text>
+<text x="460" y="140" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="14px" fill="#f0f6fc">B1  creates an account</text>
+<text x="460" y="166" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="14px" fill="#f0f6fc">B2  refuses an email in use</text>
+<rect x="648" y="152" width="72" height="20" rx="10" fill="#151b23" stroke="#3d444d"></rect>
+<text x="684" y="166" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="12px" fill="#9198a1">proposed</text>
+<text x="460" y="192" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="14px" fill="#f0f6fc">B3  refuses an invalid email</text>
+
+
+<path d="M170 161H438" marker-end="url(#a)" stroke="#9198a1" stroke-width="1.5" fill="none"></path>
+<text x="380" y="152" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="12px" fill="#9198a1">points at</text>
+
+<text x="170" y="264" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="14px" fill="#a5d6ff" font-weight="600">Born with the work</text>
+<text x="170" y="284" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="12px" fill="#9198a1">Deleted once</text>
+<text x="170" y="301" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="12px" fill="#9198a1">the work ships</text>
+<text x="590" y="264" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="14px" fill="#ffadda" font-weight="600">Lives with the code</text>
+<text x="590" y="284" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="12px" fill="#9198a1">Refined over time,</text>
+<text x="590" y="301" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="12px" fill="#9198a1">and ages well only if pruned</text>
+</svg>

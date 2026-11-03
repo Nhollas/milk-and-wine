@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 320" role="img" aria-labelledby="t d">
+<title id="t">Review checks</title>
+<desc id="d">First, the intent judge reads a scenario and its tests, never the code, and asks whether the test checks what the scenario says. Then spec mutants plant one bug per requirement in the code and run the scenario's tests, asking whether the test would fail if the code broke it.</desc>
+<rect x="0.0" y="0.0" width="760.0" height="320.0" rx="12" fill="#0d1117"></rect><defs>
+<marker id="j" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#a475f9"></path></marker>
+<marker id="u" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#e16f24"></path></marker>
+</defs>
+
+<rect x="85" y="10" width="330" height="72" rx="12" fill="#2a1f45" stroke="#a371f7"></rect>
+<text x="250" y="34" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="14px" fill="#d2a8ff" font-weight="600">First: intent judge</text>
+<text x="250" y="54" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="14px" fill="#f0f6fc">Does the test check what the scenario says?</text>
+<text x="250" y="72" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="12px" fill="#9198a1">Reads the scenario and its tests, never the code</text>
+<path d="M150 82V114" marker-end="url(#j)" stroke="#a371f7" stroke-width="1.5" fill="none"></path>
+<path d="M350 82V114" marker-end="url(#j)" stroke="#a371f7" stroke-width="1.5" fill="none"></path>
+
+<rect x="20" y="116" width="200" height="90" rx="12" fill="#151b23" stroke="#3d444d"></rect>
+<text x="120" y="146" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="14px" fill="#f0f6fc" font-weight="600">Spec</text>
+<text x="120" y="168" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="12px" fill="#9198a1">accounts B2, Then:</text>
+<text x="120" y="188" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="14px" fill="#f0f6fc">&#34;…creates no account…&#34;</text>
+
+<rect x="280" y="116" width="200" height="90" rx="12" fill="#151b23" stroke="#3d444d"></rect>
+<text x="380" y="146" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="14px" fill="#f0f6fc" font-weight="600">Tests</text>
+<text x="380" y="168" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="12px" fill="#9198a1">accounts.service.test.ts</text>
+<text x="380" y="188" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13px" fill="#f0f6fc">test(&#34;B2: …&#34;)</text>
+
+<rect x="540" y="116" width="200" height="90" rx="12" fill="#151b23" stroke="#3d444d"></rect>
+<text x="640" y="146" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="14px" fill="#f0f6fc" font-weight="600">Code</text>
+<text x="640" y="168" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="12px" fill="#9198a1">src/accounts/</text>
+<rect x="580" y="176" width="120" height="20" rx="10" fill="#3c0d10" stroke="#f85149"></rect>
+<text x="640" y="190" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="12px" fill="#9198a1">one planted bug</text>
+
+<path d="M640 236V208" marker-end="url(#u)" stroke="#db6d28" stroke-width="1.5" fill="none"></path>
+<path d="M420 236V208" marker-end="url(#u)" stroke="#db6d28" stroke-width="1.5" fill="none"></path>
+<rect x="340" y="236" width="400" height="72" rx="12" fill="#3d1d00" stroke="#db6d28"></rect>
+<text x="540" y="260" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="14px" fill="#ffa657" font-weight="600">Then: spec mutants</text>
+<text x="540" y="280" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="14px" fill="#f0f6fc">Would the test fail if the code broke it?</text>
+<text x="540" y="298" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="12px" fill="#9198a1">Plants one bug per requirement, then runs the scenario's tests</text>
+</svg>

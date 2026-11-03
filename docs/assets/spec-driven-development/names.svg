@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 250" role="img" aria-labelledby="t d">
+<title id="t">Names the tooling reads</title>
+<desc id="d">The test file src/accounts/accounts.http.service.test.ts names its spec, accounts; an optional part, http; and its level, service. The test title B2: refuses an email that's already in use starts with the scenario it proves, then says what it checks.</desc>
+<rect x="0.0" y="0.0" width="760.0" height="250.0" rx="12" fill="#0d1117"></rect><rect x="20" y="16" width="720" height="112" rx="12" fill="#151b23" stroke="#3d444d"></rect>
+<text x="40" y="52" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="16px" fill="#9198a1">src/accounts/<tspan font-weight="600" fill="#d2a8ff">accounts</tspan>.<tspan font-weight="600" fill="#79c0ff">http</tspan>.<tspan font-weight="600" fill="#ffa657">service</tspan>.test.ts</text>
+<rect x="40" y="72" width="10" height="10" rx="2" fill="#d2a8ff"></rect>
+<text x="58" y="82" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="12px" fill="#9198a1"><tspan font-weight="600">spec</tspan>: the name of a folder under specs/</text>
+<rect x="370" y="72" width="10" height="10" rx="2" fill="#79c0ff"></rect>
+<text x="388" y="82" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="12px" fill="#9198a1"><tspan font-weight="600">part</tspan>: optional, to split a spec's tests</text>
+<rect x="40" y="98" width="10" height="10" rx="2" fill="#ffa657"></rect>
+<text x="58" y="108" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="12px" fill="#9198a1"><tspan font-weight="600">level</tspan>: service, integration or system, or none for a test that proves no scenario</text>
+
+<rect x="20" y="144" width="720" height="86" rx="12" fill="#151b23" stroke="#3d444d"></rect>
+<text x="40" y="180" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="16px" fill="#9198a1">test(&#34;<tspan font-weight="600" fill="#7ee787">B2</tspan>: refuses an email that's already in use&#34;, async () =&gt; { … })</text>
+<rect x="40" y="200" width="10" height="10" rx="2" fill="#7ee787"></rect>
+<text x="58" y="210" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="12px" fill="#9198a1"><tspan font-weight="600">the scenario it proves</tspan>, then what it checks</text>
+</svg>

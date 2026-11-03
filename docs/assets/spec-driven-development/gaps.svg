@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 360" role="img" aria-labelledby="t d">
+<title id="t">The gaps are the backlog</title>
+<desc id="d">Scenarios link to tests, and tests to code. B1 and B4 link all the way through. B5 has no test, so it is proposed: work to do. A test named retries names no scenario: tag it or delete it. legacyLogin is code no scenario needs: prune it.</desc>
+<rect x="0.0" y="0.0" width="760.0" height="360.0" rx="12" fill="#0d1117"></rect><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#818b98"></path></marker></defs>
+
+<text x="105" y="28" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="14px" fill="#f0f6fc" font-weight="600">Scenarios</text>
+<text x="380" y="28" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="14px" fill="#f0f6fc" font-weight="600">Tests</text>
+<text x="655" y="28" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="14px" fill="#f0f6fc" font-weight="600">Code</text>
+
+<rect x="20" y="44" width="170" height="34" rx="8" fill="#151b23" stroke="#3d444d"></rect><text x="105" y="66" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="14px" fill="#f0f6fc">B1</text>
+<path d="M190 61H293" marker-end="url(#a)" stroke="#9198a1" stroke-width="1.5" fill="none"></path>
+<rect x="295" y="44" width="170" height="34" rx="8" fill="#151b23" stroke="#3d444d"></rect><text x="380" y="66" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13px" fill="#f0f6fc">&#34;B1: …&#34;</text>
+<path d="M465 61H568" marker-end="url(#a)" stroke="#9198a1" stroke-width="1.5" fill="none"></path>
+<rect x="570" y="44" width="170" height="34" rx="8" fill="#151b23" stroke="#3d444d"></rect><text x="655" y="66" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13px" fill="#f0f6fc">POST /signup</text>
+
+<rect x="20" y="92" width="170" height="34" rx="8" fill="#151b23" stroke="#3d444d"></rect><text x="105" y="114" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="14px" fill="#f0f6fc">B4</text>
+<path d="M190 109H293" marker-end="url(#a)" stroke="#9198a1" stroke-width="1.5" fill="none"></path>
+<rect x="295" y="92" width="170" height="34" rx="8" fill="#151b23" stroke="#3d444d"></rect><text x="380" y="114" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13px" fill="#f0f6fc">&#34;B4: …&#34;</text>
+<path d="M465 109H568" marker-end="url(#a)" stroke="#9198a1" stroke-width="1.5" fill="none"></path>
+<rect x="570" y="92" width="170" height="34" rx="8" fill="#151b23" stroke="#3d444d"></rect><text x="655" y="114" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13px" fill="#f0f6fc">GET /health</text>
+
+<rect x="20" y="140" width="170" height="34" rx="8" fill="#2e2400" stroke="#bb8009"></rect><text x="105" y="162" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="14px" fill="#f2cc60">B5</text>
+<path d="M190 157H236" stroke="#9198a1" stroke-width="1.5" fill="none"></path><path d="M238 149l12 16M250 149l-12 16" stroke="#f85149" stroke-width="2" fill="none"></path>
+<text x="34" y="162" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="14px" fill="#f2cc60" font-weight="600">1</text>
+
+<rect x="295" y="188" width="170" height="34" rx="8" fill="#3c0d10" stroke="#f85149"></rect><text x="380" y="210" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13px" fill="#ffa198">&#34;retries…&#34;</text>
+<path d="M293 205H250" stroke="#9198a1" stroke-width="1.5" fill="none"></path><path d="M236 197l12 16M248 197l-12 16" stroke="#f85149" stroke-width="2" fill="none"></path>
+<text x="309" y="210" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="14px" fill="#ffa198" font-weight="600">2</text>
+
+<rect x="570" y="236" width="170" height="34" rx="8" fill="#3c0d10" stroke="#f85149"></rect><text x="655" y="258" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13px" fill="#ffa198">legacyLogin()</text>
+<path d="M568 253H526" stroke="#9198a1" stroke-width="1.5" fill="none"></path><path d="M512 245l12 16M524 245l-12 16" stroke="#f85149" stroke-width="2" fill="none"></path>
+<text x="584" y="258" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="14px" fill="#ffa198" font-weight="600">3</text>
+
+<text x="20" y="306" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="14px" fill="#f0f6fc"><tspan font-weight="600" fill="#f2cc60">1</tspan>  A scenario nothing proves: <tspan font-weight="600">proposed</tspan>, work to do</text>
+<text x="20" y="328" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="14px" fill="#f0f6fc"><tspan font-weight="600" fill="#ffa198">2</tspan>  A test that names no scenario: <tspan font-weight="600">untagged test</tspan>, tag it or delete it</text>
+<text x="20" y="350" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="14px" fill="#f0f6fc"><tspan font-weight="600" fill="#ffa198">3</tspan>  Code no scenario needs: <tspan font-weight="600">excess</tspan>, prune it</text>
+</svg>

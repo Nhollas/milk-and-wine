@@ -18,7 +18,7 @@ pnpm check
 
 ## Where to start
 
-[INTENT.md](INTENT.md) says why this exists and what's being tested. [SPEC-DRIVEN-DEVELOPMENT.md](SPEC-DRIVEN-DEVELOPMENT.md) shows the process, mostly as diagrams. Specs live under `specs/`, with the code and its tests under `src/` and `tools/`.
+[INTENT.md](INTENT.md) says why this exists and what's being tested. [Spec-driven development](docs/spec-driven-development.md) shows the whole approach, from specs to the review checks. Specs live under `specs/`, with the code and its tests under `src/` and `tools/`.
 
 ## Running the app
 

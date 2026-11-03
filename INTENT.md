@@ -24,9 +24,7 @@ Each behaviour of the app is written in a spec as acceptance criteria, in the fo
 
 ### Intent judge
 
-Does each test check what its acceptance criteria say? An agent reads each test beside the criteria it claims to prove. It reports anything the criteria ask for that the test doesn't check, anything the test checks that the criteria don't ask for, and anything the test expects that contradicts them.
-
-The judge has to meet these targets.
+Does each test check what its acceptance criteria say? [Spec-driven development](docs/spec-driven-development.md#8-checking-a-test-proves-its-scenario) shows how it works alongside the spec mutants. The judge has to meet these targets.
 
 | Measure                                                                 | Target          |
 | ----------------------------------------------------------------------- | --------------- |
@@ -36,9 +34,7 @@ The judge has to meet these targets.
 
 ### Spec mutants
 
-Would the tests catch a bug? For each spec, an agent writes small, deliberate bugs into the code, each meant to break one thing the acceptance criteria ask for. A bug the tests miss means they're too weak to protect that behaviour. Only tests the intent judge has already passed count, so a miss points at a weak test rather than one that checks the wrong thing.
-
-The mutants have to meet these targets.
+Would the tests catch a bug? Only tests the intent judge has already passed count, so a bug the tests miss points at a test too weak to protect its behaviour. The mutants have to meet these targets.
 
 | Measure                                         | Target                                 |
 | ----------------------------------------------- | -------------------------------------- |
