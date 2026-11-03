@@ -1,7 +1,7 @@
 {
   "name": "milk-and-wine",
   "private": true,
-  "description": "An experimental take on spec-driven development, separating short-lived change specs (milk), kept as GitHub issues, from lasting behaviour specs (wine).",
+  "description": "An experimental take on spec-driven development, separating short-lived GitHub issues (milk) from lasting behaviour specs (wine).",
   "type": "module",
   "scripts": {
     "prepare": "husky",

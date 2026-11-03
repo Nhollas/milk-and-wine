@@ -1,8 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 1680" role="img" aria-labelledby="t d">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 1646" role="img" aria-labelledby="t d">
 <title id="t">From an idea to merged tickets</title>
-<desc id="d">Three Claude sessions. Session 1 settles the behaviour, writes the spec and opens a parent issue and a spec PR. Session 2 breaks the parent issue into sub-issues with blocking links. Session 3 runs Foreman, which takes each unblocked sub-issue through a test writer, the intent judge, an implementer, the mutant writer and a standards reviewer, then opens a PR for you to merge.</desc>
+<desc id="d">Three Claude sessions. Session 1 settles the behaviour, writes the spec and opens an issue and a spec PR. Session 2 breaks the issue into sub-issues with blocking links. Session 3 runs Foreman, which takes each unblocked sub-issue through a test writer, the intent judge, an implementer, the mutant writer and a standards reviewer, then opens a PR for you to merge.</desc>
 <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#57606a"/></marker><marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#2e8b57"/></marker></defs>
-<rect width="1400" height="1680" fill="#f6f8fa"/>
+<rect width="1400" height="1646" fill="#f6f8fa"/>
 <text x="40" y="50" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="22px" fill="#1f2328" font-weight="600" text-anchor="start">From an idea to merged tickets</text>
 <text x="40" y="74" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="13px" fill="#59636e" font-weight="400" text-anchor="start">Each panel is one Claude session. The numbers on the arrows match the handoffs in the table.</text>
 <text x="40" y="93" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="13px" fill="#59636e" font-weight="400" text-anchor="start">Every skill and teammate lives in this repo. Where one starts from Matt Pocock&#x27;s skills, we copy what we need and make it ours.</text>
@@ -20,16 +20,13 @@
 <circle cx="68" cy="140" r="13" fill="#d9822b"/>
 <text x="68" y="145" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="13px" fill="#ffffff" font-weight="700" text-anchor="middle">1</text>
 <text x="90" y="146" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="17px" fill="#1f2328" font-weight="600" text-anchor="start">Specify the behaviour</text>
-<text x="670" y="145" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12px" fill="#59636e" font-weight="400" text-anchor="end">Session 1 · write-spec</text>
+<text x="670" y="145" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12px" fill="#59636e" font-weight="400" text-anchor="end">Session 1 · specify</text>
 <rect x="70" y="185" width="150" height="50" rx="6" fill="#d9822b" stroke="#b3661a" stroke-width="1.5"/>
 <text x="145.0" y="207.0" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="13px" fill="#ffffff" font-weight="600" text-anchor="middle">You</text>
 <text x="145.0" y="223.0" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="10.5px" fill="#e6edf3" font-weight="400" text-anchor="middle">with an idea</text>
-<rect x="260" y="185" width="150" height="50" rx="6" fill="#2f5d9e" stroke="#1f4478" stroke-width="1.5"/>
-<text x="335.0" y="207.0" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="13px" fill="#ffffff" font-weight="600" text-anchor="middle">grill</text>
-<text x="335.0" y="223.0" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="10.5px" fill="#e6edf3" font-weight="400" text-anchor="middle">settles the behaviour</text>
-<rect x="450" y="185" width="150" height="50" rx="6" fill="#2f5d9e" stroke="#1f4478" stroke-width="1.5"/>
-<text x="525.0" y="207.0" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="13px" fill="#ffffff" font-weight="600" text-anchor="middle">write-spec</text>
-<text x="525.0" y="223.0" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="10.5px" fill="#e6edf3" font-weight="400" text-anchor="middle">drafts the spec</text>
+<rect x="260" y="185" width="340" height="50" rx="6" fill="#2f5d9e" stroke="#1f4478" stroke-width="1.5"/>
+<text x="430.0" y="207.0" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="13px" fill="#ffffff" font-weight="600" text-anchor="middle">specify</text>
+<text x="430.0" y="223.0" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="10.5px" fill="#e6edf3" font-weight="400" text-anchor="middle">grills you, then drafts the spec</text>
 <rect x="450" y="285" width="150" height="50" rx="6" fill="#ffffff" stroke="#2f5d9e" stroke-width="1.8" stroke-dasharray="6 3"/>
 <text x="525.0" y="307.0" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="13px" fill="#1f4478" font-weight="600" text-anchor="middle">Spec doc</text>
 <text x="525.0" y="323.0" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="10.5px" fill="#2f5d9e" font-weight="400" text-anchor="middle">Claude Docs, you comment</text>
@@ -40,40 +37,37 @@
 <text x="145.0" y="307.0" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="13px" fill="#ffffff" font-weight="600" text-anchor="middle">Spec PR</text>
 <text x="145.0" y="323.0" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="10.5px" fill="#e6edf3" font-weight="400" text-anchor="middle">proposed scenarios</text>
 <rect x="70" y="385" width="150" height="50" rx="6" fill="#6e7781" stroke="#57606a" stroke-width="1.5"/>
-<text x="145.0" y="407.0" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="13px" fill="#ffffff" font-weight="600" text-anchor="middle">Parent issue</text>
+<text x="145.0" y="407.0" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="13px" fill="#ffffff" font-weight="600" text-anchor="middle">Issue</text>
 <text x="145.0" y="423.0" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="10.5px" fill="#e6edf3" font-weight="400" text-anchor="middle">why + scenario IDs</text>
 <path d="M220 210 L258 210" fill="none" stroke="#57606a" stroke-width="1.8" marker-end="url(#a)"/>
 <circle cx="237" cy="210" r="9.5" fill="#ffffff" stroke="#1f2328" stroke-width="1.3"/>
 <text x="237" y="214" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="10.5px" fill="#1f2328" font-weight="600" text-anchor="middle">1</text>
-<path d="M410 210 L448 210" fill="none" stroke="#57606a" stroke-width="1.8" marker-end="url(#a)"/>
-<circle cx="427" cy="210" r="9.5" fill="#ffffff" stroke="#1f2328" stroke-width="1.3"/>
-<text x="427" y="214" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="10.5px" fill="#1f2328" font-weight="600" text-anchor="middle">2</text>
 <path d="M510 235 L510 283" fill="none" stroke="#57606a" stroke-width="1.8" marker-end="url(#a)"/>
 <circle cx="510" cy="259" r="9.5" fill="#ffffff" stroke="#1f2328" stroke-width="1.3"/>
-<text x="510" y="263" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="10.5px" fill="#1f2328" font-weight="600" text-anchor="middle">3</text>
+<text x="510" y="263" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="10.5px" fill="#1f2328" font-weight="600" text-anchor="middle">2</text>
 <path d="M545 285 L545 237" fill="none" stroke="#2e8b57" stroke-width="1.8" marker-end="url(#g)"/>
 <text x="553" y="257" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="11px" fill="#2e8b57" font-weight="600" text-anchor="start">your</text>
 <text x="553" y="271" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="11px" fill="#2e8b57" font-weight="600" text-anchor="start">comments</text>
 <path d="M450 310 L412 310" fill="none" stroke="#57606a" stroke-width="1.8" marker-end="url(#a)"/>
 <circle cx="431" cy="310" r="9.5" fill="#ffffff" stroke="#1f2328" stroke-width="1.3"/>
-<text x="431" y="314" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="10.5px" fill="#1f2328" font-weight="600" text-anchor="middle">4</text>
+<text x="431" y="314" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="10.5px" fill="#1f2328" font-weight="600" text-anchor="middle">3</text>
 <path d="M260 310 L222 310" fill="none" stroke="#57606a" stroke-width="1.8" marker-end="url(#a)"/>
 <circle cx="241" cy="310" r="9.5" fill="#ffffff" stroke="#1f2328" stroke-width="1.3"/>
-<text x="241" y="314" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="10.5px" fill="#1f2328" font-weight="600" text-anchor="middle">5</text>
+<text x="241" y="314" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="10.5px" fill="#1f2328" font-weight="600" text-anchor="middle">4</text>
 <path d="M145 335 L145 383" fill="none" stroke="#57606a" stroke-width="1.8" marker-end="url(#a)"/>
 <circle cx="145" cy="359" r="9.5" fill="#ffffff" stroke="#1f2328" stroke-width="1.3"/>
-<text x="145" y="363" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="10.5px" fill="#1f2328" font-weight="600" text-anchor="middle">6</text>
+<text x="145" y="363" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="10.5px" fill="#1f2328" font-weight="600" text-anchor="middle">5</text>
 <line x1="60" y1="470" x2="670" y2="470" stroke="#d1d9e0"/>
-<text x="60" y="494" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12px" fill="#1f2328" font-weight="400" text-anchor="start"><tspan font-weight="600">Produces</tspan> a parent issue, and a spec PR whose new scenarios are proposed but not built</text>
+<text x="60" y="494" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12px" fill="#1f2328" font-weight="400" text-anchor="start"><tspan font-weight="600">Produces</tspan> an issue, and a spec PR whose new scenarios are proposed but not built</text>
 <text x="60" y="517" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12px" fill="#1f2328" font-weight="400" text-anchor="start"><tspan font-weight="600">You decide</tspan> the behaviour, by commenting on the doc until you agree it</text>
-<text x="60" y="540" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12px" fill="#1f2328" font-weight="400" text-anchor="start"><tspan font-weight="600">Skills</tspan> grill, write-spec</text>
+<text x="60" y="540" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12px" fill="#1f2328" font-weight="400" text-anchor="start"><tspan font-weight="600">Skills</tspan> specify</text>
 <rect x="710" y="110" width="650" height="450" rx="10" fill="#ffffff" stroke="#1f2328" stroke-width="1.2"/>
 <circle cx="738" cy="140" r="13" fill="#d9822b"/>
 <text x="738" y="145" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="13px" fill="#ffffff" font-weight="700" text-anchor="middle">2</text>
 <text x="760" y="146" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="17px" fill="#1f2328" font-weight="600" text-anchor="start">Break it into tickets</text>
 <text x="1340" y="145" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12px" fill="#59636e" font-weight="400" text-anchor="end">Session 2 · to-tickets</text>
 <rect x="740" y="185" width="150" height="50" rx="6" fill="#6e7781" stroke="#57606a" stroke-width="1.5"/>
-<text x="815.0" y="207.0" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="13px" fill="#ffffff" font-weight="600" text-anchor="middle">Parent issue</text>
+<text x="815.0" y="207.0" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="13px" fill="#ffffff" font-weight="600" text-anchor="middle">Issue</text>
 <text x="815.0" y="223.0" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="10.5px" fill="#e6edf3" font-weight="400" text-anchor="middle">from session 1</text>
 <rect x="930" y="185" width="150" height="50" rx="6" fill="#2f5d9e" stroke="#1f4478" stroke-width="1.5"/>
 <text x="1005.0" y="207.0" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="13px" fill="#ffffff" font-weight="600" text-anchor="middle">to-tickets</text>
@@ -86,20 +80,20 @@
 <text x="1195.0" y="323.0" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="10.5px" fill="#e6edf3" font-weight="400" text-anchor="middle">approve the slices</text>
 <path d="M890 210 L928 210" fill="none" stroke="#57606a" stroke-width="1.8" marker-end="url(#a)"/>
 <circle cx="907" cy="210" r="9.5" fill="#ffffff" stroke="#1f2328" stroke-width="1.3"/>
-<text x="907" y="214" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="10.5px" fill="#1f2328" font-weight="600" text-anchor="middle">7</text>
+<text x="907" y="214" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="10.5px" fill="#1f2328" font-weight="600" text-anchor="middle">6</text>
 <path d="M1080 210 L1118 210" fill="none" stroke="#57606a" stroke-width="1.8" marker-end="url(#a)"/>
 <circle cx="1099" cy="210" r="9.5" fill="#ffffff" stroke="#1f2328" stroke-width="1.3"/>
-<text x="1099" y="214" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="10.5px" fill="#1f2328" font-weight="600" text-anchor="middle">8</text>
+<text x="1099" y="214" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="10.5px" fill="#1f2328" font-weight="600" text-anchor="middle">7</text>
 <path d="M1195 235 L1195 283" fill="none" stroke="#57606a" stroke-width="1.8" marker-end="url(#a)"/>
 <circle cx="1195" cy="259" r="9.5" fill="#ffffff" stroke="#1f2328" stroke-width="1.3"/>
-<text x="1195" y="263" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="10.5px" fill="#1f2328" font-weight="600" text-anchor="middle">9</text>
+<text x="1195" y="263" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="10.5px" fill="#1f2328" font-weight="600" text-anchor="middle">8</text>
 <path d="M1120 310 L1005 310 L1005 237" fill="none" stroke="#2e8b57" stroke-width="1.8" marker-end="url(#g)"/>
 <text x="1062" y="327" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="11px" fill="#2e8b57" font-weight="600" text-anchor="middle">reshape them</text>
 <rect x="730" y="372" width="610" height="80" rx="8" fill="#eef1f4" stroke="#d1d9e0"/>
-<text x="742" y="389" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="11px" fill="#59636e" font-weight="600" text-anchor="start">On the parent issue</text>
+<text x="742" y="389" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="11px" fill="#59636e" font-weight="600" text-anchor="start">On the issue</text>
 <path d="M1255 335 L1255 370" fill="none" stroke="#57606a" stroke-width="1.8" marker-end="url(#a)"/>
 <circle cx="1255" cy="352" r="9.5" fill="#ffffff" stroke="#1f2328" stroke-width="1.3"/>
-<text x="1255" y="356" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="10.5px" fill="#1f2328" font-weight="600" text-anchor="middle">10</text>
+<text x="1255" y="356" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="10.5px" fill="#1f2328" font-weight="600" text-anchor="middle">9</text>
 <rect x="745" y="397" width="120" height="44" rx="6" fill="#6e7781" stroke="#57606a" stroke-width="1.5"/>
 <text x="805.0" y="416.0" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="13px" fill="#ffffff" font-weight="600" text-anchor="middle">Slice map</text>
 <text x="805.0" y="432.0" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="10.5px" fill="#e6edf3" font-weight="400" text-anchor="middle">as approved</text>
@@ -115,7 +109,7 @@
 <path d="M1015 419 L1043 419" fill="none" stroke="#57606a" stroke-width="1.8" stroke-dasharray="5 4" marker-end="url(#a)"/>
 <path d="M1165 419 L1193 419" fill="none" stroke="#57606a" stroke-width="1.8" stroke-dasharray="5 4" marker-end="url(#a)"/>
 <line x1="730" y1="470" x2="1340" y2="470" stroke="#d1d9e0"/>
-<text x="730" y="494" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12px" fill="#1f2328" font-weight="400" text-anchor="start"><tspan font-weight="600">Produces</tspan> a slice map and sub-issues on the parent issue, joined by native blocking links</text>
+<text x="730" y="494" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12px" fill="#1f2328" font-weight="400" text-anchor="start"><tspan font-weight="600">Produces</tspan> a slice map and sub-issues on the issue, joined by native blocking links</text>
 <text x="730" y="517" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12px" fill="#1f2328" font-weight="400" text-anchor="start"><tspan font-weight="600">You decide</tspan> the slices and their order, from the map, before anything is created</text>
 <text x="730" y="540" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12px" fill="#1f2328" font-weight="400" text-anchor="start"><tspan font-weight="600">Skills</tspan> to-tickets</text>
 <path d="M694 327L707 337L694 347z" fill="#1f2328"/>
@@ -150,22 +144,22 @@
 <text x="1235.0" y="801.0" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="10.5px" fill="#e6edf3" font-weight="400" text-anchor="middle">review and merge</text>
 <path d="M225 788 L263 788" fill="none" stroke="#57606a" stroke-width="1.8" marker-end="url(#a)"/>
 <circle cx="242" cy="788" r="9.5" fill="#ffffff" stroke="#1f2328" stroke-width="1.3"/>
-<text x="242" y="792" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="10.5px" fill="#1f2328" font-weight="600" text-anchor="middle">11</text>
+<text x="242" y="792" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="10.5px" fill="#1f2328" font-weight="600" text-anchor="middle">10</text>
 <path d="M405 788 L443 788" fill="none" stroke="#57606a" stroke-width="1.8" marker-end="url(#a)"/>
 <circle cx="422" cy="788" r="9.5" fill="#ffffff" stroke="#1f2328" stroke-width="1.3"/>
-<text x="422" y="792" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="10.5px" fill="#1f2328" font-weight="600" text-anchor="middle">12</text>
+<text x="422" y="792" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="10.5px" fill="#1f2328" font-weight="600" text-anchor="middle">11</text>
 <path d="M585 788 L623 788" fill="none" stroke="#57606a" stroke-width="1.8" marker-end="url(#a)"/>
 <circle cx="602" cy="788" r="9.5" fill="#ffffff" stroke="#1f2328" stroke-width="1.3"/>
-<text x="602" y="792" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="10.5px" fill="#1f2328" font-weight="600" text-anchor="middle">13</text>
+<text x="602" y="792" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="10.5px" fill="#1f2328" font-weight="600" text-anchor="middle">12</text>
 <path d="M765 788 L803 788" fill="none" stroke="#57606a" stroke-width="1.8" marker-end="url(#a)"/>
 <circle cx="782" cy="788" r="9.5" fill="#ffffff" stroke="#1f2328" stroke-width="1.3"/>
-<text x="782" y="792" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="10.5px" fill="#1f2328" font-weight="600" text-anchor="middle">14</text>
+<text x="782" y="792" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="10.5px" fill="#1f2328" font-weight="600" text-anchor="middle">13</text>
 <path d="M945 788 L983 788" fill="none" stroke="#57606a" stroke-width="1.8" marker-end="url(#a)"/>
 <circle cx="962" cy="788" r="9.5" fill="#ffffff" stroke="#1f2328" stroke-width="1.3"/>
-<text x="962" y="792" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="10.5px" fill="#1f2328" font-weight="600" text-anchor="middle">15</text>
+<text x="962" y="792" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="10.5px" fill="#1f2328" font-weight="600" text-anchor="middle">14</text>
 <path d="M1125 788 L1163 788" fill="none" stroke="#57606a" stroke-width="1.8" marker-end="url(#a)"/>
 <circle cx="1142" cy="788" r="9.5" fill="#ffffff" stroke="#1f2328" stroke-width="1.3"/>
-<text x="1142" y="792" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="10.5px" fill="#1f2328" font-weight="600" text-anchor="middle">16</text>
+<text x="1142" y="792" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="10.5px" fill="#1f2328" font-weight="600" text-anchor="middle">15</text>
 <path d="M685 760 L685 730 L145 730 L145 758" fill="none" stroke="#2e8b57" stroke-width="1.8" marker-end="url(#g)"/>
 <text x="415" y="724" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="11px" fill="#2e8b57" font-weight="600" text-anchor="middle">mutants survive</text>
 <path d="M335 816 L335 850 L165 850 L165 818" fill="none" stroke="#2e8b57" stroke-width="1.8" marker-end="url(#g)"/>
@@ -174,93 +168,88 @@
 <text x="700" y="867" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="11px" fill="#2e8b57" font-weight="600" text-anchor="middle">off standard</text>
 <line x1="60" y1="895" x2="1340" y2="895" stroke="#d1d9e0"/>
 <text x="60" y="919" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12px" fill="#1f2328" font-weight="400" text-anchor="start"><tspan font-weight="600">Produces</tspan> one PR per sub-issue, carrying the implementer&#x27;s evidence that it verified the change</text>
-<text x="60" y="942" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12px" fill="#1f2328" font-weight="400" text-anchor="start"><tspan font-weight="600">You decide</tspan> whether each PR merges. The parent issue closes with its last sub-issue, once any decision that should outlast it is in docs/adr</text>
+<text x="60" y="942" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12px" fill="#1f2328" font-weight="400" text-anchor="start"><tspan font-weight="600">You decide</tspan> whether each PR merges. The issue closes with its last sub-issue, once any decision that should outlast it is in docs/adr</text>
 <text x="60" y="965" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12px" fill="#1f2328" font-weight="400" text-anchor="start"><tspan font-weight="600">Teammates</tspan> test writer, intent judge, implementer, mutant writer, standards reviewer. Each is an agent definition</text>
 <text x="40" y="1040" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="17px" fill="#1f2328" font-weight="600" text-anchor="start">Handoffs</text>
-<rect x="40" y="1057" width="1320" height="578" rx="8" fill="#ffffff" stroke="#d1d9e0"/>
+<rect x="40" y="1057" width="1320" height="544" rx="8" fill="#ffffff" stroke="#d1d9e0"/>
 <text x="65" y="1079" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12px" fill="#1f2328" font-weight="600" text-anchor="middle">#</text>
 <text x="110" y="1079" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12px" fill="#1f2328" font-weight="600" text-anchor="start">Handoff</text>
 <text x="1190" y="1079" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12px" fill="#1f2328" font-weight="600" text-anchor="start">Session</text>
 <line x1="40" y1="1091" x2="1360" y2="1091" stroke="#d1d9e0"/>
 <text x="65" y="1113" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12px" fill="#1f2328" font-weight="400" text-anchor="middle">1</text>
-<text x="110" y="1113" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12.5px" fill="#1f2328" font-weight="400" text-anchor="start">You and Claude settle the behaviour, with grill asking a round at a time</text>
+<text x="110" y="1113" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12.5px" fill="#1f2328" font-weight="400" text-anchor="start">specify grills you a round at a time until the behaviour is settled</text>
 <rect x="1190" y="1102" width="12" height="12" rx="2" fill="#c8d6ea"/>
 <text x="1210" y="1113" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12px" fill="#1f2328" font-weight="400" text-anchor="start">Specify</text>
 <line x1="40" y1="1125" x2="1360" y2="1125" stroke="#d1d9e0"/>
 <text x="65" y="1147" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12px" fill="#1f2328" font-weight="400" text-anchor="middle">2</text>
-<text x="110" y="1147" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12.5px" fill="#1f2328" font-weight="400" text-anchor="start">write-spec takes what you settled and drafts the spec</text>
+<text x="110" y="1147" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12.5px" fill="#1f2328" font-weight="400" text-anchor="start">It drafts the spec in a shared Claude doc: you comment on it and it revises it until you agree it</text>
 <rect x="1190" y="1136" width="12" height="12" rx="2" fill="#c8d6ea"/>
 <text x="1210" y="1147" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12px" fill="#1f2328" font-weight="400" text-anchor="start">Specify</text>
 <line x1="40" y1="1159" x2="1360" y2="1159" stroke="#d1d9e0"/>
 <text x="65" y="1181" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12px" fill="#1f2328" font-weight="400" text-anchor="middle">3</text>
-<text x="110" y="1181" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12.5px" fill="#1f2328" font-weight="400" text-anchor="start">The draft is a shared Claude doc: you comment on it and write-spec revises it until you agree it</text>
+<text x="110" y="1181" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12.5px" fill="#1f2328" font-weight="400" text-anchor="start">Once agreed, the doc becomes specs/…/spec.md, with a test.todo for each new scenario</text>
 <rect x="1190" y="1170" width="12" height="12" rx="2" fill="#c8d6ea"/>
 <text x="1210" y="1181" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12px" fill="#1f2328" font-weight="400" text-anchor="start">Specify</text>
 <line x1="40" y1="1193" x2="1360" y2="1193" stroke="#d1d9e0"/>
 <text x="65" y="1215" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12px" fill="#1f2328" font-weight="400" text-anchor="middle">4</text>
-<text x="110" y="1215" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12.5px" fill="#1f2328" font-weight="400" text-anchor="start">Once agreed, the doc becomes specs/…/spec.md, with a test.todo for each new scenario</text>
+<text x="110" y="1215" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12.5px" fill="#1f2328" font-weight="400" text-anchor="start">The spec change goes up as a PR, its new scenarios proposed but not built</text>
 <rect x="1190" y="1204" width="12" height="12" rx="2" fill="#c8d6ea"/>
 <text x="1210" y="1215" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12px" fill="#1f2328" font-weight="400" text-anchor="start">Specify</text>
 <line x1="40" y1="1227" x2="1360" y2="1227" stroke="#d1d9e0"/>
 <text x="65" y="1249" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12px" fill="#1f2328" font-weight="400" text-anchor="middle">5</text>
-<text x="110" y="1249" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12.5px" fill="#1f2328" font-weight="400" text-anchor="start">The spec change goes up as a PR, its new scenarios proposed but not built</text>
+<text x="110" y="1249" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12.5px" fill="#1f2328" font-weight="400" text-anchor="start">The issue says why the change is happening, and lists the scenarios it proposes</text>
 <rect x="1190" y="1238" width="12" height="12" rx="2" fill="#c8d6ea"/>
 <text x="1210" y="1249" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12px" fill="#1f2328" font-weight="400" text-anchor="start">Specify</text>
 <line x1="40" y1="1261" x2="1360" y2="1261" stroke="#d1d9e0"/>
 <text x="65" y="1283" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12px" fill="#1f2328" font-weight="400" text-anchor="middle">6</text>
-<text x="110" y="1283" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12.5px" fill="#1f2328" font-weight="400" text-anchor="start">The parent issue says why the change is happening, and links the spec PR and its scenario IDs</text>
-<rect x="1190" y="1272" width="12" height="12" rx="2" fill="#c8d6ea"/>
-<text x="1210" y="1283" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12px" fill="#1f2328" font-weight="400" text-anchor="start">Specify</text>
+<text x="110" y="1283" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12.5px" fill="#1f2328" font-weight="400" text-anchor="start">to-tickets reads the issue and the scenarios it lists</text>
+<rect x="1190" y="1272" width="12" height="12" rx="2" fill="#d7e5d0"/>
+<text x="1210" y="1283" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12px" fill="#1f2328" font-weight="400" text-anchor="start">Break down</text>
 <line x1="40" y1="1295" x2="1360" y2="1295" stroke="#d1d9e0"/>
 <text x="65" y="1317" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12px" fill="#1f2328" font-weight="400" text-anchor="middle">7</text>
-<text x="110" y="1317" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12.5px" fill="#1f2328" font-weight="400" text-anchor="start">to-tickets reads the parent issue and the scenarios it links</text>
+<text x="110" y="1317" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12.5px" fill="#1f2328" font-weight="400" text-anchor="start">to-tickets draws a slice map: the vertical slices, what each adds to the system, and the order they land in</text>
 <rect x="1190" y="1306" width="12" height="12" rx="2" fill="#d7e5d0"/>
 <text x="1210" y="1317" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12px" fill="#1f2328" font-weight="400" text-anchor="start">Break down</text>
 <line x1="40" y1="1329" x2="1360" y2="1329" stroke="#d1d9e0"/>
 <text x="65" y="1351" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12px" fill="#1f2328" font-weight="400" text-anchor="middle">8</text>
-<text x="110" y="1351" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12.5px" fill="#1f2328" font-weight="400" text-anchor="start">to-tickets draws a slice map: the vertical slices, what each adds to the system, and the order they land in</text>
+<text x="110" y="1351" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12.5px" fill="#1f2328" font-weight="400" text-anchor="start">You review the map; anything you&#x27;d merge, split or reorder goes back to to-tickets</text>
 <rect x="1190" y="1340" width="12" height="12" rx="2" fill="#d7e5d0"/>
 <text x="1210" y="1351" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12px" fill="#1f2328" font-weight="400" text-anchor="start">Break down</text>
 <line x1="40" y1="1363" x2="1360" y2="1363" stroke="#d1d9e0"/>
 <text x="65" y="1385" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12px" fill="#1f2328" font-weight="400" text-anchor="middle">9</text>
-<text x="110" y="1385" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12.5px" fill="#1f2328" font-weight="400" text-anchor="start">You review the map; anything you&#x27;d merge, split or reorder goes back to to-tickets</text>
+<text x="110" y="1385" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12.5px" fill="#1f2328" font-weight="400" text-anchor="start">Once you approve, each slice becomes a sub-issue with native blocking links, and the map goes on the issue</text>
 <rect x="1190" y="1374" width="12" height="12" rx="2" fill="#d7e5d0"/>
 <text x="1210" y="1385" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12px" fill="#1f2328" font-weight="400" text-anchor="start">Break down</text>
 <line x1="40" y1="1397" x2="1360" y2="1397" stroke="#d1d9e0"/>
 <text x="65" y="1419" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12px" fill="#1f2328" font-weight="400" text-anchor="middle">10</text>
-<text x="110" y="1419" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12.5px" fill="#1f2328" font-weight="400" text-anchor="start">Once you approve, the map goes on the parent issue and each slice becomes a sub-issue with native blocking links</text>
-<rect x="1190" y="1408" width="12" height="12" rx="2" fill="#d7e5d0"/>
-<text x="1210" y="1419" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12px" fill="#1f2328" font-weight="400" text-anchor="start">Break down</text>
+<text x="110" y="1419" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12.5px" fill="#1f2328" font-weight="400" text-anchor="start">The test writer turns the ticket&#x27;s test.todo entries into failing tests</text>
+<rect x="1190" y="1408" width="12" height="12" rx="2" fill="#f3dcc4"/>
+<text x="1210" y="1419" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12px" fill="#1f2328" font-weight="400" text-anchor="start">Deliver</text>
 <line x1="40" y1="1431" x2="1360" y2="1431" stroke="#d1d9e0"/>
 <text x="65" y="1453" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12px" fill="#1f2328" font-weight="400" text-anchor="middle">11</text>
-<text x="110" y="1453" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12.5px" fill="#1f2328" font-weight="400" text-anchor="start">The test writer turns the ticket&#x27;s test.todo entries into failing tests</text>
+<text x="110" y="1453" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12.5px" fill="#1f2328" font-weight="400" text-anchor="start">Once the intent judge finds the tests aligned, a fresh implementer makes them pass and records how it verified that</text>
 <rect x="1190" y="1442" width="12" height="12" rx="2" fill="#f3dcc4"/>
 <text x="1210" y="1453" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12px" fill="#1f2328" font-weight="400" text-anchor="start">Deliver</text>
 <line x1="40" y1="1465" x2="1360" y2="1465" stroke="#d1d9e0"/>
 <text x="65" y="1487" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12px" fill="#1f2328" font-weight="400" text-anchor="middle">12</text>
-<text x="110" y="1487" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12.5px" fill="#1f2328" font-weight="400" text-anchor="start">Once the intent judge finds the tests aligned, a fresh implementer makes them pass and records how it verified that</text>
+<text x="110" y="1487" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12.5px" fill="#1f2328" font-weight="400" text-anchor="start">The mutant writer checks the tests fail when the new code is broken; surviving mutants go back to the test writer</text>
 <rect x="1190" y="1476" width="12" height="12" rx="2" fill="#f3dcc4"/>
 <text x="1210" y="1487" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12px" fill="#1f2328" font-weight="400" text-anchor="start">Deliver</text>
 <line x1="40" y1="1499" x2="1360" y2="1499" stroke="#d1d9e0"/>
 <text x="65" y="1521" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12px" fill="#1f2328" font-weight="400" text-anchor="middle">13</text>
-<text x="110" y="1521" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12.5px" fill="#1f2328" font-weight="400" text-anchor="start">The mutant writer checks the tests fail when the new code is broken; surviving mutants go back to the test writer</text>
+<text x="110" y="1521" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12.5px" fill="#1f2328" font-weight="400" text-anchor="start">The standards reviewer checks the code against CODING-STANDARDS.md; anything off goes back to the implementer</text>
 <rect x="1190" y="1510" width="12" height="12" rx="2" fill="#f3dcc4"/>
 <text x="1210" y="1521" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12px" fill="#1f2328" font-weight="400" text-anchor="start">Deliver</text>
 <line x1="40" y1="1533" x2="1360" y2="1533" stroke="#d1d9e0"/>
 <text x="65" y="1555" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12px" fill="#1f2328" font-weight="400" text-anchor="middle">14</text>
-<text x="110" y="1555" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12.5px" fill="#1f2328" font-weight="400" text-anchor="start">The standards reviewer checks the code against CODING-STANDARDS.md; anything off goes back to the implementer</text>
+<text x="110" y="1555" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12.5px" fill="#1f2328" font-weight="400" text-anchor="start">The PR closes its sub-issue with &quot;Closes #N&quot; and carries the verification evidence</text>
 <rect x="1190" y="1544" width="12" height="12" rx="2" fill="#f3dcc4"/>
 <text x="1210" y="1555" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12px" fill="#1f2328" font-weight="400" text-anchor="start">Deliver</text>
 <line x1="40" y1="1567" x2="1360" y2="1567" stroke="#d1d9e0"/>
 <text x="65" y="1589" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12px" fill="#1f2328" font-weight="400" text-anchor="middle">15</text>
-<text x="110" y="1589" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12.5px" fill="#1f2328" font-weight="400" text-anchor="start">The PR closes its sub-issue with &quot;Closes #N&quot; and carries the verification evidence</text>
+<text x="110" y="1589" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12.5px" fill="#1f2328" font-weight="400" text-anchor="start">You review and merge it; the issue closes once its last sub-issue does</text>
 <rect x="1190" y="1578" width="12" height="12" rx="2" fill="#f3dcc4"/>
 <text x="1210" y="1589" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12px" fill="#1f2328" font-weight="400" text-anchor="start">Deliver</text>
-<line x1="40" y1="1601" x2="1360" y2="1601" stroke="#d1d9e0"/>
-<text x="65" y="1623" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12px" fill="#1f2328" font-weight="400" text-anchor="middle">16</text>
-<text x="110" y="1623" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12.5px" fill="#1f2328" font-weight="400" text-anchor="start">You review and merge it; the parent issue closes once its last sub-issue does</text>
-<rect x="1190" y="1612" width="12" height="12" rx="2" fill="#f3dcc4"/>
-<text x="1210" y="1623" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12px" fill="#1f2328" font-weight="400" text-anchor="start">Deliver</text>
-<line x1="90" y1="1057" x2="90" y2="1635" stroke="#d1d9e0"/>
-<line x1="1170" y1="1057" x2="1170" y2="1635" stroke="#d1d9e0"/>
+<line x1="90" y1="1057" x2="90" y2="1601" stroke="#d1d9e0"/>
+<line x1="1170" y1="1057" x2="1170" y2="1601" stroke="#d1d9e0"/>
 </svg>

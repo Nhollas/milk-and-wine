@@ -1,11 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 320" role="img" aria-labelledby="t d">
 <title id="t">Milk and wine</title>
-<desc id="d">A change spec, milk, points at accounts B2 in a behaviour spec, wine. The change spec is a GitHub issue, born with the work and closed once it ships. The behaviour spec lives with the code.</desc>
+<desc id="d">An issue, milk, points at accounts B2 in a behaviour spec, wine. The issue is on GitHub, born with the work and closed once it ships. The behaviour spec lives with the code.</desc>
 <rect x="0.0" y="0.0" width="760.0" height="320.0" rx="12" fill="#0d1117"></rect><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#818b98"></path></marker></defs>
 
 <rect x="20" y="30" width="300" height="200" rx="12" fill="#0c2d6b" stroke="#4493f8"></rect>
 <path d="M282 46h18v6l6 9v30h-30v-30l6-9z" stroke-width="1.5" fill="#0c2d6b" stroke="#4493f8"></path>
-<text x="40" y="62" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="14px" fill="#a5d6ff" font-weight="600">Change spec</text>
+<text x="40" y="62" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="14px" fill="#a5d6ff" font-weight="600">Issue</text>
 <text x="40" y="80" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="12px" fill="#9198a1">milk</text>
 <text x="40" y="110" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="12px" fill="#9198a1">issue #42 · refuse taken emails</text>
 <text x="40" y="140" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="14px" fill="#f0f6fc">Why we're doing it</text>

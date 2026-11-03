@@ -1,6 +1,6 @@
 # Milk and wine
 
-Specs come in two kinds. Wine gets better with age: a behaviour spec that lasts and is refined as the system grows. Milk goes off: a change spec that exists to deliver one piece of work, kept as a GitHub issue and closed once it's done. This repository is about the wine, and how to make people and agents trust it.
+Specs come in two kinds. Wine gets better with age: a behaviour spec that lasts and is refined as the system grows. Milk goes off: an issue on GitHub that exists to deliver one piece of work, closed once it's done. This repository is about the wine, and how to make people and agents trust it.
 
 The ideas are tried out on a small library app: members borrow copies of books, get reminded when they're overdue, and bring them back.
 

@@ -7,7 +7,3 @@
 | Subject | Scenario | Spec |
 | --- | --- | --- |
 | <subject> | <ID>: <the scenario in a few words> | [`specs/<kind>/<subject>/spec.md`](../blob/main/specs/<kind>/<subject>/spec.md) |
-
-## Tickets
-
-Added by `/to-tickets` once the spec PR merges.

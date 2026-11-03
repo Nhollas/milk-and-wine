@@ -1,33 +1,97 @@
 ---
 name: to-tickets
-description: Slice a change spec into tickets, agree them with the user from a slice map, then create them as sub-issues with blocking links.
-argument-hint: <change spec issue, such as #42>
+description: Break an issue into tracer-bullet tickets from a slice map, published as its sub-issues with native blocking links.
+argument-hint: <issue, such as #42>
 disable-model-invocation: true
 ---
 
-Adapted from Matt Pocock's [to-tickets skill](https://github.com/mattpocock/skills), under the MIT licence in [LICENSE](LICENSE).
+# To Tickets
+
+Break an issue into a set of **tickets**: tracer-bullet vertical slices, each declaring the tickets that **block** it.
 
 Use the user's request: $ARGUMENTS
 
-1. **Load the change spec.** Read the issue with `gh issue view <n> --comments`, then every spec it links, on the latest `main`. Each scenario it proposes must be in its spec on `main` with a `test.todo` and no active test. If the spec PR hasn't merged, stop and ask the user to merge it.
-2. **Read what it touches.** Read enough of the code to know which modules, journeys and outside systems each scenario reaches, and what prefactoring would make the change easy. Use the words in [the glossary](../../../GLOSSARY.md), and follow the ADRs in `docs/adr/` for the area.
-3. **Draft vertical slices.** Each slice is one ticket and follows these rules.
-   - It delivers one or more of the change spec's scenarios end to end, through every part they touch. Once it lands, its scenarios' tests pass.
-   - Every scenario the change spec proposes belongs to exactly one slice.
-   - It fits one fresh session: a test writer, the intent judge, an implementer, the mutant writer and a standards reviewer each work on it in turn.
-   - Prefactoring comes first, in slices that deliver no scenario and leave behaviour unchanged.
-   - It's blocked only by slices whose work it needs. Foreman already runs slices that edit the same files one at a time.
-   - A wide refactor, one mechanical change that breaks every caller at once, is the exception. Sequence it as expand, migrate in batches, then contract, each its own slice.
-4. **Draw the slice map.** Write the map as JSON in your scratchpad, in the shape of [the example](assets/slice-map.example.json). Its parts are the modules, journeys and outside systems the change touches, on a grid of three columns and up to four rows, with callers on the left and outside systems on the right. Keep each name to 18 characters. Its links are the calls between parts, and each slice lists the part IDs and `from>to` links it adds. Then run:
+## Process
 
-   ```sh
-   node .claude/skills/to-tickets/scripts/draw-slice-map.ts <map.json> <map.svg>
-   rsvg-convert -w 1400 <map.svg> -o <map.png>
-   ```
+### 1. Gather context
 
-   Look at the PNG yourself and fix anything that overlaps or reads wrongly before showing it.
+Fetch the issue with `gh issue view <n> --comments` and read its full body and comments, then each spec it points at on the latest `main`. Each scenario it proposes is on `main` with a `test.todo`; if its spec PR is still open, ask the user to merge it first.
 
-5. **Agree the slices.** Show the user the map, and list each slice with its title, the scenarios it delivers and the slices that block it. Ask whether the size is right, whether each blocking edge is real, and what they'd merge, split or reorder. For each slice, ask what they could see working once it lands; a slice with no answer is a layer, not a slice. Redraw after each change, and create nothing until the user approves.
-6. **Create the tickets.** Check `gh --version` is 2.94 or later, for `--parent`, `--blocked-by` and `--attach`, and stop if it isn't. Create each ticket from [the ticket template](assets/ticket.md), blockers first so their numbers exist, with `gh issue create --title <slice title> --body-file <body> --parent <n> --blocked-by <numbers>`. Leave file paths and line numbers out of the body; they go stale before the ticket is picked up.
-7. **Put the map on the change spec.** Set each slice's `ticket` to its issue number, such as `"#43"`, and redraw. Fill the change spec's Tickets section with each ticket in landing order and the map as `![Slice map](<map.png>)`, then run `gh issue edit <n> --body-file <body> --attach <map.png>`, which uploads the image in place of the local path. Change nothing else on the change spec, and don't close it.
-8. **Hand over.** Give the user the tickets' links, and say the next step is `/foreman #<n>`.
+### 2. Explore the codebase (optional)
+
+If you have not already explored the codebase, do so to understand the current state of the code. Ticket titles and descriptions should use the project's domain glossary vocabulary, and respect ADRs in the area you're touching.
+
+Look for opportunities to prefactor the code to make the implementation easier. "Make the change easy, then make the easy change."
+
+### 3. Draft vertical slices
+
+Break the work into **tracer bullet** tickets.
+
+<vertical-slice-rules>
+
+- Each slice cuts a narrow but COMPLETE path through every layer it touches: vertical, NOT a horizontal slice of one layer
+- Each slice delivers one or more of the issue's scenarios, and every scenario belongs to exactly one slice
+- A completed slice is demoable or verifiable on its own: its scenarios' tests pass
+- Each slice is sized to fit in a single fresh context window
+- Any prefactoring should be done first, in slices that deliver no scenario
+
+</vertical-slice-rules>
+
+Give each ticket its **blocking edges**: the other tickets that must complete before it can start. A ticket with no blockers can start immediately.
+
+**Wide refactors are the exception to vertical slicing.** A **wide refactor** is one mechanical change (rename a column, retype a shared symbol) whose **blast radius** fans across the whole codebase, so a single edit breaks thousands of call sites at once and no vertical slice can land green. Don't force it into a tracer bullet; sequence it as **expand–contract**. First expand: add the new form beside the old so nothing breaks. Then migrate the call sites over in batches sized by blast radius (per package, per directory), each batch its own ticket blocked by the expand, keeping CI green batch to batch because the old form still exists. Finally contract: delete the old form once no caller remains, in a ticket blocked by every migrate batch.
+
+### 4. Draw the slice map
+
+Write the map as JSON in your scratchpad, in the shape of [the example](assets/slice-map.example.json): the modules, journeys and outside systems the change touches as parts on a grid of three columns and up to four rows, callers on the left and outside systems on the right, each name at most 18 characters; the calls between them as links; and, per slice, the part IDs and `from>to` links it adds. Then draw it:
+
+```sh
+node .claude/skills/to-tickets/scripts/draw-slice-map.ts <map.json> <map.svg>
+rsvg-convert -w 1400 <map.svg> -o <map.png>
+```
+
+Look at the PNG and fix anything that overlaps or reads wrongly.
+
+### 5. Quiz the user
+
+Show the map, then the proposed breakdown as a numbered list. For each ticket, show:
+
+- **Title**: short descriptive name
+- **Blocked by**: which other tickets (if any) must complete first
+- **Delivers**: the scenarios it delivers, and what the user could see working once it lands
+
+Ask the user:
+
+- Does the granularity feel right? (too coarse / too fine)
+- Are the blocking edges correct: does each ticket only depend on tickets that genuinely gate it?
+- Should any tickets be merged or split further?
+
+Redraw the map after each change, and iterate until the user approves the breakdown.
+
+### 6. Publish the tickets
+
+Create each ticket as a sub-issue in dependency order (blockers first), so each ticket's blocking edges can reference real numbers:
+
+```sh
+gh issue create --title <title> --body-file <body> --parent <n> --blocked-by <numbers>
+```
+
+<ticket-template>
+
+## What to build
+
+The end-to-end behaviour this ticket makes work, from the user's perspective, not layer-by-layer implementation.
+
+## Scenarios
+
+- [ ] `<subject> <ID>`: <the scenario in a few words>
+
+For a prefactoring ticket: "None: behaviour is unchanged."
+
+</ticket-template>
+
+Avoid specific file paths or code snippets: they go stale fast.
+
+### 7. Put the map on the issue
+
+Set each slice's `ticket` to its number, such as `"#43"`, and redraw. Append a `## Slice map` section to the issue's body holding `![Slice map](<map.png>)`, then run `gh issue edit <n> --body-file <body> --attach <map.png>`, which uploads the image in place of the local path. Keep the rest of the issue as it is, and leave it open.
