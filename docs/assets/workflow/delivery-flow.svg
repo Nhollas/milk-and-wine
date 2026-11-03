@@ -124,9 +124,9 @@
 <circle cx="68" cy="615" r="13" fill="#d9822b"/>
 <text x="68" y="620" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="13px" fill="#ffffff" font-weight="700" text-anchor="middle">3</text>
 <text x="90" y="621" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="17px" fill="#1f2328" font-weight="600" text-anchor="start">Deliver each ticket</text>
-<text x="1340" y="620" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12px" fill="#59636e" font-weight="400" text-anchor="end">Session 3 · foreman · one pipeline per sub-issue, unblocked ones in parallel</text>
+<text x="1340" y="620" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="12px" fill="#59636e" font-weight="400" text-anchor="end">Session 3 · foreman · one sub-issue at a time, in landing order</text>
 <rect x="85" y="650" width="860" height="40" rx="6" fill="#e8eef7" stroke="#2f5d9e" stroke-width="1.5"/>
-<text x="515" y="675" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="13px" fill="#1f4478" font-weight="400" text-anchor="middle"><tspan font-weight="600">Foreman</tspan> picks every unblocked sub-issue and gives each step a fresh teammate</text>
+<text x="515" y="675" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="13px" fill="#1f4478" font-weight="400" text-anchor="middle"><tspan font-weight="600">Foreman</tspan> takes each unblocked sub-issue in turn and gives each step a fresh teammate</text>
 <rect x="85" y="760" width="140" height="56" rx="6" fill="#2f5d9e" stroke="#1f4478" stroke-width="1.5"/>
 <text x="155.0" y="785.0" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="13px" fill="#ffffff" font-weight="600" text-anchor="middle">Test writer</text>
 <text x="155.0" y="801.0" font-family="-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Helvetica,Arial,sans-serif" font-size="10.5px" fill="#e6edf3" font-weight="400" text-anchor="middle">writes failing tests</text>

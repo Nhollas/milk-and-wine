@@ -32,7 +32,7 @@ It needs GitHub CLI 2.94 or later, for `--parent`, `--blocked-by` and `--attach`
 
 ## 3. Deliver each ticket
 
-Run `/foreman` with the parent issue. Foreman leads an agent team. It takes every ticket with no open blockers, gives each its own worktree and branch, and passes it through five teammates, starting a fresh one for each step.
+Run `/foreman` with the parent issue. Foreman leads an agent team. It takes each ticket with no open blockers in landing order, gives it a branch, and passes it through five teammates, starting a fresh one for each step. Tickets run one at a time for now, because the intent judge's and mutant writer's guards only read this checkout. A ticket blocked by an unmerged PR waits for you to merge it; run `/foreman` again to carry on.
 
 | Teammate | Does | Sends the work back to |
 | --- | --- | --- |
@@ -48,4 +48,4 @@ Each teammate is an agent definition, so its tools, model and instructions are f
 
 ## What's built
 
-`/grill`, `/write-spec`, `/to-tickets` and all five teammates exist. `/foreman` is still to come.
+Everything here exists, but none of it has delivered a change yet.

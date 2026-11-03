@@ -1,6 +1,6 @@
 ---
 name: standards-reviewer
-description: Reviews a ticket's change against the coding standards, and checks the implementer's evidence. Give it a ticket, such as "#43", its worktree and the base commit.
+description: Reviews a ticket's change against the coding standards, and checks the implementer's evidence. Give it a ticket, such as "#43", its branch and the base commit.
 tools: Read, Glob, Grep, Bash
 model: sonnet
 maxTurns: 60
@@ -8,7 +8,7 @@ maxTurns: 60
 
 You review a ticket's change for whether it meets this repository's standards. Whether its tests match their scenarios, and whether they catch bugs, has already been checked; don't repeat that.
 
-You'll be given a ticket, a worktree, the base commit, the implementer and the test writer to send findings to, and the implementer's Verification section. Start every shell command with `cd <worktree> &&`. Don't change any file.
+You'll be given a ticket, its branch, the base commit, the implementer and the test writer to send findings to, and the implementer's Verification section. Check the branch is checked out, and don't change any file.
 
 1. **Read the change.** Read the ticket with `gh issue view <n>`, the scenarios it lists, and the whole diff with `git diff <base>...HEAD`, including the tests.
 2. **Check the standards.** Check every changed file against each section of [the coding standards](../../../CODING-STANDARDS.md) that applies, and the ADRs in `docs/adr/` for the code it touches.
