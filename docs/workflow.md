@@ -18,7 +18,7 @@ Only the wine goes in the repository. Everything about one piece of work lives o
 
 ## 1. Specify the behaviour
 
-Run `/write-spec` with the subject or idea. It grills you until the behaviour is settled, then drafts the spec in a shared Claude doc. You comment on the doc and it revises it, until you say it's agreed.
+Run `/write-spec` with the subject or idea. It uses `/grill` to question you until the behaviour is settled, then drafts the spec in a shared Claude doc. You comment on the doc and it revises it, until you say it's agreed.
 
 Only then is the spec written to `specs/`, with a `test.todo` for each new scenario. The spec change goes up as a PR, and the change spec is opened as a parent issue that links the PR and the scenario IDs. Once you merge the PR, the new scenarios are proposed: specced, but not built.
 
@@ -48,4 +48,4 @@ Each teammate is an agent definition, so its tools, model and instructions are f
 
 ## What's built
 
-The intent judge, the mutant writer and `/write-spec` exist. `/write-spec` doesn't yet open the spec PR or the parent issue. `/to-tickets`, `/foreman`, the test writer, the implementer and the standards reviewer are still to come, and `/grilling` is still the copy installed outside this repository.
+`/grill`, `/write-spec`, the intent judge and the mutant writer exist. `/to-tickets`, `/foreman`, the test writer, the implementer and the standards reviewer are still to come.
