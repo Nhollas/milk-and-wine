@@ -1,8 +1,5 @@
 {
   "permissions": {
     "deny": ["Edit(**/GLOSSARY.md)"]
-  },
-  "env": {
-    "ISSUE_TRACKER": "github"
   }
 }

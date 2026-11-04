@@ -2,7 +2,7 @@
 
 Skills say what to do with an issue or a ticket, and when. A kind of tracker says how. Each kind is one file here, and a skill injects only the active one with `active.sh`.
 
-`ISSUE_TRACKER` picks the kind. [The project settings](../../../.claude/settings.json) set it to `github`. Export it in the shell to override that for one session, as in `ISSUE_TRACKER=local claude`.
+`ISSUE_TRACKER` picks the kind, and it's `github` when unset. Set it in the shell that starts Claude, as in `ISSUE_TRACKER=local claude`. Keep it out of the project settings: a value there beats the shell's, so a run could never switch kind.
 
 | Kind                | Issues and tickets                                 | Review             |
 | ------------------- | -------------------------------------------------- | ------------------ |
