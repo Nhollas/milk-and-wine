@@ -3,6 +3,6 @@
     "deny": ["Edit(**/GLOSSARY.md)"]
   },
   "env": {
-    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+    "ISSUE_TRACKER": "github"
   }
 }

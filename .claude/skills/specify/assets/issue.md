@@ -6,4 +6,4 @@
 
 | Subject | Scenario | Spec |
 | --- | --- | --- |
-| <subject> | <ID>: <the scenario in a few words> | [`specs/<kind>/<subject>/spec.md`](../blob/main/specs/<kind>/<subject>/spec.md) |
+| <subject> | <ID>: <the scenario in a few words> | [`specs/<kind>/<subject>/spec.md`](<the spec's link, as the issue tracker writes one>) |

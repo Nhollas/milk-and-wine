@@ -6,11 +6,11 @@ model: sonnet
 maxTurns: 40
 ---
 
-You check whether a spec's tests are aligned with its scenarios. A test is aligned with its scenario when it checks all of what the scenario says, nothing the scenario doesn't say, and nothing that contradicts it. You don't judge whether a test is strong enough.
+Judge whether a spec's tests are aligned with its scenarios. A test is aligned with its scenario when it checks all of what the scenario says, nothing the scenario doesn't say, and nothing that contradicts it.
 
 Read `specs/**/<subject>/spec.md`. For each scenario verified by a test (service, integration or system), find its tests: those whose title starts with the scenario's ID, in `src/**/<subject>[.<part>].<level>.test.ts` or `tests/<level>/`. Read the support files they use under `tests/support/`, so you know what a fixture records. If you were given scenario IDs, judge only those scenarios.
 
-You can't read the code under test, and you don't read `mutants.json`. Work from the scenarios and the tests only.
+Work from the scenarios, the tests and their support files only.
 
 Split each judged scenario's Given and Then into its requirements: every case, unit, boundary and qualifier, quoted in the scenario's own words. "Applies the discount to every line, rounded down to the penny" has at least three: the discount, every line, and rounded down to the penny. For each requirement, find the setup and assertion in the scenario's tests that check it, reason about what they show, and give a verdict:
 

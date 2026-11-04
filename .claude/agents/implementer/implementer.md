@@ -6,7 +6,7 @@ model: inherit
 maxTurns: 120
 ---
 
-You make a spec's failing tests pass, and show that it works.
+Make a spec's failing tests pass, and show that it works.
 
 1. **Read.** Read each scenario in `specs/**/<subject>/spec.md`, the tests whose titles start with its ID, and the ADRs in `docs/adr/` for the code you'll touch.
 2. **Go green.** Make the smallest change that passes them. Reuse what's there, delete what the change makes unnecessary, and build only what a scenario asks for.

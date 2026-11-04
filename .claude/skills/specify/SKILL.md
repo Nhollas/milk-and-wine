@@ -1,11 +1,12 @@
 ---
 name: specify
-description: Grill the user until a change's behaviour is settled, agree the spec in a shared doc, then open the spec PR and its issue.
+description: Grill the user until a change's behaviour is settled, agree the spec in a shared doc, then open its issue and put the spec up for review.
 argument-hint: <subject or idea>
 disable-model-invocation: true
+allowed-tools: Bash(${CLAUDE_PROJECT_DIR}/docs/agents/issue-tracker/active.sh)
 ---
 
-Use the user's request: $ARGUMENTS
+Specify this change: $ARGUMENTS
 
 ## 1. Grill
 
@@ -43,8 +44,12 @@ Read every comment, change the doc and reply in each thread. Put each behavioura
 
 ## 4. Write the spec
 
-Create `spec/<change>` from the latest `main`, naming the change in a few words. Write the spec to `specs/<kind>/<subject>/spec.md`, and add a `test.todo("B<n>: …")` for each new scenario verified by a test.
+Branch for the spec change, naming it in a few words. Write the spec to `specs/<kind>/<subject>/spec.md`, and add a `test.todo("B<n>: …")` for each new scenario verified by a test.
 
-## 5. Open the issue and the PR
+## 5. Open the issue and put the spec up for review
 
-Draft the issue from [the issue template](assets/issue.md), titled with the change in a few words, and the PR's title. Once the user agrees them, create the issue with `gh issue create`, then commit, push and open the PR with `gh pr create`, its body `Part of #<issue>` and the scenario IDs it proposes. Give the user both links, and ask whether to delete the doc.
+Draft the issue from [the issue template](assets/issue.md), titled with the change in a few words, and the spec change's title. Once the user agrees them, open the issue, then commit and put the spec change up for review, listing the scenario IDs it proposes. Tell the user where each is, and ask whether to delete the doc.
+
+## Issue tracker
+
+!`${CLAUDE_PROJECT_DIR}/docs/agents/issue-tracker/active.sh`

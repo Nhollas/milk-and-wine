@@ -1,5 +1,3 @@
-Closes #<ticket>. Part of #<issue>.
-
 ## What now works
 
 <The behaviour this ticket delivers, as someone outside the system sees it, and the scenario IDs it delivers.>

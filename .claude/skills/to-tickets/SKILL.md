@@ -1,21 +1,19 @@
 ---
 name: to-tickets
-description: Break an issue into tracer-bullet tickets from a slice map, published as its sub-issues with native blocking links.
-argument-hint: <issue, such as #42>
+description: Break an issue into tracer-bullet tickets from a slice map, created in the issue tracker with their blocking links.
+argument-hint: <issue>
+arguments: [issue]
 disable-model-invocation: true
+allowed-tools: Bash(${CLAUDE_PROJECT_DIR}/docs/agents/issue-tracker/active.sh)
 ---
 
-# To Tickets
-
-Break an issue into a set of **tickets**: tracer-bullet vertical slices, each declaring the tickets that **block** it.
-
-Use the user's request: $ARGUMENTS
+Break issue $issue into **tickets**: tracer-bullet vertical slices, each naming the tickets that **block** it.
 
 ## Process
 
 ### 1. Gather context
 
-Fetch the issue with `gh issue view <n> --comments` and read its full body and comments, then each spec it points at on the latest `main`. Each scenario it proposes is on `main` with a `test.todo`; if its spec PR is still open, ask the user to merge it first.
+Read the issue, its full body and comments, then each spec it points at on the latest `main`. Each scenario it proposes is on `main` with a `test.todo`; if its spec change is still up for review, ask the user to merge it first.
 
 ### 2. Explore the codebase (optional)
 
@@ -46,7 +44,7 @@ Give each ticket its **blocking edges**: the other tickets that must complete be
 Write the map as JSON in your scratchpad, in the shape of [the example](assets/slice-map.example.json): the modules, journeys and outside systems the change touches as parts on a grid of three columns and up to four rows, callers on the left and outside systems on the right, each name at most 18 characters; the calls between them as links; and, per slice, the part IDs and `from>to` links it adds. Then draw it:
 
 ```sh
-node .claude/skills/to-tickets/scripts/draw-slice-map.ts <map.json> <map.svg>
+node ${CLAUDE_SKILL_DIR}/scripts/draw-slice-map.ts <map.json> <map.svg>
 rsvg-convert -w 1400 <map.svg> -o <map.png>
 ```
 
@@ -70,14 +68,14 @@ Redraw the map after each change, and iterate until the user approves the breakd
 
 ### 6. Publish the tickets
 
-Create each ticket as a sub-issue from [the ticket template](assets/ticket.md), in dependency order (blockers first), so each ticket's blocking edges can reference real numbers:
+Create each ticket under the issue from [the ticket template](assets/ticket.md), in dependency order (blockers first), so each ticket's blocking edges can reference real tickets.
 
-```sh
-gh issue create --title <title> --body-file <body> --parent <n> --blocked-by <numbers>
-```
-
-Avoid specific file paths or code snippets: they go stale fast.
+Describe behaviour in a ticket, not file paths or code, which go stale fast.
 
 ### 7. Put the map on the issue
 
-Set each slice's `ticket` to its number, such as `"#43"`, and redraw. Append a `## Slice map` section to the issue's body holding `![Slice map](<map.png>)`, then run `gh issue edit <n> --body-file <body> --attach <map.png>`, which uploads the image in place of the local path. Keep the rest of the issue as it is, and leave it open.
+Set each slice's `ticket` to how the tracker refers to it, such as `"#43"`, and redraw. Add the map to the issue's body under a `## Slice map` heading. Keep the rest of the issue as it is, and leave it open.
+
+## Issue tracker
+
+!`${CLAUDE_PROJECT_DIR}/docs/agents/issue-tracker/active.sh`

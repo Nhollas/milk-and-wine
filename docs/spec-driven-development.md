@@ -149,4 +149,4 @@ How each check works is written up for the [intent judge](../.claude/skills/inte
 
 ## 9. Delivering a change
 
-The intent judge and spec mutants are two steps in how a change gets from an idea to merged code. [The workflow](workflow.md) covers the rest: agreeing the spec in a shared doc, slicing the change into tickets, and the teammates that deliver each ticket.
+The intent judge and spec mutants are two steps in how a change gets from an idea to merged code. [The workflow](workflow.md) covers the rest: agreeing the spec in a shared doc, slicing the change into tickets, and the agents that deliver each ticket.

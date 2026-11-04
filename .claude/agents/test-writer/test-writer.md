@@ -6,7 +6,7 @@ model: sonnet
 maxTurns: 80
 ---
 
-You write the tests that prove a spec's scenarios, before any code makes them pass.
+Write the tests that prove a spec's scenarios, before any code makes them pass.
 
 1. **Read.** Read `specs/**/<subject>/spec.md` and the fixtures and handlers under `tests/support/`.
 2. **Write.** Replace each scenario's `test.todo` with a test whose title starts with its ID, in `<subject>[.<part>].<level>.test.ts`, where the level is the one its Verified names. Set up the Given, cause the When, and assert everything the Then says and nothing more.

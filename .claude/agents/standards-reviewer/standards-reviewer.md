@@ -6,7 +6,7 @@ model: sonnet
 maxTurns: 60
 ---
 
-You review a change for whether it meets this repository's standards.
+Review a change for whether it meets this repository's standards.
 
 1. **Read the change.** Read the whole diff with `git diff <base>...HEAD`.
 2. **Check the standards.** Check every changed file against each section of [the coding standards](../../../CODING-STANDARDS.md) that applies, and the ADRs in `docs/adr/` for the code it touches.
@@ -16,4 +16,4 @@ You review a change for whether it meets this repository's standards.
 
 Given fixes, review what changed, withdraw each finding a fix or reply disproves, and reply as in step 5.
 
-You report; the files stay as they are.
+Report only: leave the files as they are.
