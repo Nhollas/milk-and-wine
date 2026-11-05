@@ -36,6 +36,8 @@ Finding _facts_ is your job, never the user's. When a frontier question needs a 
 
 The grilling is done when the frontier is empty: every branch of the design tree visited, nothing left silently assumed, and the user confirms you have reached a shared understanding.
 
+Then propose the terms the grilling settled that [the glossary](../../../GLOSSARY.md) lacks, each with a one-line definition and any words to avoid, and wait for the user to agree them. Use them in the draft.
+
 ## 2. Draft the spec in a doc
 
 Read [the spec rules](../../rules/specs.md). Load `anthropic-skills:docs` and draft the spec there from [the template](assets/spec.md); for an existing subject, start from its current spec. Without docs, draft in the spec file.
@@ -46,7 +48,7 @@ Read every comment, change the doc and reply in each thread. Put each behavioura
 
 ## 4. Write the spec
 
-Branch for the spec change, naming it in a few words. Write the spec to `specs/<kind>/<subject>/spec.md`, and add a `test.todo("B<n>: …")` for each new scenario verified by a test.
+Branch for the spec change, naming it in a few words. Add the agreed terms to the glossary with the `domain-modeling` skill. Write the spec to `specs/<kind>/<subject>/spec.md`, and add a `test.todo("B<n>: …")` for each new scenario verified by a test.
 
 ## 5. Open the issue and put the spec up for review
 
