@@ -7,7 +7,7 @@ import { z } from "zod";
 const vitestReport = z.object({
   testResults: z.array(
     z.object({
-      assertionResults: z.array(z.object({ fullName: z.string(), status: z.string() })),
+      assertionResults: z.array(z.object({ fullName: z.string() })),
     }),
   ),
 });
@@ -28,10 +28,7 @@ export function vitestHiddenTests(root: string) {
         );
         const report = vitestReport.parse(JSON.parse(readFileSync(reportPath, "utf8")));
         return report.testResults.flatMap(({ assertionResults }) =>
-          assertionResults.map(({ fullName, status }) => ({
-            title: fullName,
-            passed: status === "passed",
-          })),
+          assertionResults.map(({ fullName }) => ({ title: fullName })),
         );
       } finally {
         rmSync(workspace, { recursive: true, force: true });
