@@ -34,6 +34,23 @@ test.for<[TaskPart, string]>([
   expect(result).toEqual({ exitCode: 1, output: expectedOutput });
 });
 
+test.for<[TaskPart, string]>([
+  ["ticket", "widgets is not valid:\n  missing ticket\n"],
+  ["starter code", "widgets is not valid:\n  missing starter code\n"],
+  ["hidden tests", "widgets is not valid:\n  missing hidden tests\n"],
+  ["solution", "widgets is not valid:\n  missing solution\n"],
+])(
+  "B2: rejects a task whose %s folder is empty",
+  ([part, expectedOutput], { tasks, hiddenTests }) => {
+    tasks.addTask("widgets", { emptied: [part] });
+
+    const result = check(["widgets"], { root: tasks.root, hiddenTests });
+
+    // oxlint-disable-next-line vitest/no-standalone-expect -- test.for hands the test its fixtures; the lint rule only knows test.each
+    expect(result).toEqual({ exitCode: 1, output: expectedOutput });
+  },
+);
+
 test("B2: names each part a task lacks", ({ tasks, hiddenTests }) => {
   tasks.addTask("widgets", { without: ["issue", "solution"] });
 

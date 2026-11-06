@@ -9,6 +9,7 @@ type TaskOptions = {
   scenarios?: string[];
   hiddenTests?: string[];
   without?: TaskPart[];
+  emptied?: TaskPart[];
 };
 
 type HiddenTestResult = { title: string; passed: boolean };
@@ -48,19 +49,36 @@ function benchmarkTasks() {
     root,
     addTask(
       name: string,
-      { scenarios = ["B1"], hiddenTests = ["B1: costs 2 each"], without = [] }: TaskOptions = {},
+      {
+        scenarios = ["B1"],
+        hiddenTests = ["B1: costs 2 each"],
+        without = [],
+        emptied = [],
+      }: TaskOptions = {},
     ) {
       const folder = `${TASKS_FOLDER}/${name}`;
       const has = (part: TaskPart) => !without.includes(part);
       mkdirSync(join(root, folder), { recursive: true });
       if (has("spec")) write(`${folder}/spec.md`, specMarkdown(name, scenarios));
       if (has("issue")) write(`${folder}/issue.md`, `# ${name}\n`);
-      if (has("ticket")) write(`${folder}/tickets/01.md`, `# Price a widget\n`);
-      if (has("starter code")) write(`${folder}/starter/src/widgets.ts`, `export {};\n`);
-      if (has("hidden tests")) {
+      const folderOf: Partial<Record<TaskPart, string>> = {
+        ticket: "tickets",
+        "starter code": "starter",
+        "hidden tests": "tests",
+        solution: "solution",
+      };
+      for (const part of emptied) {
+        mkdirSync(join(root, folder, folderOf[part]!), { recursive: true });
+      }
+      if (has("ticket") && !emptied.includes("ticket"))
+        write(`${folder}/tickets/01.md`, `# Price a widget\n`);
+      if (has("starter code") && !emptied.includes("starter code"))
+        write(`${folder}/starter/src/widgets.ts`, `export {};\n`);
+      if (has("hidden tests") && !emptied.includes("hidden tests")) {
         write(`${folder}/tests/widgets.service.test.ts`, hiddenTestsSource(hiddenTests));
       }
-      if (has("solution")) write(`${folder}/solution/src/widgets.ts`, `export {};\n`);
+      if (has("solution") && !emptied.includes("solution"))
+        write(`${folder}/solution/src/widgets.ts`, `export {};\n`);
     },
     [Symbol.dispose]() {
       rmSync(root, { recursive: true, force: true });
