@@ -41,14 +41,14 @@ Give each ticket its **blocking edges**: the other tickets that must complete be
 
 ### 4. Draw the slice map
 
-Write the map as JSON in your scratchpad, in the shape of [the example](assets/slice-map.example.json): the modules, journeys and outside systems the change touches as parts on a grid of three columns and up to four rows, callers on the left and outside systems on the right, each name at most 18 characters; the calls between them as links; and, per slice, the part IDs and `from>to` links it adds. Then draw it:
+Write the map as `slice-map.json` in `.scratch/<issue>/` at the project's root, which git ignores, so the user can open it while you iterate. Give it the shape of [the example](assets/slice-map.example.json): the modules, journeys and outside systems the change touches as parts on a grid of three columns and up to four rows, callers on the left and outside systems on the right, each name at most 18 characters; the calls between them as links; and, per slice, the part IDs and `from>to` links it adds. Then draw it:
 
 ```sh
-node ${CLAUDE_SKILL_DIR}/scripts/draw-slice-map.ts <map.json> <map.svg>
-rsvg-convert -w 1400 <map.svg> -o <map.png>
+node ${CLAUDE_SKILL_DIR}/scripts/draw-slice-map.ts .scratch/<issue>/slice-map.json .scratch/<issue>/slice-map.svg
+rsvg-convert -w 1400 .scratch/<issue>/slice-map.svg -o .scratch/<issue>/slice-map.png
 ```
 
-Look at the PNG and fix anything that overlaps or reads wrongly.
+Look at the PNG and fix anything that overlaps or reads wrongly. Then tell the user where the SVG is, which is sharper than the PNG.
 
 ### 5. Quiz the user
 

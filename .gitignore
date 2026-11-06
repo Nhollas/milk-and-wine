@@ -4,3 +4,4 @@ reports/
 .stryker-tmp/
 .claude/skills/intent-judge/evals/results/
 .issues/
+.scratch/
