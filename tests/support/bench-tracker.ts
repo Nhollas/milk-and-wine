@@ -6,7 +6,11 @@ import { join } from "node:path";
 const issueTrackerDirectory = join(import.meta.dirname, "../../docs/agents/issue-tracker");
 
 export function git(repository: string, ...args: string[]): string {
-  return execFileSync("git", args, { cwd: repository, encoding: "utf8" }).trim();
+  return execFileSync("git", args, {
+    cwd: repository,
+    encoding: "utf8",
+    stdio: ["ignore", "pipe", "pipe"],
+  }).trim();
 }
 
 export function newRepositoryOnMain(): string {
@@ -19,15 +23,11 @@ export function newRepositoryOnMain(): string {
 }
 
 export function benchInstructions(): string {
-  try {
-    return execFileSync("sh", [join(issueTrackerDirectory, "active.sh")], {
-      encoding: "utf8",
-      env: { ...process.env, ISSUE_TRACKER: "bench" },
-      stdio: ["ignore", "pipe", "ignore"],
-    });
-  } catch {
-    return "";
-  }
+  return execFileSync("sh", [join(issueTrackerDirectory, "active.sh")], {
+    encoding: "utf8",
+    env: { ...process.env, ISSUE_TRACKER: "bench" },
+    stdio: ["ignore", "pipe", "pipe"],
+  });
 }
 
 /** The shell commands in the fenced block under an instruction's heading, with `<name>` placeholders filled in. */
@@ -45,5 +45,5 @@ export function commandsUnder(
 }
 
 export function run(repository: string, commands: string): void {
-  execFileSync("sh", ["-ec", commands], { cwd: repository, stdio: "ignore" });
+  execFileSync("sh", ["-ec", commands], { cwd: repository, stdio: ["ignore", "ignore", "pipe"] });
 }
