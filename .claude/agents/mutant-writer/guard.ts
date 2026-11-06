@@ -7,7 +7,7 @@ type HookInput = {
   cwd?: string;
 };
 
-const READABLE = /^(src|specs)(\/|$)/u;
+const READABLE = /^(src|tools|specs)(\/|$)/u;
 const TEST_FILE = /\.(test|fixtures)\.ts$/u;
 const MUTANTS_FILE = /^specs\/.+\/mutants\.json$/u;
 
@@ -18,7 +18,7 @@ export function blockReasonOf(input: string, root: string): string | undefined {
 
   if (event.tool_name === "Read" || event.tool_name === "Glob") {
     if (path === undefined || !READABLE.test(path)) {
-      return "The mutant writer reads only src/ and specs/. Pass a path under one of them.";
+      return "The mutant writer reads only src/, tools/ and specs/. Pass a path under one of them.";
     }
     if (TEST_FILE.test(path)) return "The mutant writer never reads tests.";
     return undefined;
