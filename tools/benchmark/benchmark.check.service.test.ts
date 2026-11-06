@@ -8,6 +8,14 @@ test.todo("B5: reports a scenario with no hidden test");
 
 test.todo("B6: reports a hidden test naming an ID the spec lacks");
 
+test("B26: prints usage and exits 1 when no task name is given", ({ tasks, hiddenTests }) => {
+  tasks.addTask("widgets");
+
+  const result = check([], { root: tasks.root, hiddenTests });
+
+  expect(result).toEqual({ exitCode: 1, output: "usage: pnpm bench:check <task>\n" });
+});
+
 test("B1: rejects a task name with no task folder", ({ tasks, hiddenTests }) => {
   tasks.addTask("widgets");
 
