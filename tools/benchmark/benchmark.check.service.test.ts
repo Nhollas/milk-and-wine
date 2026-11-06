@@ -2,8 +2,6 @@ import { expect } from "vitest";
 import { test } from "../../tests/support/benchmark.fixtures.ts";
 import { check } from "./check.ts";
 
-type TaskPart = "spec" | "issue" | "ticket" | "starter code" | "hidden tests" | "solution";
-
 test.todo("B4: reports a hidden test that passes on the starter code");
 
 test.todo("B5: reports a scenario with no hidden test");
@@ -18,28 +16,31 @@ test("B1: rejects a task name with no task folder", ({ tasks, hiddenTests }) => 
   expect(result).toEqual({ exitCode: 1, output: "unknown task: gadgets\n" });
 });
 
-test.for<[TaskPart, string]>([
+test.for([
   ["spec", "widgets is not valid:\n  missing spec\n"],
   ["issue", "widgets is not valid:\n  missing issue\n"],
   ["ticket", "widgets is not valid:\n  missing ticket\n"],
   ["starter code", "widgets is not valid:\n  missing starter code\n"],
   ["hidden tests", "widgets is not valid:\n  missing hidden tests\n"],
   ["solution", "widgets is not valid:\n  missing solution\n"],
-])("B2: rejects a task missing its %s", ([part, expectedOutput], { tasks, hiddenTests }) => {
-  tasks.addTask("widgets", { without: [part] });
+] as const)(
+  "B2: rejects a task missing its %s",
+  ([part, expectedOutput], { tasks, hiddenTests }) => {
+    tasks.addTask("widgets", { without: [part] });
 
-  const result = check(["widgets"], { root: tasks.root, hiddenTests });
+    const result = check(["widgets"], { root: tasks.root, hiddenTests });
 
-  // oxlint-disable-next-line vitest/no-standalone-expect -- test.for hands the test its fixtures; the lint rule only knows test.each
-  expect(result).toEqual({ exitCode: 1, output: expectedOutput });
-});
+    // oxlint-disable-next-line vitest/no-standalone-expect -- test.for hands the test its fixtures; the lint rule only knows test.each
+    expect(result).toEqual({ exitCode: 1, output: expectedOutput });
+  },
+);
 
-test.for<[TaskPart, string]>([
+test.for([
   ["ticket", "widgets is not valid:\n  missing ticket\n"],
   ["starter code", "widgets is not valid:\n  missing starter code\n"],
   ["hidden tests", "widgets is not valid:\n  missing hidden tests\n"],
   ["solution", "widgets is not valid:\n  missing solution\n"],
-])(
+] as const)(
   "B2: rejects a task whose %s folder is empty",
   ([part, expectedOutput], { tasks, hiddenTests }) => {
     tasks.addTask("widgets", { emptied: [part] });

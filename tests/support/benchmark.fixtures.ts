@@ -5,11 +5,13 @@ import { test as base } from "vitest";
 
 type TaskPart = "spec" | "issue" | "ticket" | "starter code" | "hidden tests" | "solution";
 
+type FolderPart = Exclude<TaskPart, "spec" | "issue">;
+
 type TaskOptions = {
   scenarios?: string[];
   hiddenTests?: string[];
   without?: TaskPart[];
-  emptied?: TaskPart[];
+  emptied?: FolderPart[];
 };
 
 type HiddenTestResult = { title: string; passed: boolean };
@@ -61,14 +63,14 @@ function benchmarkTasks() {
       mkdirSync(join(root, folder), { recursive: true });
       if (has("spec")) write(`${folder}/spec.md`, specMarkdown(name, scenarios));
       if (has("issue")) write(`${folder}/issue.md`, `# ${name}\n`);
-      const folderOf: Partial<Record<TaskPart, string>> = {
+      const folderOf: Record<FolderPart, string> = {
         ticket: "tickets",
         "starter code": "starter",
         "hidden tests": "tests",
         solution: "solution",
       };
       for (const part of emptied) {
-        mkdirSync(join(root, folder, folderOf[part]!), { recursive: true });
+        mkdirSync(join(root, folder, folderOf[part]), { recursive: true });
       }
       if (has("ticket") && !emptied.includes("ticket"))
         write(`${folder}/tickets/01.md`, `# Price a widget\n`);
