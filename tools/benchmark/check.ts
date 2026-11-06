@@ -17,7 +17,7 @@ const TASK_PARTS = [
 type HiddenTestResult = { title: string; passed: boolean };
 
 type HiddenTests = {
-  run(taskFolder: string, against: "starter" | "solution"): HiddenTestResult[];
+  run(taskFolder: string): HiddenTestResult[];
 };
 
 type CheckOptions = { root: string; hiddenTests: HiddenTests };
@@ -26,7 +26,7 @@ type CheckResult = { exitCode: number; output: string };
 
 export function check(args: string[], { root, hiddenTests }: CheckOptions): CheckResult {
   const [task] = args;
-  if (!task || args.length !== 1) {
+  if (!task) {
     return { exitCode: 1, output: "usage: pnpm bench:check <task>\n" };
   }
   const taskFolder = join(root, TASKS_FOLDER, task);
@@ -39,7 +39,7 @@ export function check(args: string[], { root, hiddenTests }: CheckOptions): Chec
   }
 
   const scenarios = [...scenarioLines(readFileSync(join(taskFolder, "spec.md"), "utf8"))];
-  const solutionResults = hiddenTests.run(taskFolder, "solution");
+  const solutionResults = hiddenTests.run(taskFolder);
   return {
     exitCode: 0,
     output: `ok: ${scenarios.length} scenarios, ${solutionResults.length} hidden tests\nbench:check passed\n`,

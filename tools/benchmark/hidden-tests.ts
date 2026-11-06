@@ -12,13 +12,13 @@ const vitestReport = z.object({
   ),
 });
 
-// Runs a task's hidden tests with Vitest against a copy of its starter code or solution.
+// Runs a task's hidden tests with Vitest against a copy of its solution.
 export function vitestHiddenTests(root: string) {
   return {
-    run(taskFolder: string, against: "starter" | "solution") {
+    run(taskFolder: string) {
       const workspace = mkdtempSync(join(tmpdir(), "bench-check-"));
       try {
-        cpSync(join(taskFolder, against), workspace, { recursive: true });
+        cpSync(join(taskFolder, "solution"), workspace, { recursive: true });
         cpSync(join(taskFolder, "tests"), join(workspace, "tests"), { recursive: true });
         const reportPath = join(workspace, "vitest-report.json");
         spawnSync(
