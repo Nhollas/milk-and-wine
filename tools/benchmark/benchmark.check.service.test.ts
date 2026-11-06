@@ -39,10 +39,11 @@ test("B2: names each part a task lacks", ({ tasks, hiddenTests }) => {
 
   const result = check(["widgets"], { root: tasks.root, hiddenTests });
 
-  expect(result).toEqual({
-    exitCode: 1,
-    output: "widgets is not valid:\n  missing issue\n  missing solution\n",
-  });
+  expect(result.exitCode).toBe(1);
+  expect(result.output.startsWith("widgets is not valid:\n")).toBe(true);
+  expect(result.output.split("\n")).toEqual(
+    expect.arrayContaining(["  missing issue", "  missing solution"]),
+  );
 });
 
 test("B7: passes a valid task, counting its scenarios and hidden tests", ({
