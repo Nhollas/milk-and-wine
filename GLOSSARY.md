@@ -25,3 +25,19 @@ The few words a person and an agent could otherwise mean different things by. A 
 **Requirement**: One thing a scenario's Given or Then says that a test can check, such as a case, boundary or qualifier. _Avoid_: Promise
 
 **Verified**: What proves a scenario, named in its last column: a service, integration or system test whose title starts with the scenario's ID and whose file name carries which of the three it is, a dependency's guarantee, or a manual check. _Avoid_: Level, for this column; coverage
+
+## Benchmark
+
+**Task**: A made-up change for an agent to deliver: a spec, an issue with its tickets, starter code, hidden tests and a solution. It never merges. _Avoid_: Kata, exercise
+
+**Hidden tests**: A task's tests that grade a trial, which the trial's agent never sees. _Avoid_: Acceptance tests
+
+**Solution**: Code known to meet a task's spec, which its hidden tests must pass. _Avoid_: Reference, oracle
+
+**Agent**: What attempts a task: foreman, this repository's workflow, or baseline, Claude Code with only what it has out of the box. _Avoid_: Setup, arm
+
+**Trial**: One agent's attempt at one task, in its own sandbox. _Avoid_: Run
+
+**Experiment**: The trials started together: one or more agents, on one or more tasks, each repeated a set number of times. _Avoid_: Job, batch
+
+**False pass**: A scenario whose hidden tests fail in a trial while that trial's own tests all pass. _Avoid_: Escape, miss
