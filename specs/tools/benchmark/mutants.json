@@ -1,0 +1,136 @@
+{
+  "B1": {
+    "then": "Prints `unknown task: <task>`, and exits `1`",
+    "mutants": [
+      {
+        "breaks": "The unknown-task message no longer names the task given.",
+        "file": "tools/benchmark/check.ts",
+        "find": [
+          "  if (!isDirectory(taskFolder)) return { exitCode: 1, output: `unknown task: ${task}\\n` };"
+        ],
+        "replace": [
+          "  if (!isDirectory(taskFolder)) return { exitCode: 1, output: \"unknown task\\n\" };"
+        ]
+      },
+      {
+        "breaks": "An unknown task exits 0 instead of 1.",
+        "file": "tools/benchmark/check.ts",
+        "find": [
+          "  if (!isDirectory(taskFolder)) return { exitCode: 1, output: `unknown task: ${task}\\n` };"
+        ],
+        "replace": [
+          "  if (!isDirectory(taskFolder)) return { exitCode: 0, output: `unknown task: ${task}\\n` };"
+        ]
+      }
+    ]
+  },
+  "B2": {
+    "then": "Prints `<task> is not valid:` and each missing part, and exits `1`",
+    "mutants": [
+      {
+        "breaks": "The header line `<task> is not valid:` is no longer printed.",
+        "file": "tools/benchmark/check.ts",
+        "find": ["    return { exitCode: 1, output: `${task} is not valid:\\n${lines}` };"],
+        "replace": ["    return { exitCode: 1, output: lines };"]
+      },
+      {
+        "breaks": "Only the first missing part is listed instead of each one.",
+        "file": "tools/benchmark/check.ts",
+        "find": ["    const lines = missing.map(({ part }) => `  missing ${part}\\n`).join(\"\");"],
+        "replace": [
+          "    const lines = missing.slice(0, 1).map(({ part }) => `  missing ${part}\\n`).join(\"\");"
+        ]
+      },
+      {
+        "breaks": "A task with missing parts exits 0 instead of 1.",
+        "file": "tools/benchmark/check.ts",
+        "find": ["    return { exitCode: 1, output: `${task} is not valid:\\n${lines}` };"],
+        "replace": ["    return { exitCode: 0, output: `${task} is not valid:\\n${lines}` };"]
+      },
+      {
+        "breaks": "A missing solution is never noticed because it is not among the parts checked.",
+        "file": "tools/benchmark/check.ts",
+        "find": [
+          "  { part: \"hidden tests\", path: \"tests\" },",
+          "  { part: \"solution\", path: \"solution\" },"
+        ],
+        "replace": ["  { part: \"hidden tests\", path: \"tests\" },"]
+      },
+      {
+        "breaks": "A missing ticket is not noticed because the tickets folder is not checked.",
+        "file": "tools/benchmark/check.ts",
+        "find": [
+          "  { part: \"ticket\", path: \"tickets\" },",
+          "  { part: \"starter code\", path: \"starter\" },"
+        ],
+        "replace": ["  { part: \"starter code\", path: \"starter\" },"]
+      },
+      {
+        "breaks": "An empty folder (no tickets, starter code, tests or solution) counts as present.",
+        "file": "tools/benchmark/check.ts",
+        "find": ["  return !statSync(path).isDirectory() || readdirSync(path).length > 0;"],
+        "replace": ["  return true;"]
+      },
+      {
+        "breaks": "A missing spec file is not reported because the spec is not among the parts checked.",
+        "file": "tools/benchmark/check.ts",
+        "find": [
+          "  { part: \"spec\", path: \"spec.md\" },",
+          "  { part: \"issue\", path: \"issue.md\" },"
+        ],
+        "replace": ["  { part: \"issue\", path: \"issue.md\" },"]
+      }
+    ]
+  },
+  "B7": {
+    "then": "Prints `ok`, the number of scenarios and of hidden tests, then `bench:check passed`, and exits `0`",
+    "mutants": [
+      {
+        "breaks": "The count of hidden tests is wrong (off by one).",
+        "file": "tools/benchmark/check.ts",
+        "find": [
+          "    output: `ok: ${scenarios.length} scenarios, ${solutionResults.length} hidden tests\\nbench:check passed\\n`,"
+        ],
+        "replace": [
+          "    output: `ok: ${scenarios.length} scenarios, ${solutionResults.length + 1} hidden tests\\nbench:check passed\\n`,"
+        ]
+      },
+      {
+        "breaks": "The number of scenarios reported is the number of hidden tests instead.",
+        "file": "tools/benchmark/check.ts",
+        "find": [
+          "    output: `ok: ${scenarios.length} scenarios, ${solutionResults.length} hidden tests\\nbench:check passed\\n`,"
+        ],
+        "replace": [
+          "    output: `ok: ${solutionResults.length} scenarios, ${solutionResults.length} hidden tests\\nbench:check passed\\n`,"
+        ]
+      },
+      {
+        "breaks": "The final `bench:check passed` line is not printed.",
+        "file": "tools/benchmark/check.ts",
+        "find": [
+          "    output: `ok: ${scenarios.length} scenarios, ${solutionResults.length} hidden tests\\nbench:check passed\\n`,"
+        ],
+        "replace": [
+          "    output: `ok: ${scenarios.length} scenarios, ${solutionResults.length} hidden tests\\n`,"
+        ]
+      },
+      {
+        "breaks": "A valid task exits 1 instead of 0.",
+        "file": "tools/benchmark/check.ts",
+        "find": ["    exitCode: 0,"],
+        "replace": ["    exitCode: 1,"]
+      },
+      {
+        "breaks": "The `ok` word is missing from the output.",
+        "file": "tools/benchmark/check.ts",
+        "find": [
+          "    output: `ok: ${scenarios.length} scenarios, ${solutionResults.length} hidden tests\\nbench:check passed\\n`,"
+        ],
+        "replace": [
+          "    output: `${scenarios.length} scenarios, ${solutionResults.length} hidden tests\\nbench:check passed\\n`,"
+        ]
+      }
+    ]
+  }
+}
