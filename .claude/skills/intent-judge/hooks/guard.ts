@@ -11,7 +11,7 @@ type HookInput = {
 // A plugin's hooks run in every session that loads it; this one guards only the judge's own calls.
 const JUDGE = /^(intent-judge:)?intent-judge$/u;
 
-const READABLE = /^(src|specs|tests)(\/|$)/u;
+const READABLE = /^(src|specs|tests|tools)(\/|$)/u;
 const TEST_FILE = /\.test\.ts$/u;
 
 export function blockReasonOf(input: string, root: string): string | undefined {
@@ -21,9 +21,10 @@ export function blockReasonOf(input: string, root: string): string | undefined {
 
   if (event.tool_name === "Read" || event.tool_name === "Glob") {
     if (path === undefined || !READABLE.test(path)) {
-      return "The intent judge reads only specs/, tests/ and tests in src/. Pass a path under one of them.";
+      return "The intent judge reads only specs/, tests/ and tests in src/ and tools/. Pass a path under one of them.";
     }
-    if (event.tool_name === "Read" && path.startsWith("src/") && !TEST_FILE.test(path)) {
+    const isCode = path.startsWith("src/") || path.startsWith("tools/");
+    if (event.tool_name === "Read" && isCode && !TEST_FILE.test(path)) {
       return "The intent judge never reads the code under test, only tests.";
     }
     if (event.tool_name === "Read" && path.endsWith("/mutants.json")) {
