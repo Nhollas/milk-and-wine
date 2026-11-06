@@ -8,7 +8,7 @@ How a change gets from an idea to merged code. It takes three Claude sessions, a
 
 Only the wine goes in the repository. Everything about one piece of work lives in the issue tracker and closes when the work is done.
 
-The skills say what to do with an issue or a ticket, and [the issue tracker](agents/issue-tracker/README.md) says how, in the kind `ISSUE_TRACKER` names: **github**, with issues, sub-issues and PRs, or **local**, with markdown files under a gitignored `.issues/` and a branch for each change.
+The skills say what to do with an issue or a ticket, and [the issue tracker](agents/issue-tracker/README.md) says how, in the kind `ISSUE_TRACKER` names: **github**, with issues, sub-issues and PRs, **local**, with markdown files under a gitignored `.issues/` and a branch for each change, or **bench**, which is local but merges a change as soon as it goes up for review, for a benchmark trial.
 
 | What | Where | Lasts |
 | --- | --- | --- |
