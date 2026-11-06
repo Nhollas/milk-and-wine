@@ -14,7 +14,7 @@ type TaskOptions = {
   emptied?: FolderPart[];
 };
 
-type HiddenTestResult = { title: string; passed: boolean };
+type HiddenTestResult = { title: string };
 
 const TASKS_FOLDER = "tools/benchmark/tasks";
 

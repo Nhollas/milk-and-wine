@@ -75,9 +75,9 @@ test("B7: passes a valid task, counting its scenarios and hidden tests", ({
     hiddenTests: ["B1: costs 2 each", "B2: costs 4 for two", "B2: costs 6 for three"],
   });
   hiddenTests.onSolution([
-    { title: "B1: costs 2 each", passed: true },
-    { title: "B2: costs 4 for two", passed: true },
-    { title: "B2: costs 6 for three", passed: true },
+    { title: "B1: costs 2 each" },
+    { title: "B2: costs 4 for two" },
+    { title: "B2: costs 6 for three" },
   ]);
 
   const result = check(["widgets"], { root: tasks.root, hiddenTests });
