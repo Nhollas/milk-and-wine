@@ -23,6 +23,7 @@ A task is valid when it has every part, every scenario in its spec has a hidden 
 | B5 | A scenario in the task's spec has no hidden test whose title starts with its ID | `bench:check <task>` runs | Reports `no hidden test` with the ID, and exits `1` | service |
 | B6 | A hidden test's title starts with an ID the task's spec lacks | `bench:check <task>` runs | Reports `unknown-id` with the test's title, and exits `1` | service |
 | B7 | A valid task | `bench:check <task>` runs | Prints `ok`, the number of scenarios and of hidden tests, then `bench:check passed`, and exits `0` | service |
+| B26 | No task name is given | `bench:check` runs | Prints `usage: pnpm bench:check <task>`, and exits `1` | service |
 
 **Why**
 
