@@ -11,8 +11,6 @@ test("B13: merges a ticket into main when it goes up for review", () => {
   const repository = newRepositoryOnMain();
   git(repository, "switch", "--create", "ticket/shop/01-add-cart");
   git(repository, "commit", "--allow-empty", "-m", "feat: add cart");
-  git(repository, "switch", "main");
-  git(repository, "commit", "--allow-empty", "-m", "chore: move main on");
 
   run(
     repository,
