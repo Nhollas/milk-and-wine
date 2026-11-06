@@ -26,7 +26,7 @@ From `main`. A spec change's branch is `spec/<change>`, and a ticket's as above.
 
 ### Put a change up for review
 
-Merge it into `main`, unsquashed, which closes a ticket. For a ticket, run this from the repository's root, with `<branch>` its branch and `<ticket-file>` its file:
+Merge it into `main`, unsquashed, which closes a ticket. For a ticket, commit its work on its branch first, then run this from the repository's root, with `<branch>` its branch and `<ticket-file>` its file:
 
 ```sh
 printf '\n## Review\n\n%s\n' '<branch>' >> '<ticket-file>'
