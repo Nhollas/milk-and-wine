@@ -132,5 +132,28 @@
         ]
       }
     ]
+  },
+  "B26": {
+    "then": "Prints `usage: pnpm bench:check <task>`, and exits `1`",
+    "mutants": [
+      {
+        "breaks": "With no task name the command exits 0 instead of 1.",
+        "file": "tools/benchmark/check.ts",
+        "find": ["    return { exitCode: 1, output: \"usage: pnpm bench:check <task>\\n\" };"],
+        "replace": ["    return { exitCode: 0, output: \"usage: pnpm bench:check <task>\\n\" };"]
+      },
+      {
+        "breaks": "With no task name the usage line is not printed.",
+        "file": "tools/benchmark/check.ts",
+        "find": ["    return { exitCode: 1, output: \"usage: pnpm bench:check <task>\\n\" };"],
+        "replace": ["    return { exitCode: 1, output: \"\" };"]
+      },
+      {
+        "breaks": "The usage line names the wrong command (`bench:run` instead of `bench:check`).",
+        "file": "tools/benchmark/check.ts",
+        "find": ["    return { exitCode: 1, output: \"usage: pnpm bench:check <task>\\n\" };"],
+        "replace": ["    return { exitCode: 1, output: \"usage: pnpm bench:run <task>\\n\" };"]
+      }
+    ]
   }
 }
