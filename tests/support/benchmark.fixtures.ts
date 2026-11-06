@@ -89,20 +89,14 @@ function benchmarkTasks() {
 }
 
 function fakeHiddenTests() {
-  const results: Record<"starter" | "solution", HiddenTestResult[]> = {
-    starter: [],
-    solution: [],
-  };
+  let solution: HiddenTestResult[] = [];
 
   return {
-    onStarter(starterResults: HiddenTestResult[]) {
-      results.starter = starterResults;
-    },
     onSolution(solutionResults: HiddenTestResult[]) {
-      results.solution = solutionResults;
+      solution = solutionResults;
     },
-    run(_taskFolder: string, against: "starter" | "solution"): HiddenTestResult[] {
-      return results[against];
+    run(_taskFolder: string): HiddenTestResult[] {
+      return solution;
     },
   };
 }
