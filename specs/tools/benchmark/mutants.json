@@ -133,6 +133,114 @@
       }
     ]
   },
+  "B8": {
+    "then": "Prints `commit first: results name the commit they measured`, starts nothing, and exits `1`",
+    "mutants": [
+      {
+        "breaks": "A repository with uncommitted changes exits 0 instead of 1.",
+        "file": "tools/benchmark/run.ts",
+        "find": [
+          "    return { exitCode: 1, output: \"commit first: results name the commit they measured\\n\" };"
+        ],
+        "replace": [
+          "    return { exitCode: 0, output: \"commit first: results name the commit they measured\\n\" };"
+        ]
+      },
+      {
+        "breaks": "A repository with uncommitted changes gets no `commit first` message.",
+        "file": "tools/benchmark/run.ts",
+        "find": [
+          "    return { exitCode: 1, output: \"commit first: results name the commit they measured\\n\" };"
+        ],
+        "replace": ["    return { exitCode: 1, output: \"\" };"]
+      },
+      {
+        "breaks": "A repository with uncommitted changes still starts a trial before refusing.",
+        "file": "tools/benchmark/run.ts",
+        "find": [
+          "export function run(args: string[], { root, hiddenTests, repository }: RunOptions): RunResult {",
+          "  if (repository.hasUncommittedChanges()) {"
+        ],
+        "replace": [
+          "export function run(args: string[], { root, hiddenTests, repository, trials }: RunOptions): RunResult {",
+          "  if (repository.hasUncommittedChanges()) {",
+          "    trials.start({ task: args[0] ?? \"\", agent: \"foreman\" });"
+        ]
+      },
+      {
+        "breaks": "Uncommitted changes are no longer refused: the check is skipped and the run goes on.",
+        "file": "tools/benchmark/run.ts",
+        "find": ["  if (repository.hasUncommittedChanges()) {"],
+        "replace": ["  if (false && repository.hasUncommittedChanges()) {"]
+      }
+    ]
+  },
+  "B9": {
+    "then": "Prints what's wrong with it, starts nothing, and exits `1`",
+    "mutants": [
+      {
+        "breaks": "An invalid task exits 0 instead of 1.",
+        "file": "tools/benchmark/run.ts",
+        "find": [
+          "    return { exitCode: 1, output: failures.map(({ output }) => output).join(\"\") };"
+        ],
+        "replace": [
+          "    return { exitCode: 0, output: failures.map(({ output }) => output).join(\"\") };"
+        ]
+      },
+      {
+        "breaks": "An invalid task is refused without printing what is wrong with it.",
+        "file": "tools/benchmark/run.ts",
+        "find": [
+          "    return { exitCode: 1, output: failures.map(({ output }) => output).join(\"\") };"
+        ],
+        "replace": ["    return { exitCode: 1, output: \"\" };"]
+      },
+      {
+        "breaks": "Only the first task named is checked, so an invalid later task is not refused.",
+        "file": "tools/benchmark/run.ts",
+        "find": ["  const failures = tasks"],
+        "replace": ["  const failures = tasks.slice(0, 1)"]
+      },
+      {
+        "breaks": "Only the first invalid task is reported, hiding what is wrong with the others.",
+        "file": "tools/benchmark/run.ts",
+        "find": [
+          "    return { exitCode: 1, output: failures.map(({ output }) => output).join(\"\") };"
+        ],
+        "replace": ["    return { exitCode: 1, output: failures[0].output };"]
+      },
+      {
+        "breaks": "An invalid task still starts a trial before the run is refused.",
+        "file": "tools/benchmark/run.ts",
+        "find": [
+          "export function run(args: string[], { root, hiddenTests, repository }: RunOptions): RunResult {",
+          "  if (repository.hasUncommittedChanges()) {",
+          "    return { exitCode: 1, output: \"commit first: results name the commit they measured\\n\" };",
+          "  }",
+          "  const firstFlag = args.findIndex((arg) => arg.startsWith(\"--\"));",
+          "  const tasks = firstFlag === -1 ? args : args.slice(0, firstFlag);",
+          "  const failures = tasks",
+          "    .map((task) => check([task], { root, hiddenTests }))",
+          "    .filter(({ exitCode }) => exitCode !== 0);",
+          "  if (failures.length > 0) {"
+        ],
+        "replace": [
+          "export function run(args: string[], { root, hiddenTests, repository, trials }: RunOptions): RunResult {",
+          "  if (repository.hasUncommittedChanges()) {",
+          "    return { exitCode: 1, output: \"commit first: results name the commit they measured\\n\" };",
+          "  }",
+          "  const firstFlag = args.findIndex((arg) => arg.startsWith(\"--\"));",
+          "  const tasks = firstFlag === -1 ? args : args.slice(0, firstFlag);",
+          "  const failures = tasks",
+          "    .map((task) => check([task], { root, hiddenTests }))",
+          "    .filter(({ exitCode }) => exitCode !== 0);",
+          "  if (failures.length > 0) {",
+          "    trials.start({ task: tasks[0] ?? \"\", agent: \"foreman\" });"
+        ]
+      }
+    ]
+  },
   "B26": {
     "then": "Prints `usage: pnpm bench:check <task>`, and exits `1`",
     "mutants": [
