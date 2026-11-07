@@ -27,6 +27,8 @@ export function blockReasonOf(input: string, root: string): string | undefined {
     if (path !== undefined && MUTANTS_FILE.test(path)) return undefined;
     return "The mutant writer writes only specs/**/mutants.json.";
   }
+  // Claude Code delivers a subagent's report through this tool.
+  if (event.tool_name === "SubagentHandback") return undefined;
   return `The mutant writer can't use ${event.tool_name ?? "this tool"}.`;
 }
 
