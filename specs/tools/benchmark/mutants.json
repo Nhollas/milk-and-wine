@@ -82,6 +82,132 @@
       }
     ]
   },
+  "B3": {
+    "then": "Reports `fails on the solution` with the test's title, and exits `1`",
+    "mutants": [
+      {
+        "breaks": "The solution's failing tests are not the ones reported: passing tests are listed instead.",
+        "file": "tools/benchmark/check.ts",
+        "find": ["      .filter(({ passed }) => !passed)"],
+        "replace": ["      .filter(({ passed }) => passed)"]
+      },
+      {
+        "breaks": "The `fails on the solution` report names only the scenario ID, not the test's title.",
+        "file": "tools/benchmark/check.ts",
+        "find": ["      .map(({ title }) => `fails on the solution  ${title}`),"],
+        "replace": ["      .map(({ title }) => `fails on the solution  ${idOf(title)}`),"]
+      },
+      {
+        "breaks": "The solution's hidden tests are run against the starter code, so a test failing only on the solution goes unnoticed.",
+        "file": "tools/benchmark/check.ts",
+        "find": ["  const solutionResults = hiddenTests.run(taskFolder, \"solution\");"],
+        "replace": ["  const solutionResults = hiddenTests.run(taskFolder, \"starter\");"]
+      }
+    ]
+  },
+  "B4": {
+    "then": "Reports `passes on the starter code` with the test's title, and exits `1`",
+    "mutants": [
+      {
+        "breaks": "Every starter-code result is reported, including tests that fail there as they should.",
+        "file": "tools/benchmark/check.ts",
+        "find": ["      .filter(({ passed }) => passed)"],
+        "replace": ["      .filter(() => true)"]
+      },
+      {
+        "breaks": "The `passes on the starter code` report names only the scenario ID, not the test's title.",
+        "file": "tools/benchmark/check.ts",
+        "find": ["      .map(({ title }) => `passes on the starter code  ${title}`),"],
+        "replace": ["      .map(({ title }) => `passes on the starter code  ${idOf(title)}`),"]
+      },
+      {
+        "breaks": "The starter-code check runs the hidden tests against the solution, so a test passing on the starter code goes unnoticed.",
+        "file": "tools/benchmark/check.ts",
+        "find": ["  const starterResults = hiddenTests.run(taskFolder, \"starter\");"],
+        "replace": ["  const starterResults = hiddenTests.run(taskFolder, \"solution\");"]
+      },
+      {
+        "breaks": "The report says `passes on the starter` instead of `passes on the starter code`.",
+        "file": "tools/benchmark/check.ts",
+        "find": ["      .map(({ title }) => `passes on the starter code  ${title}`),"],
+        "replace": ["      .map(({ title }) => `passes on the starter  ${title}`),"]
+      }
+    ]
+  },
+  "B5": {
+    "then": "Reports `no hidden test` with the ID, and exits `1`",
+    "mutants": [
+      {
+        "breaks": "Scenarios that do have a hidden test are reported instead of those that lack one.",
+        "file": "tools/benchmark/check.ts",
+        "find": [
+          "    ...scenarioIds.filter((id) => !testedIds.has(id)).map((id) => `no hidden test  ${id}`),"
+        ],
+        "replace": [
+          "    ...scenarioIds.filter((id) => testedIds.has(id)).map((id) => `no hidden test  ${id}`),"
+        ]
+      },
+      {
+        "breaks": "Only the first hidden test counts toward covering scenarios, so later scenarios are wrongly reported as untested.",
+        "file": "tools/benchmark/check.ts",
+        "find": ["  const testedIds = new Set(solutionResults.map(({ title }) => idOf(title)));"],
+        "replace": [
+          "  const testedIds = new Set(solutionResults.slice(0, 1).map(({ title }) => idOf(title)));"
+        ]
+      },
+      {
+        "breaks": "The `no hidden test` report does not say which scenario ID lacks a test.",
+        "file": "tools/benchmark/check.ts",
+        "find": [
+          "    ...scenarioIds.filter((id) => !testedIds.has(id)).map((id) => `no hidden test  ${id}`),"
+        ],
+        "replace": [
+          "    ...scenarioIds.filter((id) => !testedIds.has(id)).map(() => \"no hidden test\"),"
+        ]
+      },
+      {
+        "breaks": "A scenario counts as tested when any hidden test title merely starts with its ID text, so B1 is covered by a B10 test.",
+        "file": "tools/benchmark/check.ts",
+        "find": [
+          "    ...scenarioIds.filter((id) => !testedIds.has(id)).map((id) => `no hidden test  ${id}`),"
+        ],
+        "replace": [
+          "    ...scenarioIds",
+          "      .filter((id) => !solutionResults.some(({ title }) => title.startsWith(id)))",
+          "      .map((id) => `no hidden test  ${id}`),"
+        ]
+      }
+    ]
+  },
+  "B6": {
+    "then": "Reports `unknown-id` with the test's title, and exits `1`",
+    "mutants": [
+      {
+        "breaks": "Tests whose ID the spec does have are reported as unknown, and unknown ones are not.",
+        "file": "tools/benchmark/check.ts",
+        "find": ["      .filter(({ title }) => !scenarioIds.includes(idOf(title)))"],
+        "replace": ["      .filter(({ title }) => scenarioIds.includes(idOf(title)))"]
+      },
+      {
+        "breaks": "An ID that merely begins with a spec ID, such as B100 against B10, is accepted as known.",
+        "file": "tools/benchmark/check.ts",
+        "find": ["      .filter(({ title }) => !scenarioIds.includes(idOf(title)))"],
+        "replace": ["      .filter(({ title }) => !scenarioIds.some((id) => title.startsWith(id)))"]
+      },
+      {
+        "breaks": "The `unknown-id` report names only the ID, not the test's title.",
+        "file": "tools/benchmark/check.ts",
+        "find": ["      .map(({ title }) => `unknown-id  ${title}`),"],
+        "replace": ["      .map(({ title }) => `unknown-id  ${idOf(title)}`),"]
+      },
+      {
+        "breaks": "The report uses the label `unknown id` instead of `unknown-id`.",
+        "file": "tools/benchmark/check.ts",
+        "find": ["      .map(({ title }) => `unknown-id  ${title}`),"],
+        "replace": ["      .map(({ title }) => `unknown id  ${title}`),"]
+      }
+    ]
+  },
   "B7": {
     "then": "Prints `ok`, the number of scenarios and of hidden tests, then `bench:check passed`, and exits `0`",
     "mutants": [
@@ -89,17 +215,17 @@
         "breaks": "The count of hidden tests is wrong (off by one).",
         "file": "tools/benchmark/check.ts",
         "find": [
-          "    output: `ok: ${scenarios.length} scenarios, ${solutionResults.length} hidden tests\\nbench:check passed\\n`,"
+          "    output: `ok: ${scenarioIds.length} scenarios, ${solutionResults.length} hidden tests\\nbench:check passed\\n`,"
         ],
         "replace": [
-          "    output: `ok: ${scenarios.length} scenarios, ${solutionResults.length + 1} hidden tests\\nbench:check passed\\n`,"
+          "    output: `ok: ${scenarioIds.length} scenarios, ${solutionResults.length + 1} hidden tests\\nbench:check passed\\n`,"
         ]
       },
       {
         "breaks": "The number of scenarios reported is the number of hidden tests instead.",
         "file": "tools/benchmark/check.ts",
         "find": [
-          "    output: `ok: ${scenarios.length} scenarios, ${solutionResults.length} hidden tests\\nbench:check passed\\n`,"
+          "    output: `ok: ${scenarioIds.length} scenarios, ${solutionResults.length} hidden tests\\nbench:check passed\\n`,"
         ],
         "replace": [
           "    output: `ok: ${solutionResults.length} scenarios, ${solutionResults.length} hidden tests\\nbench:check passed\\n`,"
@@ -109,10 +235,10 @@
         "breaks": "The final `bench:check passed` line is not printed.",
         "file": "tools/benchmark/check.ts",
         "find": [
-          "    output: `ok: ${scenarios.length} scenarios, ${solutionResults.length} hidden tests\\nbench:check passed\\n`,"
+          "    output: `ok: ${scenarioIds.length} scenarios, ${solutionResults.length} hidden tests\\nbench:check passed\\n`,"
         ],
         "replace": [
-          "    output: `ok: ${scenarios.length} scenarios, ${solutionResults.length} hidden tests\\n`,"
+          "    output: `ok: ${scenarioIds.length} scenarios, ${solutionResults.length} hidden tests\\n`,"
         ]
       },
       {
@@ -125,10 +251,10 @@
         "breaks": "The `ok` word is missing from the output.",
         "file": "tools/benchmark/check.ts",
         "find": [
-          "    output: `ok: ${scenarios.length} scenarios, ${solutionResults.length} hidden tests\\nbench:check passed\\n`,"
+          "    output: `ok: ${scenarioIds.length} scenarios, ${solutionResults.length} hidden tests\\nbench:check passed\\n`,"
         ],
         "replace": [
-          "    output: `${scenarios.length} scenarios, ${solutionResults.length} hidden tests\\nbench:check passed\\n`,"
+          "    output: `${scenarioIds.length} scenarios, ${solutionResults.length} hidden tests\\nbench:check passed\\n`,"
         ]
       }
     ]

@@ -10,11 +10,14 @@ type FolderPart = Exclude<TaskPart, "spec" | "issue">;
 type TaskOptions = {
   scenarios?: string[];
   hiddenTests?: string[];
+  failingHiddenTests?: string[];
   without?: TaskPart[];
   emptied?: FolderPart[];
 };
 
-type HiddenTestResult = { title: string };
+type HiddenTestResult = { title: string; passed: boolean };
+
+type CodeUnderTest = "solution" | "starter";
 
 const TASKS_FOLDER = "tools/benchmark/tasks";
 
@@ -29,11 +32,14 @@ function specMarkdown(task: string, scenarios: string[]): string {
   ].join("\n");
 }
 
-function hiddenTestsSource(titles: string[]): string {
+function hiddenTestsSource(titles: string[], failingTitles: string[]): string {
   return [
-    `import { test } from "vitest";`,
+    `import { expect, test } from "vitest";`,
     "",
     ...titles.map((title) => `test("${title}", () => {});`),
+    ...(failingTitles.length > 0 ? [`import { mode } from "../src/widgets.ts";`] : []),
+    // Fails on the solution, passes on the starter code.
+    ...failingTitles.map((title) => `test("${title}", () => { expect(mode).toBe("starter"); });`),
     "",
   ].join("\n");
 }
@@ -54,6 +60,7 @@ function benchmarkTasks() {
       {
         scenarios = ["B1"],
         hiddenTests = ["B1: costs 2 each"],
+        failingHiddenTests = [],
         without = [],
         emptied = [],
       }: TaskOptions = {},
@@ -75,12 +82,15 @@ function benchmarkTasks() {
       if (has("ticket") && !emptied.includes("ticket"))
         write(`${folder}/tickets/01.md`, `# Price a widget\n`);
       if (has("starter code") && !emptied.includes("starter code"))
-        write(`${folder}/starter/src/widgets.ts`, `export {};\n`);
+        write(`${folder}/starter/src/widgets.ts`, `export const mode = "starter";\n`);
       if (has("hidden tests") && !emptied.includes("hidden tests")) {
-        write(`${folder}/tests/widgets.service.test.ts`, hiddenTestsSource(hiddenTests));
+        write(
+          `${folder}/tests/widgets.service.test.ts`,
+          hiddenTestsSource(hiddenTests, failingHiddenTests),
+        );
       }
       if (has("solution") && !emptied.includes("solution"))
-        write(`${folder}/solution/src/widgets.ts`, `export {};\n`);
+        write(`${folder}/solution/src/widgets.ts`, `export const mode = "solution";\n`);
     },
     [Symbol.dispose]() {
       rmSync(root, { recursive: true, force: true });
@@ -88,15 +98,24 @@ function benchmarkTasks() {
   };
 }
 
+function passing(results: { title: string; passed?: boolean }[]): HiddenTestResult[] {
+  return results.map(({ title, passed = true }) => ({ title, passed }));
+}
+
 function fakeHiddenTests() {
   let solution: HiddenTestResult[] = [];
+  let starter: HiddenTestResult[] | undefined;
 
   return {
-    onSolution(solutionResults: HiddenTestResult[]) {
-      solution = solutionResults;
+    onSolution(results: { title: string; passed?: boolean }[]) {
+      solution = passing(results);
     },
-    run(_taskFolder: string): HiddenTestResult[] {
-      return solution;
+    onStarter(results: { title: string; passed?: boolean }[]) {
+      starter = passing(results);
+    },
+    run(_taskFolder: string, against: CodeUnderTest = "solution"): HiddenTestResult[] {
+      if (against === "solution") return solution;
+      return starter ?? solution.map(({ title }) => ({ title, passed: false }));
     },
   };
 }

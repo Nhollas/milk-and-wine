@@ -7,18 +7,18 @@ import { z } from "zod";
 const vitestReport = z.object({
   testResults: z.array(
     z.object({
-      assertionResults: z.array(z.object({ fullName: z.string() })),
+      assertionResults: z.array(z.object({ fullName: z.string(), status: z.string() })),
     }),
   ),
 });
 
-// Runs a task's hidden tests with Vitest against a copy of its solution.
+// Runs a task's hidden tests with Vitest against a copy of its solution or starter code.
 export function vitestHiddenTests(root: string) {
   return {
-    run(taskFolder: string) {
+    run(taskFolder: string, against: "solution" | "starter" = "solution") {
       const workspace = mkdtempSync(join(tmpdir(), "bench-check-"));
       try {
-        cpSync(join(taskFolder, "solution"), workspace, { recursive: true });
+        cpSync(join(taskFolder, against), workspace, { recursive: true });
         cpSync(join(taskFolder, "tests"), join(workspace, "tests"), { recursive: true });
         const reportPath = join(workspace, "vitest-report.json");
         spawnSync(
@@ -28,7 +28,10 @@ export function vitestHiddenTests(root: string) {
         );
         const report = vitestReport.parse(JSON.parse(readFileSync(reportPath, "utf8")));
         return report.testResults.flatMap(({ assertionResults }) =>
-          assertionResults.map(({ fullName }) => ({ title: fullName })),
+          assertionResults.map(({ fullName, status }) => ({
+            title: fullName,
+            passed: status === "passed",
+          })),
         );
       } finally {
         rmSync(workspace, { recursive: true, force: true });
