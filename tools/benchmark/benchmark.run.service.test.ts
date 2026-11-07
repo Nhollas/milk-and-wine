@@ -26,7 +26,7 @@ test("B8: refuses to run with uncommitted changes", ({
 });
 
 test("B9: refuses to run an invalid task", ({ tasks, hiddenTests, repository, trials }) => {
-  tasks.addTask("gadgets");
+  tasks.addTask("gadgets", { without: ["issue"] });
   tasks.addTask("widgets", { without: ["solution"] });
 
   const result = run(["gadgets", "widgets", "--agent", "baseline", "--trials", "2"], {
@@ -36,6 +36,9 @@ test("B9: refuses to run an invalid task", ({ tasks, hiddenTests, repository, tr
     trials,
   });
 
-  expect(result).toEqual({ exitCode: 1, output: "widgets is not valid:\n  missing solution\n" });
+  expect(result).toEqual({
+    exitCode: 1,
+    output: "gadgets is not valid:\n  missing issue\nwidgets is not valid:\n  missing solution\n",
+  });
   expect(trials.started).toEqual([]);
 });
