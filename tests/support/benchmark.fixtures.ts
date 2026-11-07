@@ -101,10 +101,38 @@ function fakeHiddenTests() {
   };
 }
 
+function fakeRepository() {
+  let uncommittedChanges = false;
+
+  return {
+    addUncommittedChanges() {
+      uncommittedChanges = true;
+    },
+    hasUncommittedChanges(): boolean {
+      return uncommittedChanges;
+    },
+  };
+}
+
+type StartedTrial = { task: string; agent: string };
+
+function fakeTrials() {
+  const started: StartedTrial[] = [];
+
+  return {
+    started,
+    start(trial: StartedTrial) {
+      started.push(trial);
+    },
+  };
+}
+
 export const test = base
   .extend("tasks", ({}, { onCleanup }) => {
     const tasks = benchmarkTasks();
     onCleanup(() => tasks[Symbol.dispose]());
     return tasks;
   })
-  .extend("hiddenTests", () => fakeHiddenTests());
+  .extend("hiddenTests", () => fakeHiddenTests())
+  .extend("repository", () => fakeRepository())
+  .extend("trials", () => fakeTrials());
