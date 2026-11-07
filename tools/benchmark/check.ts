@@ -14,9 +14,9 @@ const TASK_PARTS = [
   { part: "solution", path: "solution" },
 ] as const;
 
-type HiddenTestResult = { title: string };
+export type HiddenTestResult = { title: string };
 
-type HiddenTests = {
+export type HiddenTests = {
   run(taskFolder: string): HiddenTestResult[];
 };
 

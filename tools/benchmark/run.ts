@@ -1,12 +1,6 @@
 import { execFileSync } from "node:child_process";
-import { check } from "./check.ts";
+import { check, type HiddenTests } from "./check.ts";
 import { vitestHiddenTests } from "./hidden-tests.ts";
-
-type HiddenTestResult = { title: string };
-
-type HiddenTests = {
-  run(taskFolder: string): HiddenTestResult[];
-};
 
 type Repository = { hasUncommittedChanges(): boolean };
 
