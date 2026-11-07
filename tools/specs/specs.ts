@@ -64,7 +64,7 @@ export function readSubjects(repository: Repository): { subjects: Subject[]; pro
   return { subjects, problems };
 }
 
-function* scenarioLines(markdown: string): Generator<{ cells: string[]; line: number }> {
+export function* scenarioLines(markdown: string): Generator<{ cells: string[]; line: number }> {
   const lines = markdown.split("\n");
   let inScenarioTable = false;
   for (const [index, text] of lines.entries()) {
