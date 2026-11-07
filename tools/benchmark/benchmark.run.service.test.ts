@@ -1,6 +1,5 @@
 import { expect } from "vitest";
 import { test } from "../../tests/support/benchmark.fixtures.ts";
-import { check } from "./check.ts";
 import { run } from "./run.ts";
 
 test("B8: refuses to run with uncommitted changes", ({
@@ -37,9 +36,8 @@ test("B9: refuses to run an invalid task", ({ tasks, hiddenTests, repository, tr
     trials,
   });
 
-  const problems = (task: string) => check([task], { root: tasks.root, hiddenTests }).output;
   expect(result.exitCode).toBe(1);
-  expect(result.output).toContain(problems("gadgets"));
-  expect(result.output).toContain(problems("widgets"));
+  expect(result.output).toContain("gadgets is not valid:\n  missing issue\n");
+  expect(result.output).toContain("widgets is not valid:\n  missing solution\n");
   expect(trials.started).toEqual([]);
 });
