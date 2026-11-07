@@ -37,7 +37,7 @@ A task is valid when it has every part, every scenario in its spec has a hidden 
 | ID | Given | When | Then | Verified |
 | --- | --- | --- | --- | --- |
 | B8 | The repository has uncommitted changes | `bench:run` runs | Prints `commit first: results name the commit they measured`, starts nothing, and exits `1` | service |
-| B9 | A task named isn't valid | `bench:run` runs | Prints what's wrong with it, starts nothing, and exits `1` | service |
+| B9 | One or more of the tasks named aren't valid | `bench:run` runs | Prints what `bench:check <task>` prints for each of them, starts nothing, and exits `1` | service |
 | B10 | A clean repository and valid tasks | A trial starts | Its sandbox holds a new git repository with only the task's spec, issue, tickets and starter code, `CODING-STANDARDS.md`, the project's config files, and an `ISSUE-TRACKER.md` at its root that says how to use the `bench` issue tracker. A foreman trial's also has `.claude/`, and what its skills read: `GLOSSARY.md`, `docs/adr/`, `docs/agents/issue-tracker/`, `tools/specs/` and `tools/spec-mutants/` | integration |
 | B11 | A foreman trial's sandbox is ready | The trial starts | Runs `claude -p "/foreman <issue>"` once, with `ISSUE_TRACKER=bench` | integration |
 | B12 | A baseline trial's sandbox is ready | The trial starts | Runs `claude -p "Deliver the tickets in <issue>. ISSUE-TRACKER.md says how to use the issue tracker."` once | integration |
