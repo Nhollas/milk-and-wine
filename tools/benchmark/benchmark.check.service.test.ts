@@ -14,6 +14,27 @@ test("B4: reports a hidden test that passes on the starter code", ({ tasks, hidd
   expect(result.output).toContain("B1: costs 2 each");
 });
 
+test("B4: does not report a hidden test that fails on the starter code", ({
+  tasks,
+  hiddenTests,
+}) => {
+  tasks.addTask("widgets", {
+    scenarios: ["B1", "B2"],
+    hiddenTests: ["B1: costs 2 each", "B2: costs 4 for two"],
+  });
+  hiddenTests.onSolution([{ title: "B1: costs 2 each" }, { title: "B2: costs 4 for two" }]);
+  hiddenTests.onStarter([
+    { title: "B1: costs 2 each", passed: true },
+    { title: "B2: costs 4 for two", passed: false },
+  ]);
+
+  const result = check(["widgets"], { root: tasks.root, hiddenTests });
+
+  expect(result.exitCode).toBe(1);
+  expect(result.output).toContain("passes on the starter code  B1: costs 2 each");
+  expect(result.output).not.toContain("B2: costs 4 for two");
+});
+
 test("B5: reports a scenario with no hidden test", ({ tasks, hiddenTests }) => {
   tasks.addTask("widgets", { scenarios: ["B1", "B2"], hiddenTests: ["B1: costs 2 each"] });
   hiddenTests.onSolution([{ title: "B1: costs 2 each" }]);
@@ -23,6 +44,30 @@ test("B5: reports a scenario with no hidden test", ({ tasks, hiddenTests }) => {
   expect(result.exitCode).toBe(1);
   expect(result.output).toContain("no hidden test");
   expect(result.output).toContain("B2");
+});
+
+test("B5: reports only the scenarios with no hidden test", ({ tasks, hiddenTests }) => {
+  const titles = ["B1: costs 2 each", "B2: costs 4 for two"];
+  tasks.addTask("widgets", { scenarios: ["B1", "B2", "B3"], hiddenTests: titles });
+  hiddenTests.onSolution(titles.map((title) => ({ title })));
+
+  const result = check(["widgets"], { root: tasks.root, hiddenTests });
+
+  expect(result.exitCode).toBe(1);
+  expect(result.output).toContain("no hidden test  B3");
+  expect(result.output).not.toContain("no hidden test  B1");
+  expect(result.output).not.toContain("no hidden test  B2");
+});
+
+test("B5: does not count a B10 hidden test as testing B1", ({ tasks, hiddenTests }) => {
+  tasks.addTask("widgets", { scenarios: ["B1", "B10"], hiddenTests: ["B10: costs 4 for two"] });
+  hiddenTests.onSolution([{ title: "B10: costs 4 for two" }]);
+
+  const result = check(["widgets"], { root: tasks.root, hiddenTests });
+
+  expect(result.exitCode).toBe(1);
+  expect(result.output).toContain("no hidden test  B1\n");
+  expect(result.output).not.toContain("no hidden test  B10");
 });
 
 test("B6: reports a hidden test naming an ID the spec lacks", ({ tasks, hiddenTests }) => {
@@ -37,6 +82,18 @@ test("B6: reports a hidden test naming an ID the spec lacks", ({ tasks, hiddenTe
   expect(result.exitCode).toBe(1);
   expect(result.output).toContain("unknown-id");
   expect(result.output).toContain("B9: costs 4 for two");
+});
+
+test("B6: treats B100 as unknown when the spec has B10", ({ tasks, hiddenTests }) => {
+  const titles = ["B10: costs 2 each", "B100: costs 4 for two"];
+  tasks.addTask("widgets", { scenarios: ["B10"], hiddenTests: titles });
+  hiddenTests.onSolution(titles.map((title) => ({ title })));
+
+  const result = check(["widgets"], { root: tasks.root, hiddenTests });
+
+  expect(result.exitCode).toBe(1);
+  expect(result.output).toContain("unknown-id  B100: costs 4 for two");
+  expect(result.output).not.toContain("unknown-id  B10: costs 2 each");
 });
 
 test("B26: prints usage and exits 1 when no task name is given", ({ tasks, hiddenTests }) => {

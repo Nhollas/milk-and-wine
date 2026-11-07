@@ -16,6 +16,6 @@ test("B3: reports a hidden test that fails on the solution", ({ tasks }) => {
   });
 
   expect(result.exitCode).toBe(1);
-  expect(result.output).toContain("fails on the solution");
-  expect(result.output).toContain("B2: costs 4 for two");
+  expect(result.output).toContain("fails on the solution  B2: costs 4 for two");
+  expect(result.output).not.toContain("fails on the solution  B1");
 });

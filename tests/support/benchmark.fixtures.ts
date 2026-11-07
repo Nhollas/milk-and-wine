@@ -37,7 +37,9 @@ function hiddenTestsSource(titles: string[], failingTitles: string[]): string {
     `import { expect, test } from "vitest";`,
     "",
     ...titles.map((title) => `test("${title}", () => {});`),
-    ...failingTitles.map((title) => `test("${title}", () => { expect(1).toBe(2); });`),
+    ...(failingTitles.length > 0 ? [`import { mode } from "../src/widgets.ts";`] : []),
+    // Fails on the solution, passes on the starter code.
+    ...failingTitles.map((title) => `test("${title}", () => { expect(mode).toBe("starter"); });`),
     "",
   ].join("\n");
 }
@@ -80,7 +82,7 @@ function benchmarkTasks() {
       if (has("ticket") && !emptied.includes("ticket"))
         write(`${folder}/tickets/01.md`, `# Price a widget\n`);
       if (has("starter code") && !emptied.includes("starter code"))
-        write(`${folder}/starter/src/widgets.ts`, `export {};\n`);
+        write(`${folder}/starter/src/widgets.ts`, `export const mode = "starter";\n`);
       if (has("hidden tests") && !emptied.includes("hidden tests")) {
         write(
           `${folder}/tests/widgets.service.test.ts`,
@@ -88,7 +90,7 @@ function benchmarkTasks() {
         );
       }
       if (has("solution") && !emptied.includes("solution"))
-        write(`${folder}/solution/src/widgets.ts`, `export {};\n`);
+        write(`${folder}/solution/src/widgets.ts`, `export const mode = "solution";\n`);
     },
     [Symbol.dispose]() {
       rmSync(root, { recursive: true, force: true });
