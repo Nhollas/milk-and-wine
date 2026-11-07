@@ -38,7 +38,6 @@ test.for([
 
     const result = check(["widgets"], { root: tasks.root, hiddenTests });
 
-    // oxlint-disable-next-line vitest/no-standalone-expect -- test.for hands the test its fixtures; the lint rule only knows test.each
     expect(result).toEqual({ exitCode: 1, output: expectedOutput });
   },
 );
@@ -55,7 +54,6 @@ test.for([
 
     const result = check(["widgets"], { root: tasks.root, hiddenTests });
 
-    // oxlint-disable-next-line vitest/no-standalone-expect -- test.for hands the test its fixtures; the lint rule only knows test.each
     expect(result).toEqual({ exitCode: 1, output: expectedOutput });
   },
 );
