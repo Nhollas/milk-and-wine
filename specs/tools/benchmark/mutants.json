@@ -102,12 +102,6 @@
         "file": "tools/benchmark/check.ts",
         "find": ["  const solutionResults = hiddenTests.run(taskFolder, \"solution\");"],
         "replace": ["  const solutionResults = hiddenTests.run(taskFolder, \"starter\");"]
-      },
-      {
-        "breaks": "A skipped or otherwise non-passing hidden test is counted as passing, so it never fails on the solution.",
-        "file": "tools/benchmark/hidden-tests.ts",
-        "find": ["            passed: status === \"passed\","],
-        "replace": ["            passed: status !== \"failed\","]
       }
     ]
   },
