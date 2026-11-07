@@ -221,17 +221,17 @@
         "breaks": "The count of hidden tests is wrong (off by one).",
         "file": "tools/benchmark/check.ts",
         "find": [
-          "    output: `ok: ${scenarios.length} scenarios, ${solutionResults.length} hidden tests\\nbench:check passed\\n`,"
+          "    output: `ok: ${scenarioIds.length} scenarios, ${solutionResults.length} hidden tests\\nbench:check passed\\n`,"
         ],
         "replace": [
-          "    output: `ok: ${scenarios.length} scenarios, ${solutionResults.length + 1} hidden tests\\nbench:check passed\\n`,"
+          "    output: `ok: ${scenarioIds.length} scenarios, ${solutionResults.length + 1} hidden tests\\nbench:check passed\\n`,"
         ]
       },
       {
         "breaks": "The number of scenarios reported is the number of hidden tests instead.",
         "file": "tools/benchmark/check.ts",
         "find": [
-          "    output: `ok: ${scenarios.length} scenarios, ${solutionResults.length} hidden tests\\nbench:check passed\\n`,"
+          "    output: `ok: ${scenarioIds.length} scenarios, ${solutionResults.length} hidden tests\\nbench:check passed\\n`,"
         ],
         "replace": [
           "    output: `ok: ${solutionResults.length} scenarios, ${solutionResults.length} hidden tests\\nbench:check passed\\n`,"
@@ -241,10 +241,10 @@
         "breaks": "The final `bench:check passed` line is not printed.",
         "file": "tools/benchmark/check.ts",
         "find": [
-          "    output: `ok: ${scenarios.length} scenarios, ${solutionResults.length} hidden tests\\nbench:check passed\\n`,"
+          "    output: `ok: ${scenarioIds.length} scenarios, ${solutionResults.length} hidden tests\\nbench:check passed\\n`,"
         ],
         "replace": [
-          "    output: `ok: ${scenarios.length} scenarios, ${solutionResults.length} hidden tests\\n`,"
+          "    output: `ok: ${scenarioIds.length} scenarios, ${solutionResults.length} hidden tests\\n`,"
         ]
       },
       {
@@ -257,10 +257,10 @@
         "breaks": "The `ok` word is missing from the output.",
         "file": "tools/benchmark/check.ts",
         "find": [
-          "    output: `ok: ${scenarios.length} scenarios, ${solutionResults.length} hidden tests\\nbench:check passed\\n`,"
+          "    output: `ok: ${scenarioIds.length} scenarios, ${solutionResults.length} hidden tests\\nbench:check passed\\n`,"
         ],
         "replace": [
-          "    output: `${scenarios.length} scenarios, ${solutionResults.length} hidden tests\\nbench:check passed\\n`,"
+          "    output: `${scenarioIds.length} scenarios, ${solutionResults.length} hidden tests\\nbench:check passed\\n`,"
         ]
       }
     ]
