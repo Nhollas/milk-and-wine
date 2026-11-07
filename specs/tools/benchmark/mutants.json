@@ -176,7 +176,7 @@
     ]
   },
   "B9": {
-    "then": "Prints what's wrong with each of them, starts nothing, and exits `1`",
+    "then": "Prints what `bench:check <task>` prints for each of them, starts nothing, and exits `1`",
     "mutants": [
       {
         "breaks": "An invalid task exits 0 instead of 1.",
