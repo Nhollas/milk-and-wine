@@ -2,11 +2,42 @@ import { expect } from "vitest";
 import { test } from "../../tests/support/benchmark.fixtures.ts";
 import { check } from "./check.ts";
 
-test.todo("B4: reports a hidden test that passes on the starter code");
+test("B4: reports a hidden test that passes on the starter code", ({ tasks, hiddenTests }) => {
+  tasks.addTask("widgets", { scenarios: ["B1"], hiddenTests: ["B1: costs 2 each"] });
+  hiddenTests.onSolution([{ title: "B1: costs 2 each" }]);
+  hiddenTests.onStarter([{ title: "B1: costs 2 each", passed: true }]);
 
-test.todo("B5: reports a scenario with no hidden test");
+  const result = check(["widgets"], { root: tasks.root, hiddenTests });
 
-test.todo("B6: reports a hidden test naming an ID the spec lacks");
+  expect(result.exitCode).toBe(1);
+  expect(result.output).toContain("passes on the starter code");
+  expect(result.output).toContain("B1: costs 2 each");
+});
+
+test("B5: reports a scenario with no hidden test", ({ tasks, hiddenTests }) => {
+  tasks.addTask("widgets", { scenarios: ["B1", "B2"], hiddenTests: ["B1: costs 2 each"] });
+  hiddenTests.onSolution([{ title: "B1: costs 2 each" }]);
+
+  const result = check(["widgets"], { root: tasks.root, hiddenTests });
+
+  expect(result.exitCode).toBe(1);
+  expect(result.output).toContain("no hidden test");
+  expect(result.output).toContain("B2");
+});
+
+test("B6: reports a hidden test naming an ID the spec lacks", ({ tasks, hiddenTests }) => {
+  tasks.addTask("widgets", {
+    scenarios: ["B1"],
+    hiddenTests: ["B1: costs 2 each", "B9: costs 4 for two"],
+  });
+  hiddenTests.onSolution([{ title: "B1: costs 2 each" }, { title: "B9: costs 4 for two" }]);
+
+  const result = check(["widgets"], { root: tasks.root, hiddenTests });
+
+  expect(result.exitCode).toBe(1);
+  expect(result.output).toContain("unknown-id");
+  expect(result.output).toContain("B9: costs 4 for two");
+});
 
 test("B26: prints usage and exits 1 when no task name is given", ({ tasks, hiddenTests }) => {
   tasks.addTask("widgets");
