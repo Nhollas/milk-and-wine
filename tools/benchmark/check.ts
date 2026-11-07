@@ -14,10 +14,10 @@ const TASK_PARTS = [
   { part: "solution", path: "solution" },
 ] as const;
 
-type HiddenTestResult = { title: string };
+type HiddenTestResult = { title: string; passed: boolean };
 
 type HiddenTests = {
-  run(taskFolder: string): HiddenTestResult[];
+  run(taskFolder: string, against?: "solution" | "starter"): HiddenTestResult[];
 };
 
 type CheckOptions = { root: string; hiddenTests: HiddenTests };
@@ -38,12 +38,39 @@ export function check(args: string[], { root, hiddenTests }: CheckOptions): Chec
     return { exitCode: 1, output: `${task} is not valid:\n${lines}` };
   }
 
-  const scenarios = [...scenarioLines(readFileSync(join(taskFolder, "spec.md"), "utf8"))];
-  const solutionResults = hiddenTests.run(taskFolder);
+  const scenarioIds = [...scenarioLines(readFileSync(join(taskFolder, "spec.md"), "utf8"))].map(
+    ({ cells: [id = ""] }) => id,
+  );
+  const solutionResults = hiddenTests.run(taskFolder, "solution");
+  const starterResults = hiddenTests.run(taskFolder, "starter");
+  const testedIds = new Set(solutionResults.map(({ title }) => idOf(title)));
+  const problems = [
+    ...solutionResults
+      .filter(({ passed }) => !passed)
+      .map(({ title }) => `fails on the solution  ${title}`),
+    ...starterResults
+      .filter(({ passed }) => passed)
+      .map(({ title }) => `passes on the starter code  ${title}`),
+    ...scenarioIds.filter((id) => !testedIds.has(id)).map((id) => `no hidden test  ${id}`),
+    ...solutionResults
+      .filter(({ title }) => !scenarioIds.includes(idOf(title)))
+      .map(({ title }) => `unknown-id  ${title}`),
+  ];
+  if (problems.length > 0) {
+    return {
+      exitCode: 1,
+      output: `${task} is not valid:\n${problems.map((problem) => `  ${problem}\n`).join("")}`,
+    };
+  }
   return {
     exitCode: 0,
-    output: `ok: ${scenarios.length} scenarios, ${solutionResults.length} hidden tests\nbench:check passed\n`,
+    output: `ok: ${scenarioIds.length} scenarios, ${solutionResults.length} hidden tests\nbench:check passed\n`,
   };
+}
+
+// A hidden test's title starts with its scenario's ID, as in "B2: costs 4 for two".
+function idOf(title: string): string {
+  return title.split(":")[0] ?? "";
 }
 
 function isDirectory(path: string): boolean {
