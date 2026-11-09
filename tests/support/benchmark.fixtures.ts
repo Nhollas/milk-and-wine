@@ -165,6 +165,8 @@ type TrialOutput = {
   /** The trial's `agent_execution` timing in `result.json`: the agent's own run. */
   agentStartedAt: string;
   agentFinishedAt: string;
+  /** The messages before the final one in Claude Code's stream-json output, as the agent streamed them. */
+  claudeMessages?: Record<string, unknown>[];
   /** The final `result` message of Claude Code's stream-json output. */
   claudeResult: Record<string, unknown>;
 };
@@ -179,7 +181,7 @@ function fakeHarbor() {
   // `claude-code` agent, `agent/claude-code.txt`, the agent's stream-json output teed by Harbor.
   function leaveOutputFolder(
     jobsFolder: string,
-    { agentStartedAt, agentFinishedAt, claudeResult }: TrialOutput,
+    { agentStartedAt, agentFinishedAt, claudeMessages = [], claudeResult }: TrialOutput,
   ) {
     const trialFolder = join(jobsFolder, "2026-11-09__14-00-00", "widgets__k7Qp2Xa");
     mkdirSync(join(trialFolder, "agent"), { recursive: true });
@@ -205,6 +207,7 @@ function fakeHarbor() {
       [
         "Not JSON: a line of the agent's other output",
         JSON.stringify(systemMessage),
+        ...claudeMessages.map((message) => JSON.stringify(message)),
         JSON.stringify(claudeResult),
         "",
       ].join("\n"),

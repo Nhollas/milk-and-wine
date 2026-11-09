@@ -138,8 +138,8 @@ test("B11: runs foreman once on the issue, with the bench tracker", ({
   const args = harbor.runs[0]?.args ?? [];
   expect(args[0]).toBe("run");
   expect(args[args.indexOf("-a") + 1]).toBe("claude-code");
-  expect(args[args.indexOf("--ae") + 1]).toBe("ISSUE_TRACKER=bench");
-  expect(args.filter((arg) => arg === "--ae")).toHaveLength(1);
+  const agentEnvironment = args.flatMap((arg, index) => (arg === "--ae" ? [args[index + 1]] : []));
+  expect(agentEnvironment).toContain("ISSUE_TRACKER=bench");
   expect(folders.fileText(harbor.taskFolder(), "instruction.md")?.trim()).toBe("/foreman widgets");
 });
 
@@ -169,9 +169,39 @@ test("B16: records a trial's wall-clock time, and its tokens by model, subagents
 }) => {
   tasks.addTask("widgets");
   tasks.addFiles(projectFiles);
+  // The main thread only ever runs claude-opus-4-1. claude-sonnet-4-5 is a subagent's model: its
+  // usage is in no main-thread message, only in the final result's `modelUsage`.
   harbor.leavesOutput({
     agentStartedAt: "2026-11-09T14:00:00.000000Z",
     agentFinishedAt: "2026-11-09T14:01:30.000000Z",
+    claudeMessages: [
+      {
+        type: "assistant",
+        parent_tool_use_id: null,
+        message: {
+          model: "claude-opus-4-1",
+          usage: {
+            input_tokens: 700,
+            output_tokens: 200,
+            cache_read_input_tokens: 2000,
+            cache_creation_input_tokens: 300,
+          },
+        },
+      },
+      {
+        type: "assistant",
+        parent_tool_use_id: null,
+        message: {
+          model: "claude-opus-4-1",
+          usage: {
+            input_tokens: 500,
+            output_tokens: 100,
+            cache_read_input_tokens: 2000,
+            cache_creation_input_tokens: 200,
+          },
+        },
+      },
+    ],
     claudeResult: {
       type: "result",
       subtype: "success",
@@ -188,7 +218,7 @@ test("B16: records a trial's wall-clock time, and its tokens by model, subagents
         "claude-sonnet-4-5": {
           inputTokens: 700,
           outputTokens: 90,
-          cacheReadInputTokens: 0,
+          cacheReadInputTokens: 11,
           cacheCreationInputTokens: 60,
           costUSD: 0.1,
         },
@@ -212,7 +242,7 @@ test("B16: records a trial's wall-clock time, and its tokens by model, subagents
     "claude-sonnet-4-5": {
       inputTokens: 700,
       outputTokens: 90,
-      cacheReadInputTokens: 0,
+      cacheReadInputTokens: 11,
       cacheCreationInputTokens: 60,
     },
   });
