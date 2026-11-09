@@ -8,21 +8,21 @@ import { runTrial } from "./trial.ts";
 
 type Repository = { hasUncommittedChanges(): boolean };
 
-type Trials = { start(trial: { task: string; agent: string }): void };
+type Trials = { start(trial: { task: string; agent: string }): object };
 
 type RunOptions = {
   root: string;
   hiddenTests: HiddenTests;
   repository: Repository;
   trials: Trials;
-  print(text: string): void;
+  print: (text: string) => void;
 };
 
 type RunResult = { exitCode: number; output: string };
 
 export function run(
   args: string[],
-  { root, hiddenTests, repository, trials }: RunOptions,
+  { root, hiddenTests, repository, trials, print }: RunOptions,
 ): RunResult {
   if (repository.hasUncommittedChanges()) {
     return { exitCode: 1, output: "commit first: results name the commit they measured\n" };
@@ -36,15 +36,20 @@ export function run(
     return { exitCode: 1, output: failures.map(({ output }) => output).join("") };
   }
   const agents = args.filter((_, index) => args[index - 1] === "--agent");
+  const trialsIndex = args.indexOf("--trials");
+  const count = trialsIndex === -1 ? 1 : Number(args[trialsIndex + 1]);
   for (const task of tasks) {
-    for (const agent of agents) trials.start({ task, agent });
+    for (const agent of agents) {
+      for (let trial = 0; trial < count; trial++) {
+        print(`${JSON.stringify(trials.start({ task, agent }))}\n`);
+      }
+    }
   }
   return { exitCode: 0, output: "" };
 }
 
 function harbor(args: string[]): { exitCode: number } {
   const result = spawnSync("harbor", args, { stdio: "inherit" });
-  if (result.error) throw result.error;
   return { exitCode: result.status ?? 1 };
 }
 
@@ -68,8 +73,7 @@ if (import.meta.main) {
     trials: {
       start(trial) {
         const workFolder = mkdtempSync(join(tmpdir(), "bench-trial-"));
-        const record = runTrial(trial, { root, workFolder, harbor });
-        process.stdout.write(`${JSON.stringify(record)}\n`);
+        return runTrial(trial, { root, workFolder, harbor });
       },
     },
   });
