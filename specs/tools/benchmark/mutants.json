@@ -367,6 +367,160 @@
       }
     ]
   },
+  "B10": {
+    "then": "Its sandbox holds a new git repository with only the task's spec at `specs/<task>/spec.md`, its issue and tickets under `.issues/<task>/` where the `bench` tracker keeps them, its starter code at the root, `CODING-STANDARDS.md`, the trial config in `tools/benchmark/trial-config/` at its root, and an `ISSUE-TRACKER.md` at its root: a copy of `docs/agents/issue-tracker/bench.md`, which says how to use the `bench` issue tracker. A foreman trial's also has `.claude/`, and what its skills read: `GLOSSARY.md`, `docs/adr/`, `docs/agents/issue-tracker/`, `tools/specs/` and `tools/spec-mutants/`",
+    "mutants": [
+      {
+        "breaks": "The task's spec is put at specs/spec.md instead of specs/<task>/spec.md.",
+        "file": "tools/benchmark/trial.ts",
+        "find": ["  copy(join(taskFolder, \"spec.md\"), `specs/${task}/spec.md`);"],
+        "replace": ["  copy(join(taskFolder, \"spec.md\"), \"specs/spec.md\");"]
+      },
+      {
+        "breaks": "The task's issue is put directly under .issues/ rather than under .issues/<task>/.",
+        "file": "tools/benchmark/trial.ts",
+        "find": ["  copy(join(taskFolder, \"issue.md\"), `.issues/${task}/issue.md`);"],
+        "replace": ["  copy(join(taskFolder, \"issue.md\"), \".issues/issue.md\");"]
+      },
+      {
+        "breaks": "The task's tickets are put directly under .issues/ rather than under .issues/<task>/.",
+        "file": "tools/benchmark/trial.ts",
+        "find": ["  copy(join(taskFolder, \"tickets\"), `.issues/${task}/tickets`);"],
+        "replace": ["  copy(join(taskFolder, \"tickets\"), \".issues/tickets\");"]
+      },
+      {
+        "breaks": "The starter code is put in src/ instead of at the root of the repository.",
+        "file": "tools/benchmark/trial.ts",
+        "find": ["  copy(join(taskFolder, \"starter\"), \".\");"],
+        "replace": ["  copy(join(taskFolder, \"starter\"), \"src\");"]
+      },
+      {
+        "breaks": "CODING-STANDARDS.md is no longer copied into any trial.",
+        "file": "tools/benchmark/trial.ts",
+        "find": ["const SHARED_FILES = [\"CODING-STANDARDS.md\"];"],
+        "replace": ["const SHARED_FILES: string[] = [];"]
+      },
+      {
+        "breaks": "The trial config is put in a trial-config/ subfolder instead of at the root.",
+        "file": "tools/benchmark/trial.ts",
+        "find": ["  copy(join(root, TRIAL_CONFIG_FOLDER), \".\");"],
+        "replace": ["  copy(join(root, TRIAL_CONFIG_FOLDER), \"trial-config\");"]
+      },
+      {
+        "breaks": "The issue tracker guide is copied to docs/ISSUE-TRACKER.md instead of ISSUE-TRACKER.md at the root.",
+        "file": "tools/benchmark/trial.ts",
+        "find": [
+          "  copy(join(root, \"docs/agents/issue-tracker/bench.md\"), \"ISSUE-TRACKER.md\");"
+        ],
+        "replace": [
+          "  copy(join(root, \"docs/agents/issue-tracker/bench.md\"), \"docs/ISSUE-TRACKER.md\");"
+        ]
+      },
+      {
+        "breaks": "A baseline trial gets foreman's files too, not only foreman trials.",
+        "file": "tools/benchmark/trial.ts",
+        "find": [
+          "  const projectFiles = agent === \"foreman\" ? [...SHARED_FILES, ...FOREMAN_FILES] : SHARED_FILES;"
+        ],
+        "replace": ["  const projectFiles = [...SHARED_FILES, ...FOREMAN_FILES];"]
+      },
+      {
+        "breaks": "A foreman trial's repository lacks .claude/.",
+        "file": "tools/benchmark/trial.ts",
+        "find": ["  \".claude\",", "  \"GLOSSARY.md\","],
+        "replace": ["  \"GLOSSARY.md\","]
+      },
+      {
+        "breaks": "A foreman trial's repository lacks tools/spec-mutants/, which its skills read.",
+        "file": "tools/benchmark/trial.ts",
+        "find": ["  \"tools/specs\",", "  \"tools/spec-mutants\","],
+        "replace": ["  \"tools/specs\","]
+      },
+      {
+        "breaks": "The trial repository also holds the task's solution, which agents could copy an answer from.",
+        "file": "tools/benchmark/trial.ts",
+        "find": ["  copy(join(taskFolder, \"starter\"), \".\");"],
+        "replace": [
+          "  copy(join(taskFolder, \"starter\"), \".\");",
+          "  copy(join(taskFolder, \"solution\"), \".\");"
+        ]
+      }
+    ]
+  },
+  "B11": {
+    "then": "Runs Harbor's `claude-code` agent once on the instruction `/foreman <issue>`, with `ISSUE_TRACKER=bench` and a 2-hour timeout",
+    "mutants": [
+      {
+        "breaks": "The foreman instruction omits the issue, so it is just `/foreman`.",
+        "file": "tools/benchmark/trial.ts",
+        "find": ["    ? `/foreman ${task}`"],
+        "replace": ["    ? \"/foreman\""]
+      },
+      {
+        "breaks": "The agent runs with a different issue tracker than `bench`.",
+        "file": "tools/benchmark/trial.ts",
+        "find": ["    \"ISSUE_TRACKER=bench\","],
+        "replace": ["    \"ISSUE_TRACKER=github\","]
+      },
+      {
+        "breaks": "The timeout is 1 hour instead of 2 hours.",
+        "file": "tools/benchmark/trial.ts",
+        "find": ["const AGENT_TIMEOUT_SEC = 2 * 60 * 60;"],
+        "replace": ["const AGENT_TIMEOUT_SEC = 60 * 60;"]
+      },
+      {
+        "breaks": "Harbor runs a different agent than `claude-code`.",
+        "file": "tools/benchmark/trial.ts",
+        "find": ["    \"claude-code\","],
+        "replace": ["    \"terminus-2\","]
+      },
+      {
+        "breaks": "Harbor is run twice for one trial instead of once.",
+        "file": "tools/benchmark/trial.ts",
+        "find": ["  harbor(["],
+        "replace": ["  for (let attempt = 0; attempt < 2; attempt++) harbor(["]
+      }
+    ]
+  },
+  "B16": {
+    "then": "Records how long its agent ran, not counting building the sandbox or grading, and its tokens by model, subagents included",
+    "mutants": [
+      {
+        "breaks": "Time runs from the agent's start to now, so it counts everything after the agent finished, such as grading.",
+        "file": "tools/benchmark/trial.ts",
+        "find": [
+          "    wallClockMs: Date.parse(agent_execution.finished_at) - Date.parse(agent_execution.started_at),"
+        ],
+        "replace": ["    wallClockMs: Date.now() - Date.parse(agent_execution.started_at),"]
+      },
+      {
+        "breaks": "Only the first model's tokens are recorded, not every model's.",
+        "file": "tools/benchmark/trial.ts",
+        "find": ["    Object.entries(result?.data?.modelUsage ?? {}).map(([model, usage]) => ["],
+        "replace": [
+          "    Object.entries(result?.data?.modelUsage ?? {}).slice(0, 1).map(([model, usage]) => ["
+        ]
+      },
+      {
+        "breaks": "Output tokens are always recorded as 0.",
+        "file": "tools/benchmark/trial.ts",
+        "find": ["        outputTokens: usage.outputTokens,"],
+        "replace": ["        outputTokens: 0,"]
+      },
+      {
+        "breaks": "Cache-read input tokens are always recorded as 0.",
+        "file": "tools/benchmark/trial.ts",
+        "find": ["        cacheReadInputTokens: usage.cacheReadInputTokens,"],
+        "replace": ["        cacheReadInputTokens: 0,"]
+      },
+      {
+        "breaks": "Tokens come from the first result message rather than the final one that totals all models and subagents.",
+        "file": "tools/benchmark/trial.ts",
+        "find": ["    .findLast(({ success }) => success);"],
+        "replace": ["    .find(({ success }) => success);"]
+      }
+    ]
+  },
   "B26": {
     "then": "Prints `usage: pnpm bench:check <task>`, and exits `1`",
     "mutants": [
