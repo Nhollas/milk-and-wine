@@ -38,6 +38,7 @@ A task is valid when it has every part, every scenario in its spec has a hidden 
 | --- | --- | --- | --- | --- |
 | B8 | The repository has uncommitted changes | `bench:run` runs | Prints `commit first: results name the commit they measured`, starts nothing, and exits `1` | service |
 | B9 | One or more of the tasks named aren't valid | `bench:run` runs | Prints what `bench:check <task>` prints for each of them, starts nothing, and exits `1` | service |
+| B27 | A clean repository and valid tasks | `bench:run` runs | Starts `--trials` trials, or 1 if it isn't given, of each agent named, on each task named, and prints each trial's measures as a line of JSON as it ends | service |
 | B10 | A valid task | A trial starts | Its sandbox holds a new git repository with only the task's spec at `specs/<task>/spec.md`, its issue and tickets under `.issues/<task>/` where the `bench` tracker keeps them, its starter code at the root, `CODING-STANDARDS.md`, the files of `tools/benchmark/trial-config/` at its root, and an `ISSUE-TRACKER.md` at its root: a copy of `docs/agents/issue-tracker/bench.md`, which says how to use the `bench` issue tracker. A foreman trial's also has `.claude/`, and what its skills read: `GLOSSARY.md`, `docs/adr/`, `docs/agents/issue-tracker/`, `tools/specs/` and `tools/spec-mutants/` | integration |
 | B11 | A foreman trial's sandbox is ready | The trial starts | Runs Harbor's `claude-code` agent once on the instruction `/foreman <issue>`, with `ISSUE_TRACKER=bench` as the only environment it adds and a 2-hour timeout | integration |
 | B12 | A baseline trial's sandbox is ready | The trial starts | Runs Harbor's `claude-code` agent once on the instruction `Deliver the tickets in <issue>. ISSUE-TRACKER.md says how to use the issue tracker.`, with a 2-hour timeout | integration |
@@ -48,6 +49,7 @@ A task is valid when it has every part, every scenario in its spec has a hidden 
 **Why**
 
 - **B8:** A result is evidence about one version of the workflow, so it has to name a commit that holds exactly it.
+- **B27:** One command runs anything from a single trial, to check a task, to a full comparison. Each trial's measures show as soon as it ends, so a long experiment can be watched.
 - **B10:** Both agents get the same task, standards and tracker, and nothing they could copy an answer from or that steers how they work. Baseline is Claude Code as anyone would have it, free to work however it likes. `.claude/` and the files its skills read are foreman's process, so only foreman gets them. A trial measures the workflow, not this repository's taste in tooling, so it gets its own config: just enough to install, typecheck and test, with `pnpm check` running the typecheck and tests.
 - **B11, B12, B13:** Both agents get the same instruction and finish in one session. Foreman stops when the next ticket waits on one still up for review, so in a trial putting a ticket up for review merges it, as a person would. A trial that stops to ask a question just ends: nobody answers, as in other coding benchmarks.
 - **B14:** How often an agent breaks is part of what it costs, so a broken trial is counted, not run again.
