@@ -32,18 +32,18 @@ A task is valid when it has every part, every scenario in its spec has a hidden 
 
 ### Running an experiment
 
-`bench:run <task> --agent <agent> --trials <n>` runs `n` trials of each agent named, on each task named. One agent or both, one task or several, and one trial or many are all the same command. A trial times out after 2 hours.
+`bench:run <task> --agent <agent> --trials <n>` runs `n` trials of each agent named, on each task named. One agent or both, one task or several, and one trial or many are all the same command.
 
 | ID | Given | When | Then | Verified |
 | --- | --- | --- | --- | --- |
 | B8 | The repository has uncommitted changes | `bench:run` runs | Prints `commit first: results name the commit they measured`, starts nothing, and exits `1` | service |
 | B9 | One or more of the tasks named aren't valid | `bench:run` runs | Prints what `bench:check <task>` prints for each of them, starts nothing, and exits `1` | service |
-| B10 | A valid task | A trial starts | Its sandbox holds a new git repository with only the task's spec at `specs/<task>/spec.md`, its issue and tickets under `.issues/<task>/` where the `bench` tracker keeps them, its starter code at the root, `CODING-STANDARDS.md`, the trial config in `tools/benchmark/trial-config/` at its root, and an `ISSUE-TRACKER.md` at its root: a copy of `docs/agents/issue-tracker/bench.md`, which says how to use the `bench` issue tracker. A foreman trial's also has `.claude/`, and what its skills read: `GLOSSARY.md`, `docs/adr/`, `docs/agents/issue-tracker/`, `tools/specs/` and `tools/spec-mutants/` | integration |
+| B10 | A valid task | A trial starts | Its sandbox holds a new git repository with only the task's spec at `specs/<task>/spec.md`, its issue and tickets under `.issues/<task>/` where the `bench` tracker keeps them, its starter code at the root, `CODING-STANDARDS.md`, the files of `tools/benchmark/trial-config/` at its root, and an `ISSUE-TRACKER.md` at its root: a copy of `docs/agents/issue-tracker/bench.md`, which says how to use the `bench` issue tracker. A foreman trial's also has `.claude/`, and what its skills read: `GLOSSARY.md`, `docs/adr/`, `docs/agents/issue-tracker/`, `tools/specs/` and `tools/spec-mutants/` | integration |
 | B11 | A foreman trial's sandbox is ready | The trial starts | Runs Harbor's `claude-code` agent once on the instruction `/foreman <issue>`, with `ISSUE_TRACKER=bench` and a 2-hour timeout | integration |
-| B12 | A baseline trial's sandbox is ready | The trial starts | Runs `claude -p "Deliver the tickets in <issue>. ISSUE-TRACKER.md says how to use the issue tracker."` once | integration |
+| B12 | A baseline trial's sandbox is ready | The trial starts | Runs Harbor's `claude-code` agent once on the instruction `Deliver the tickets in <issue>. ISSUE-TRACKER.md says how to use the issue tracker.`, with a 2-hour timeout | integration |
 | B13 | An agent follows the `bench` issue tracker | It puts a ticket up for review | Merges the ticket's branch into `main` with `--no-ff`, which closes the ticket | system |
-| B14 | A trial's `claude` exits with an error, or the trial times out | The trial ends | Records it as broken, with the reason and what it measured so far, and the experiment goes on | integration |
-| B15 | A trial's `claude` stops at the subscription's usage limit | The trial ends | Stops the experiment, keeps the results of trials already finished, prints `usage limit reached`, and exits `1` | integration |
+| B14 | A trial's agent exits with an error, or the trial times out | The trial ends | Records it as broken, with the reason and what it measured so far, and the experiment goes on | integration |
+| B15 | A trial's agent stops at the subscription's usage limit | The trial ends | Stops the experiment, keeps the results of trials already finished, prints `usage limit reached`, and exits `1` | integration |
 
 **Why**
 
