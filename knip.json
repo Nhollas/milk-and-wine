@@ -8,5 +8,6 @@
     ".claude/skills/intent-judge/evals/tools/stage-case.ts",
     ".claude/skills/to-tickets/scripts/draw-slice-map.ts"
   ],
+  "ignoreBinaries": ["harbor"],
   "project": ["src/**/*.ts", "tests/**/*.ts", "tools/**/*.ts", ".claude/**/*.ts"]
 }
