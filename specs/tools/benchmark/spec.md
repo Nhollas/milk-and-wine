@@ -59,7 +59,7 @@ Every measure reads the trial's working tree as the agent leaves it, committed o
 
 | ID | Given | When | Then | Verified |
 | --- | --- | --- | --- | --- |
-| B16 | A trial has ended | It's measured | Records how long its agent ran, not counting building the sandbox or grading, and its tokens by model, subagents included | integration |
+| B16 | A trial has ended | It's measured | Records how long its agent ran, not counting building the sandbox or grading, and its tokens by model, subagents included: input, output, cache-read and cache-creation tokens for each | integration |
 | B17 | All of a scenario's hidden tests pass | The trial is measured | Counts the scenario passed. The pass rate is passed scenarios over the task's scenarios | service |
 | B18 | The trial wrote tests of its own and none fail, and a scenario's hidden tests do | The trial is measured | Counts the scenario a false pass | service |
 | B20 | A trial has ended | It's measured | Records Stryker's mutation score for the task's `src/` against the trial's own tests | service |
