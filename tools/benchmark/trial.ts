@@ -1,8 +1,3 @@
-type Sandbox = {
-  folder: string;
-  exec(command: string[], env: Record<string, string>): { exitCode: number; stdout: string };
-};
-
 type TokenCounts = {
   inputTokens: number;
   outputTokens: number;
@@ -12,8 +7,10 @@ type TokenCounts = {
 
 type TrialOptions = {
   root: string;
-  sandboxes: { create(): Sandbox };
-  now: () => Date;
+  /** A folder the trial may write its Harbor task folder and Harbor's output folder in. */
+  workFolder: string;
+  /** Starts a process and waits for it: the one call the trial makes to run `harbor run`. */
+  runProcess(command: string, args: string[], env: Record<string, string>): { exitCode: number };
 };
 
 type TrialRecord = {

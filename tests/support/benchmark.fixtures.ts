@@ -12,7 +12,6 @@ import {
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { test as base } from "vitest";
-import { testClock } from "./test-clock.ts";
 
 type TaskPart = "spec" | "issue" | "ticket" | "starter code" | "hidden tests" | "solution";
 
@@ -160,58 +159,82 @@ function fakeTrials() {
   };
 }
 
-type ClaudeRun = { takesMilliseconds: number; stdout: string };
+type HarborCall = { command: string; args: string[]; env: Record<string, string> };
 
-type Execution = { command: string[]; env: Record<string, string> };
+type TrialOutput = {
+  startedAt: string;
+  finishedAt: string;
+  claudeResult: Record<string, unknown>;
+};
 
-function fakeSandboxes(
-  clock: ReturnType<typeof testClock>,
-  onCleanup: (cleanup: () => void) => void,
-) {
-  const folder = mkdtempSync(join(tmpdir(), "benchmark-sandbox-"));
-  onCleanup(() => rmSync(folder, { recursive: true, force: true }));
-  const executed: Execution[] = [];
-  let claudeRun: ClaudeRun = { takesMilliseconds: 0, stdout: "{}" };
+// The process call that starts `harbor run`. It records its arguments and writes Harbor's
+// output layout (`<jobs>/<job>/<trial>/result.json`, `agent/`) under the `-o` folder.
+function fakeHarborProcess() {
+  const calls: HarborCall[] = [];
+  let output: TrialOutput | undefined;
+
+  function writeTrialOutput(
+    jobsFolder: string,
+    { startedAt, finishedAt, claudeResult }: TrialOutput,
+  ) {
+    const trialFolder = join(jobsFolder, "2026-11-09__14-00-00", "widgets__k7Qp2Xa");
+    mkdirSync(join(trialFolder, "agent"), { recursive: true });
+    mkdirSync(join(trialFolder, "verifier"), { recursive: true });
+    writeFileSync(
+      join(trialFolder, "result.json"),
+      JSON.stringify({
+        task_name: "widgets",
+        trial_name: "widgets__k7Qp2Xa",
+        started_at: startedAt,
+        finished_at: finishedAt,
+        exception_info: null,
+        agent_result: { n_input_tokens: 0, n_cache_tokens: 0, n_output_tokens: 0 },
+        verifier_result: null,
+      }),
+    );
+    writeFileSync(join(trialFolder, "agent", "claude.json"), JSON.stringify(claudeResult));
+  }
 
   return {
-    folder,
-    executed,
-    claudeRunsFor(run: ClaudeRun) {
-      claudeRun = run;
+    calls,
+    /** What the next `harbor run` leaves in its output folder. */
+    producesTrial(trialOutput: TrialOutput) {
+      output = trialOutput;
     },
-    create() {
-      return {
-        folder,
-        exec(command: string[], env: Record<string, string>) {
-          executed.push({ command, env });
-          clock.setNow(new Date(clock.now().getTime() + claudeRun.takesMilliseconds).toISOString());
-          return { exitCode: 0, stdout: claudeRun.stdout };
-        },
-      };
+    run(command: string, args: string[], env: Record<string, string>) {
+      calls.push({ command, args, env });
+      const jobsFolder = args[args.indexOf("-o") + 1];
+      if (output !== undefined && jobsFolder !== undefined) writeTrialOutput(jobsFolder, output);
+      return { exitCode: 0 };
     },
-    /** Every file in the sandbox's folder outside `.git`, relative to it and sorted. */
-    files(): string[] {
-      return readdirSync(folder, { recursive: true, withFileTypes: true })
-        .filter((entry) => entry.isFile())
-        .map((entry) => join(entry.parentPath, entry.name).slice(folder.length + 1))
-        .filter((path) => !path.startsWith(".git/"))
-        .toSorted();
-    },
-    /** A file's text, or `undefined` when the sandbox lacks it. */
-    read(path: string): string | undefined {
-      return existsSync(join(folder, path)) ? readFileSync(join(folder, path), "utf8") : undefined;
-    },
-    gitRoot(): string {
-      const root = execFileSync("git", ["rev-parse", "--show-toplevel"], {
-        cwd: folder,
-        encoding: "utf8",
-      });
-      return root.trim();
-    },
-    realFolder(): string {
-      return realpathSync(folder);
+    /** The task folder the trial handed to `harbor run -p`. */
+    taskFolder(): string {
+      return this.calls[0]?.args[this.calls[0].args.indexOf("-p") + 1] ?? "";
     },
   };
+}
+
+/** Every file under a folder outside `.git`, relative to it and sorted. */
+function filesUnder(folder: string): string[] {
+  if (!existsSync(folder)) return [];
+  return readdirSync(folder, { recursive: true, withFileTypes: true })
+    .filter((entry) => entry.isFile())
+    .map((entry) => join(entry.parentPath, entry.name).slice(folder.length + 1))
+    .filter((path) => !path.startsWith(".git/"))
+    .toSorted();
+}
+
+function fileText(folder: string, path: string): string | undefined {
+  return existsSync(join(folder, path)) ? readFileSync(join(folder, path), "utf8") : undefined;
+}
+
+function isGitRoot(folder: string): boolean {
+  if (!existsSync(join(folder, ".git"))) return false;
+  const root = execFileSync("git", ["rev-parse", "--show-toplevel"], {
+    cwd: folder,
+    encoding: "utf8",
+  });
+  return root.trim() === realpathSync(folder);
 }
 
 export const test = base
@@ -223,5 +246,10 @@ export const test = base
   .extend("hiddenTests", () => fakeHiddenTests())
   .extend("repository", () => fakeRepository())
   .extend("trials", () => fakeTrials())
-  .extend("clock", () => testClock())
-  .extend("sandboxes", ({ clock }, { onCleanup }) => fakeSandboxes(clock, onCleanup));
+  .extend("folders", () => ({ filesUnder, fileText, isGitRoot }))
+  .extend("harbor", () => fakeHarborProcess())
+  .extend("workFolder", ({}, { onCleanup }) => {
+    const folder = mkdtempSync(join(tmpdir(), "benchmark-trial-"));
+    onCleanup(() => rmSync(folder, { recursive: true, force: true }));
+    return folder;
+  });
