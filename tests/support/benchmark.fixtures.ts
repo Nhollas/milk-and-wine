@@ -1,7 +1,18 @@
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { execFileSync } from "node:child_process";
+import {
+  existsSync,
+  mkdirSync,
+  mkdtempSync,
+  readdirSync,
+  readFileSync,
+  realpathSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { test as base } from "vitest";
+import { testClock } from "./test-clock.ts";
 
 type TaskPart = "spec" | "issue" | "ticket" | "starter code" | "hidden tests" | "solution";
 
@@ -55,6 +66,9 @@ function benchmarkTasks() {
 
   return {
     root,
+    addFiles(files: Record<string, string>) {
+      for (const [path, content] of Object.entries(files)) write(path, content);
+    },
     addTask(
       name: string,
       {
@@ -146,6 +160,60 @@ function fakeTrials() {
   };
 }
 
+type ClaudeRun = { takesMilliseconds: number; stdout: string };
+
+type Execution = { command: string[]; env: Record<string, string> };
+
+function fakeSandboxes(
+  clock: ReturnType<typeof testClock>,
+  onCleanup: (cleanup: () => void) => void,
+) {
+  const folder = mkdtempSync(join(tmpdir(), "benchmark-sandbox-"));
+  onCleanup(() => rmSync(folder, { recursive: true, force: true }));
+  const executed: Execution[] = [];
+  let claudeRun: ClaudeRun = { takesMilliseconds: 0, stdout: "{}" };
+
+  return {
+    folder,
+    executed,
+    claudeRunsFor(run: ClaudeRun) {
+      claudeRun = run;
+    },
+    create() {
+      return {
+        folder,
+        exec(command: string[], env: Record<string, string>) {
+          executed.push({ command, env });
+          clock.setNow(new Date(clock.now().getTime() + claudeRun.takesMilliseconds).toISOString());
+          return { exitCode: 0, stdout: claudeRun.stdout };
+        },
+      };
+    },
+    /** Every file in the sandbox's folder outside `.git`, relative to it and sorted. */
+    files(): string[] {
+      return readdirSync(folder, { recursive: true, withFileTypes: true })
+        .filter((entry) => entry.isFile())
+        .map((entry) => join(entry.parentPath, entry.name).slice(folder.length + 1))
+        .filter((path) => !path.startsWith(".git/"))
+        .toSorted();
+    },
+    /** A file's text, or `undefined` when the sandbox lacks it. */
+    read(path: string): string | undefined {
+      return existsSync(join(folder, path)) ? readFileSync(join(folder, path), "utf8") : undefined;
+    },
+    gitRoot(): string {
+      const root = execFileSync("git", ["rev-parse", "--show-toplevel"], {
+        cwd: folder,
+        encoding: "utf8",
+      });
+      return root.trim();
+    },
+    realFolder(): string {
+      return realpathSync(folder);
+    },
+  };
+}
+
 export const test = base
   .extend("tasks", ({}, { onCleanup }) => {
     const tasks = benchmarkTasks();
@@ -154,4 +222,6 @@ export const test = base
   })
   .extend("hiddenTests", () => fakeHiddenTests())
   .extend("repository", () => fakeRepository())
-  .extend("trials", () => fakeTrials());
+  .extend("trials", () => fakeTrials())
+  .extend("clock", () => testClock())
+  .extend("sandboxes", ({ clock }, { onCleanup }) => fakeSandboxes(clock, onCleanup));
