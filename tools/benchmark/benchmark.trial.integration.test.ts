@@ -33,6 +33,23 @@ const projectFiles = {
   "specs/loans/spec.md": "# Loans\n",
 };
 
+// The trial's own config, kept apart from the project's root config above, which is the decoy.
+const trialConfig = {
+  ".gitignore": ".issues/\nnode_modules/\n",
+  "package.json": '{ "scripts": { "check": "tsc && vitest run" } }\n',
+  "pnpm-lock.yaml": "lockfileVersion: '9.0'\n# trial\n",
+  "pnpm-workspace.yaml": "packages: []\n# trial\n",
+  "tsconfig.json": '{ "compilerOptions": { "strict": true } }\n',
+  "vitest.config.ts": "export default { test: { include: ['**/*.test.ts'] } };\n",
+};
+
+const trialConfigFiles = Object.fromEntries(
+  Object.entries(trialConfig).map(([path, content]) => [
+    `tools/benchmark/trial-config/${path}`,
+    content,
+  ]),
+);
+
 const baselineFiles = [
   ".gitignore",
   ".issues/widgets/issue.md",
@@ -71,7 +88,7 @@ test("B10: gives a baseline trial only the task, the standards, the config and t
   workFolder,
 }) => {
   tasks.addTask("widgets");
-  tasks.addFiles(projectFiles);
+  tasks.addFiles({ ...projectFiles, ...trialConfigFiles });
 
   runTrial(
     { task: "widgets", agent: "baseline" },
@@ -81,11 +98,16 @@ test("B10: gives a baseline trial only the task, the standards, the config and t
   const repository = repositoryFolder(harbor.taskFolder());
   expect(folders.filesUnder(repository)).toEqual(baselineFiles);
   expect(folders.isGitRoot(repository)).toBe(true);
+  expect(
+    Object.fromEntries(
+      Object.keys(trialConfig).map((path) => [path, folders.fileText(repository, path)]),
+    ),
+  ).toEqual(trialConfig);
 });
 
 test("B10: gives a foreman trial its own process too", ({ tasks, harbor, folders, workFolder }) => {
   tasks.addTask("widgets");
-  tasks.addFiles(projectFiles);
+  tasks.addFiles({ ...projectFiles, ...trialConfigFiles });
 
   runTrial(
     { task: "widgets", agent: "foreman" },
@@ -97,6 +119,11 @@ test("B10: gives a foreman trial its own process too", ({ tasks, harbor, folders
     [...baselineFiles, ...foremanOnlyFiles].toSorted(),
   );
   expect(folders.isGitRoot(repository)).toBe(true);
+  expect(
+    Object.fromEntries(
+      Object.keys(trialConfig).map((path) => [path, folders.fileText(repository, path)]),
+    ),
+  ).toEqual(trialConfig);
 });
 
 test("B10: puts the bench tracker's instructions in ISSUE-TRACKER.md and the starter code at the root", ({
@@ -106,7 +133,7 @@ test("B10: puts the bench tracker's instructions in ISSUE-TRACKER.md and the sta
   workFolder,
 }) => {
   tasks.addTask("widgets");
-  tasks.addFiles(projectFiles);
+  tasks.addFiles({ ...projectFiles, ...trialConfigFiles });
 
   runTrial(
     { task: "widgets", agent: "baseline" },
@@ -127,7 +154,7 @@ test("B11: runs foreman once on the issue, with the bench tracker", ({
   workFolder,
 }) => {
   tasks.addTask("widgets");
-  tasks.addFiles(projectFiles);
+  tasks.addFiles({ ...projectFiles, ...trialConfigFiles });
 
   runTrial(
     { task: "widgets", agent: "foreman" },
@@ -151,7 +178,7 @@ test("B11: gives the agent a 2-hour timeout in the task folder", ({
   workFolder,
 }) => {
   tasks.addTask("widgets");
-  tasks.addFiles(projectFiles);
+  tasks.addFiles({ ...projectFiles, ...trialConfigFiles });
 
   runTrial(
     { task: "widgets", agent: "foreman" },
@@ -168,7 +195,7 @@ test("B16: records a trial's wall-clock time, and its tokens by model, subagents
   workFolder,
 }) => {
   tasks.addTask("widgets");
-  tasks.addFiles(projectFiles);
+  tasks.addFiles({ ...projectFiles, ...trialConfigFiles });
   // The main thread only ever runs claude-opus-4-1. claude-sonnet-4-5 is a subagent's model: its
   // usage is in no main-thread message, only in the final result's `modelUsage`.
   harbor.leavesOutput({
