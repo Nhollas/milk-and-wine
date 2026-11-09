@@ -98,11 +98,7 @@ test("B10: gives a baseline trial only the task, the standards, the config and t
   const repository = repositoryFolder(harbor.taskFolder());
   expect(folders.filesUnder(repository)).toEqual(baselineFiles);
   expect(folders.isGitRoot(repository)).toBe(true);
-  expect(
-    Object.fromEntries(
-      Object.keys(trialConfig).map((path) => [path, folders.fileText(repository, path)]),
-    ),
-  ).toEqual(trialConfig);
+  expect(folders.textsOf(repository, Object.keys(trialConfig))).toEqual(trialConfig);
 });
 
 test("B10: gives a foreman trial its own process too", ({ tasks, harbor, folders, workFolder }) => {
@@ -119,11 +115,7 @@ test("B10: gives a foreman trial its own process too", ({ tasks, harbor, folders
     [...baselineFiles, ...foremanOnlyFiles].toSorted(),
   );
   expect(folders.isGitRoot(repository)).toBe(true);
-  expect(
-    Object.fromEntries(
-      Object.keys(trialConfig).map((path) => [path, folders.fileText(repository, path)]),
-    ),
-  ).toEqual(trialConfig);
+  expect(folders.textsOf(repository, Object.keys(trialConfig))).toEqual(trialConfig);
 });
 
 test("B10: puts the bench tracker's instructions in ISSUE-TRACKER.md and the starter code at the root", ({
@@ -161,16 +153,28 @@ test("B11: runs foreman once on the issue, with the bench tracker", ({
     { root: tasks.root, workFolder, harbor: harbor.run },
   );
 
-  expect(harbor.runs).toHaveLength(1);
-  const args = harbor.runs[0]?.args ?? [];
-  expect(args[0]).toBe("run");
-  expect(args[args.indexOf("-a") + 1]).toBe("claude-code");
-  const agentEnvironment = args.flatMap((arg, index) => (arg === "--ae" ? [args[index + 1]] : []));
-  expect(agentEnvironment).toContain("ISSUE_TRACKER=bench");
-  expect(folders.fileText(harbor.taskFolder(), "instruction.md")?.trim()).toBe("/foreman widgets");
+  // The arguments handed to Harbor are this scenario's outcome. Written whole, the list also pins
+  // the folders and forbids other `--ae` values, which B11 leaves open.
+  expect(harbor.runs).toEqual([
+    {
+      args: [
+        "run",
+        "-p",
+        join(workFolder, "widgets"),
+        "-o",
+        join(workFolder, "jobs"),
+        "-a",
+        "claude-code",
+        "--ae",
+        "ISSUE_TRACKER=bench",
+      ],
+    },
+  ]);
+  expect(folders.fileText(join(workFolder, "widgets"), "instruction.md")?.trim()).toBe(
+    "/foreman widgets",
+  );
 });
 
-// The 2-hour limit is a sentence of the spec, not a scenario; B14 records the timeout itself.
 test("B11: gives the agent a 2-hour timeout in the task folder", ({
   tasks,
   harbor,

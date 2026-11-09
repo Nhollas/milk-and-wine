@@ -171,11 +171,29 @@ type TrialOutput = {
   claudeResult: Record<string, unknown>;
 };
 
-// A fake Harbor: records the args it was run with and leaves a recorded output folder under `-o`.
-// It simulates nothing of what Harbor does with the task folder.
+// A finished trial's output, which the fake Harbor leaves unless a test says otherwise.
+const finishedTrial: TrialOutput = {
+  agentStartedAt: "2026-11-09T14:00:00.000000Z",
+  agentFinishedAt: "2026-11-09T14:01:00.000000Z",
+  claudeResult: {
+    type: "result",
+    subtype: "success",
+    modelUsage: {
+      "claude-opus-4-1": {
+        inputTokens: 10,
+        outputTokens: 5,
+        cacheReadInputTokens: 20,
+        cacheCreationInputTokens: 3,
+      },
+    },
+  },
+};
+
+// A fake Harbor: records its args and leaves a finished trial's output under `-o`, `finishedTrial`
+// unless `leavesOutput` replaces it. It simulates nothing of the task folder.
 function fakeHarbor() {
   const runs: HarborRun[] = [];
-  let output: TrialOutput | undefined;
+  let output: TrialOutput = finishedTrial;
 
   // Harbor's layout: `<jobs>/<job>/<trial>/result.json` (a TrialResult) and, for the
   // `claude-code` agent, `agent/claude-code.txt`, the agent's stream-json output teed by Harbor.
@@ -223,7 +241,7 @@ function fakeHarbor() {
     run: (args: string[]) => {
       runs.push({ args });
       const jobsFolder = args[args.indexOf("-o") + 1];
-      if (output !== undefined && jobsFolder !== undefined) leaveOutputFolder(jobsFolder, output);
+      if (jobsFolder !== undefined) leaveOutputFolder(jobsFolder, output);
       return { exitCode: 0 };
     },
     /** The task folder the trial gave Harbor, `harbor run -p <task folder>`. */
@@ -248,6 +266,11 @@ function fileText(folder: string, path: string): string | undefined {
   return existsSync(join(folder, path)) ? readFileSync(join(folder, path), "utf8") : undefined;
 }
 
+/** The text of each file under a folder by path, `undefined` for one that isn't there. */
+function textsOf(folder: string, paths: string[]): Record<string, string | undefined> {
+  return Object.fromEntries(paths.map((path) => [path, fileText(folder, path)]));
+}
+
 function isGitRoot(folder: string): boolean {
   if (!existsSync(join(folder, ".git"))) return false;
   const root = execFileSync("git", ["rev-parse", "--show-toplevel"], {
@@ -266,7 +289,7 @@ export const test = base
   .extend("hiddenTests", () => fakeHiddenTests())
   .extend("repository", () => fakeRepository())
   .extend("trials", () => fakeTrials())
-  .extend("folders", () => ({ filesUnder, fileText, isGitRoot }))
+  .extend("folders", () => ({ filesUnder, fileText, textsOf, isGitRoot }))
   .extend("harbor", () => fakeHarbor())
   .extend("workFolder", ({}, { onCleanup }) => {
     const folder = mkdtempSync(join(tmpdir(), "benchmark-trial-"));
