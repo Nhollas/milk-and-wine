@@ -1,6 +1,6 @@
 import { execFileSync } from "node:child_process";
 import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
+import { basename, join } from "node:path";
 import { z } from "zod";
 
 const TASKS_FOLDER = "tools/benchmark/tasks";
@@ -34,13 +34,6 @@ const TEST_SCRIPT = `#!/bin/sh
 echo 0 > /logs/verifier/reward.txt
 `;
 
-type TokenCounts = {
-  inputTokens: number;
-  outputTokens: number;
-  cacheReadInputTokens: number;
-  cacheCreationInputTokens: number;
-};
-
 type TrialOptions = {
   root: string;
   /** A folder the trial may write its Harbor task folder and Harbor's output folder in. */
@@ -53,7 +46,7 @@ type TrialRecord = {
   task: string;
   agent: string;
   wallClockMs: number;
-  tokens: Record<string, TokenCounts>;
+  tokens: z.infer<typeof claudeResult>["modelUsage"];
 };
 
 const trialResult = z.object({
@@ -80,7 +73,7 @@ export function runTrial(
   const taskFolder = join(workFolder, trial.task);
   const jobsFolder = join(workFolder, "jobs");
   writeTaskFolder(trial, root, taskFolder);
-  harbor([
+  const { exitCode } = harbor([
     "run",
     "-p",
     taskFolder,
@@ -91,6 +84,7 @@ export function runTrial(
     "--ae",
     "ISSUE_TRACKER=bench",
   ]);
+  if (exitCode !== 0) throw new Error(`harbor exited ${exitCode}`);
   return { ...trial, ...measure(jobsFolder) };
 }
 
@@ -122,7 +116,10 @@ function writeRepository(task: string, agent: string, root: string, repository: 
     cpSync(from, join(repository, to), { recursive: true });
   const projectFiles = agent === "foreman" ? [...SHARED_FILES, ...FOREMAN_FILES] : SHARED_FILES;
   for (const path of projectFiles) copy(join(root, path), path);
-  copy(join(root, TRIAL_CONFIG_FOLDER), ".");
+  cpSync(join(root, TRIAL_CONFIG_FOLDER), repository, {
+    recursive: true,
+    filter: (path) => basename(path) !== "node_modules",
+  });
   copy(join(root, "docs/agents/issue-tracker/bench.md"), "ISSUE-TRACKER.md");
   copy(join(taskFolder, "spec.md"), `specs/${task}/spec.md`);
   copy(join(taskFolder, "issue.md"), `.issues/${task}/issue.md`);
@@ -149,7 +146,6 @@ function writeRepository(task: string, agent: string, root: string, repository: 
 // `result` message counts every model's tokens, subagents' included.
 function measure(jobsFolder: string): Pick<TrialRecord, "wallClockMs" | "tokens"> {
   const trialFolder = trialFolderUnder(jobsFolder);
-  if (trialFolder === undefined) return { wallClockMs: 0, tokens: {} };
   const { agent_execution } = trialResult.parse(
     JSON.parse(readFileSync(join(trialFolder, "result.json"), "utf8")),
   );
@@ -157,26 +153,15 @@ function measure(jobsFolder: string): Pick<TrialRecord, "wallClockMs" | "tokens"
     .split("\n")
     .map((line) => claudeResult.safeParse(parseJson(line)))
     .findLast(({ success }) => success);
-  const tokens = Object.fromEntries(
-    Object.entries(result?.data?.modelUsage ?? {}).map(([model, usage]) => [
-      model,
-      {
-        inputTokens: usage.inputTokens,
-        outputTokens: usage.outputTokens,
-        cacheReadInputTokens: usage.cacheReadInputTokens,
-        cacheCreationInputTokens: usage.cacheCreationInputTokens,
-      },
-    ]),
-  );
+  if (result?.data === undefined) throw new Error(`no result message in ${trialFolder}`);
   return {
     wallClockMs: Date.parse(agent_execution.finished_at) - Date.parse(agent_execution.started_at),
-    tokens,
+    tokens: result.data.modelUsage,
   };
 }
 
-function trialFolderUnder(jobsFolder: string): string | undefined {
-  if (!existsSync(jobsFolder)) return undefined;
-  return readdirSync(jobsFolder, { withFileTypes: true })
+function trialFolderUnder(jobsFolder: string): string {
+  const trialFolder = readdirSync(jobsFolder, { withFileTypes: true })
     .filter((job) => job.isDirectory())
     .flatMap((job) =>
       readdirSync(join(jobsFolder, job.name), { withFileTypes: true })
@@ -184,6 +169,8 @@ function trialFolderUnder(jobsFolder: string): string | undefined {
         .map((trial) => join(jobsFolder, job.name, trial.name)),
     )
     .find((folder) => existsSync(join(folder, "result.json")));
+  if (trialFolder === undefined) throw new Error(`no trial result under ${jobsFolder}`);
+  return trialFolder;
 }
 
 function parseJson(line: string): unknown {

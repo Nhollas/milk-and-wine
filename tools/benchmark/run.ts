@@ -34,18 +34,11 @@ export function run(
   if (failures.length > 0) {
     return { exitCode: 1, output: failures.map(({ output }) => output).join("") };
   }
-  const agents = valuesOf("--agent", args);
-  const trialCount = Number(valuesOf("--trials", args)[0] ?? "1");
+  const agents = args.filter((_, index) => args[index - 1] === "--agent");
   for (const task of tasks) {
-    for (const agent of agents) {
-      for (let count = 0; count < trialCount; count++) trials.start({ task, agent });
-    }
+    for (const agent of agents) trials.start({ task, agent });
   }
   return { exitCode: 0, output: "" };
-}
-
-function valuesOf(flag: string, args: string[]): string[] {
-  return args.flatMap((arg, index) => (arg === flag ? (args[index + 1] ?? []) : []));
 }
 
 function harbor(args: string[]): { exitCode: number } {
