@@ -283,12 +283,8 @@
       {
         "breaks": "A repository with uncommitted changes still starts a trial before refusing.",
         "file": "tools/benchmark/run.ts",
-        "find": [
-          "export function run(args: string[], { root, hiddenTests, repository }: RunOptions): RunResult {",
-          "  if (repository.hasUncommittedChanges()) {"
-        ],
+        "find": ["  if (repository.hasUncommittedChanges()) {"],
         "replace": [
-          "export function run(args: string[], { root, hiddenTests, repository, trials }: RunOptions): RunResult {",
           "  if (repository.hasUncommittedChanges()) {",
           "    trials.start({ task: args[0] ?? \"\", agent: \"foreman\" });"
         ]
@@ -339,28 +335,8 @@
       {
         "breaks": "An invalid task still starts a trial before the run is refused.",
         "file": "tools/benchmark/run.ts",
-        "find": [
-          "export function run(args: string[], { root, hiddenTests, repository }: RunOptions): RunResult {",
-          "  if (repository.hasUncommittedChanges()) {",
-          "    return { exitCode: 1, output: \"commit first: results name the commit they measured\\n\" };",
-          "  }",
-          "  const firstFlag = args.findIndex((arg) => arg.startsWith(\"--\"));",
-          "  const tasks = firstFlag === -1 ? args : args.slice(0, firstFlag);",
-          "  const failures = tasks",
-          "    .map((task) => check([task], { root, hiddenTests }))",
-          "    .filter(({ exitCode }) => exitCode !== 0);",
-          "  if (failures.length > 0) {"
-        ],
+        "find": ["  if (failures.length > 0) {"],
         "replace": [
-          "export function run(args: string[], { root, hiddenTests, repository, trials }: RunOptions): RunResult {",
-          "  if (repository.hasUncommittedChanges()) {",
-          "    return { exitCode: 1, output: \"commit first: results name the commit they measured\\n\" };",
-          "  }",
-          "  const firstFlag = args.findIndex((arg) => arg.startsWith(\"--\"));",
-          "  const tasks = firstFlag === -1 ? args : args.slice(0, firstFlag);",
-          "  const failures = tasks",
-          "    .map((task) => check([task], { root, hiddenTests }))",
-          "    .filter(({ exitCode }) => exitCode !== 0);",
           "  if (failures.length > 0) {",
           "    trials.start({ task: tasks[0] ?? \"\", agent: \"foreman\" });"
         ]
