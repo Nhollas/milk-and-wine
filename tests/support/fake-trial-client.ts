@@ -1,12 +1,15 @@
 type StartedTrial = { task: string; agent: string };
 
 export function fakeOutput() {
-  const lines: string[] = [];
+  let printed = "";
 
   return {
-    lines,
+    /** What was printed, read as one stream and split on line breaks. */
+    get lines(): string[] {
+      return printed.split("\n").filter((line) => line !== "");
+    },
     print: (text: string) => {
-      lines.push(...text.split("\n").filter((line) => line !== ""));
+      printed += text;
     },
   };
 }
