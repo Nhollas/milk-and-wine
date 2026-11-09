@@ -5,17 +5,11 @@ import { z } from "zod";
 
 const TASKS_FOLDER = "tools/benchmark/tasks";
 
-// What every trial's repository takes from this one: the standards, and the config to install,
-// typecheck and test. None of the lint, format or commit tooling.
-const SHARED_FILES = [
-  ".gitignore",
-  "CODING-STANDARDS.md",
-  "package.json",
-  "pnpm-lock.yaml",
-  "pnpm-workspace.yaml",
-  "tsconfig.json",
-  "vitest.config.ts",
-];
+// A trial's own config, just enough to install, typecheck and test: not this repository's tooling.
+const TRIAL_CONFIG_FOLDER = "tools/benchmark/trial-config";
+
+// What every trial's repository takes from this one besides its config.
+const SHARED_FILES = ["CODING-STANDARDS.md"];
 
 // Foreman's process, and what its skills read.
 const FOREMAN_FILES = [
@@ -128,6 +122,7 @@ function writeRepository(task: string, agent: string, root: string, repository: 
     cpSync(from, join(repository, to), { recursive: true });
   const projectFiles = agent === "foreman" ? [...SHARED_FILES, ...FOREMAN_FILES] : SHARED_FILES;
   for (const path of projectFiles) copy(join(root, path), path);
+  copy(join(root, TRIAL_CONFIG_FOLDER), ".");
   copy(join(root, "docs/agents/issue-tracker/bench.md"), "ISSUE-TRACKER.md");
   copy(join(taskFolder, "spec.md"), `specs/${task}/spec.md`);
   copy(join(taskFolder, "issue.md"), `.issues/${task}/issue.md`);
