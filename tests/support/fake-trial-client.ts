@@ -14,15 +14,20 @@ export function fakeOutput() {
 export function fakeTrials(output: { lines: string[] }) {
   const started: StartedTrial[] = [];
   const linesPrintedAtStart: number[] = [];
+  const returned: Record<string, unknown>[] = [];
 
   return {
     started,
     /** For each trial started, how many lines had been printed when it started. */
     linesPrintedAtStart,
+    /** The record each trial returned, with measures distinct per trial. */
+    returned,
     start(trial: StartedTrial) {
       started.push(trial);
       linesPrintedAtStart.push(output.lines.length);
-      return { ...trial, wallClockMs: started.length };
+      const record = { ...trial, wallClockMs: started.length, tokens: started.length * 100 };
+      returned.push(record);
+      return record;
     },
   };
 }

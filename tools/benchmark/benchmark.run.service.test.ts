@@ -2,8 +2,12 @@ import { expect } from "vitest";
 import { test } from "../../tests/support/benchmark.fixtures.ts";
 import { run } from "./run.ts";
 
-function jsonLines(lines: string[]): { task: string; agent: string }[] {
-  return lines.map((line) => JSON.parse(line) as { task: string; agent: string });
+function jsonLines(lines: string[]): Record<string, unknown>[] {
+  return lines.map((line) => JSON.parse(line) as Record<string, unknown>);
+}
+
+function byTokens(records: Record<string, unknown>[]) {
+  return records.toSorted((a, b) => Number(a["tokens"]) - Number(b["tokens"]));
 }
 
 test("B8: refuses to run with uncommitted changes", ({
@@ -75,20 +79,7 @@ test("B27: starts --trials trials of each agent on each task, printing each tria
     "widgets/foreman",
     "widgets/foreman",
   ]);
-  expect(
-    jsonLines(output.lines)
-      .map(({ task, agent }) => `${task}/${agent}`)
-      .toSorted(),
-  ).toEqual([
-    "gadgets/baseline",
-    "gadgets/baseline",
-    "gadgets/foreman",
-    "gadgets/foreman",
-    "widgets/baseline",
-    "widgets/baseline",
-    "widgets/foreman",
-    "widgets/foreman",
-  ]);
+  expect(byTokens(jsonLines(output.lines))).toEqual(byTokens(trials.returned));
   expect(trials.linesPrintedAtStart).toEqual([0, 1, 2, 3, 4, 5, 6, 7]);
   expect(result.exitCode).toBe(0);
 });
@@ -115,11 +106,7 @@ test("B27: starts 1 trial of each agent on each task when --trials isn't given",
     "widgets/baseline",
     "widgets/foreman",
   ]);
-  expect(
-    jsonLines(output.lines)
-      .map(({ task, agent }) => `${task}/${agent}`)
-      .toSorted(),
-  ).toEqual(["widgets/baseline", "widgets/foreman"]);
+  expect(byTokens(jsonLines(output.lines))).toEqual(byTokens(trials.returned));
   expect(trials.linesPrintedAtStart).toEqual([0, 1]);
   expect(result.exitCode).toBe(0);
 });
