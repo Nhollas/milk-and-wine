@@ -38,8 +38,8 @@ A task is valid when it has every part, every scenario in its spec has a hidden 
 | --- | --- | --- | --- | --- |
 | B8 | The repository has uncommitted changes | `bench:run` runs | Prints `commit first: results name the commit they measured`, starts nothing, and exits `1` | service |
 | B9 | One or more of the tasks named aren't valid | `bench:run` runs | Prints what `bench:check <task>` prints for each of them, starts nothing, and exits `1` | service |
-| B10 | A clean repository and valid tasks | A trial starts | Its sandbox holds a new git repository with only the task's spec, issue, tickets and starter code, `CODING-STANDARDS.md`, the project's config files, and an `ISSUE-TRACKER.md` at its root that says how to use the `bench` issue tracker. A foreman trial's also has `.claude/`, and what its skills read: `GLOSSARY.md`, `docs/adr/`, `docs/agents/issue-tracker/`, `tools/specs/` and `tools/spec-mutants/` | integration |
-| B11 | A foreman trial's sandbox is ready | The trial starts | Runs `claude -p "/foreman <issue>"` once, with `ISSUE_TRACKER=bench` | integration |
+| B10 | A clean repository and valid tasks | A trial starts | Its sandbox holds a new git repository with only the task's spec, issue and tickets, its starter code at the root, `CODING-STANDARDS.md`, the config files needed to install, typecheck and test, but none of the project's lint, format or commit tooling, and an `ISSUE-TRACKER.md` at its root that says how to use the `bench` issue tracker. A foreman trial's also has `.claude/`, and what its skills read: `GLOSSARY.md`, `docs/adr/`, `docs/agents/issue-tracker/`, `tools/specs/` and `tools/spec-mutants/` | integration |
+| B11 | A foreman trial's sandbox is ready | The trial starts | Runs Harbor's `claude-code` agent once on the instruction `/foreman <issue>`, with `ISSUE_TRACKER=bench` and a 2-hour timeout | integration |
 | B12 | A baseline trial's sandbox is ready | The trial starts | Runs `claude -p "Deliver the tickets in <issue>. ISSUE-TRACKER.md says how to use the issue tracker."` once | integration |
 | B13 | An agent follows the `bench` issue tracker | It puts a ticket up for review | Merges the ticket's branch into `main` with `--no-ff`, which closes the ticket | system |
 | B14 | A trial's `claude` exits with an error, or the trial times out | The trial ends | Records it as broken, with the reason and what it measured so far, and the experiment goes on | integration |
@@ -48,7 +48,7 @@ A task is valid when it has every part, every scenario in its spec has a hidden 
 **Why**
 
 - **B8:** A result is evidence about one version of the workflow, so it has to name a commit that holds exactly it.
-- **B10:** Both agents get the same task, standards and tracker, and nothing they could copy an answer from or that steers how they work. Baseline is Claude Code as anyone would have it, free to work however it likes. `.claude/` and the files its skills read are foreman's process, so only foreman gets them.
+- **B10:** Both agents get the same task, standards and tracker, and nothing they could copy an answer from or that steers how they work. Baseline is Claude Code as anyone would have it, free to work however it likes. `.claude/` and the files its skills read are foreman's process, so only foreman gets them. A trial measures the workflow, not this repository's taste in tooling.
 - **B11, B12, B13:** Both agents get the same instruction and finish in one session. Foreman stops when the next ticket waits on one still up for review, so in a trial putting a ticket up for review merges it, as a person would. A trial that stops to ask a question just ends: nobody answers, as in other coding benchmarks.
 - **B14:** How often an agent breaks is part of what it costs, so a broken trial is counted, not run again.
 - **B15:** Trials after the limit would all break for a reason that isn't the agent's.
@@ -59,7 +59,7 @@ Every measure reads the trial's working tree as the agent leaves it, committed o
 
 | ID | Given | When | Then | Verified |
 | --- | --- | --- | --- | --- |
-| B16 | A trial has ended | It's measured | Records its wall-clock time, and its tokens by model, subagents included | integration |
+| B16 | A trial has ended | It's measured | Records how long its agent ran, not counting building the sandbox or grading, and its tokens by model, subagents included | integration |
 | B17 | All of a scenario's hidden tests pass | The trial is measured | Counts the scenario passed. The pass rate is passed scenarios over the task's scenarios | service |
 | B18 | The trial wrote tests of its own and none fail, and a scenario's hidden tests do | The trial is measured | Counts the scenario a false pass | service |
 | B20 | A trial has ended | It's measured | Records Stryker's mutation score for the task's `src/` against the trial's own tests | service |
@@ -68,6 +68,7 @@ Every measure reads the trial's working tree as the agent leaves it, committed o
 **Why**
 
 - **Measures:** The pass rate is the main one: how much of the spec an agent built. Time and tokens are pace. False passes and the mutation score are confidence at review: whether the agent's own tests would have warned a reviewer. The longest function and the highest complexity are how hard the code is to review.
+- **B16:** Building the sandbox and grading take the same for both agents, so counting them would only add noise to pace.
 - **B17:** A scenario with many hidden tests counts no more than one with a few.
 - **B18:** A false pass is a bug a reviewer would have had to find alone, since the agent's tests said all was well.
 
