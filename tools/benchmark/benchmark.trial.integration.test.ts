@@ -202,6 +202,20 @@ test("B16: records a trial's wall-clock time, and its tokens by model, subagents
     agentStartedAt: "2026-11-09T14:00:00.000000Z",
     agentFinishedAt: "2026-11-09T14:01:30.000000Z",
     claudeMessages: [
+      // An earlier result, as a prior turn emits: it counts only part of the run.
+      {
+        type: "result",
+        subtype: "success",
+        modelUsage: {
+          "claude-opus-4-1": {
+            inputTokens: 700,
+            outputTokens: 200,
+            cacheReadInputTokens: 2000,
+            cacheCreationInputTokens: 300,
+            costUSD: 0.2,
+          },
+        },
+      },
       {
         type: "assistant",
         parent_tool_use_id: null,
