@@ -155,6 +155,7 @@ function fakeTrials() {
     started,
     start(trial: StartedTrial) {
       started.push(trial);
+      return { ...trial, wallClockMs: started.length };
     },
   };
 }

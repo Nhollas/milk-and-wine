@@ -193,7 +193,7 @@ test("B11: gives the agent a 2-hour timeout in the task folder", ({
   expect(taskToml).toMatch(/\[agent\][^[]*\btimeout_sec\s*=\s*7200(\.0)?\s*$/mu);
 });
 
-test("B16: records a trial's wall-clock time, and its tokens by model, subagents included", ({
+test("B16: records how long a trial's agent ran, not counting building the sandbox or grading, and its tokens by model, subagents included", ({
   tasks,
   harbor,
   workFolder,
