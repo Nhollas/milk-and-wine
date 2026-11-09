@@ -159,57 +159,74 @@ function fakeTrials() {
   };
 }
 
-type HarborCall = { command: string; args: string[]; env: Record<string, string> };
+type HarborRun = { args: string[] };
 
 type TrialOutput = {
-  startedAt: string;
-  finishedAt: string;
+  /** The trial's `agent_execution` timing in `result.json`: the agent's own run. */
+  agentStartedAt: string;
+  agentFinishedAt: string;
+  /** The final `result` message of Claude Code's stream-json output. */
   claudeResult: Record<string, unknown>;
 };
 
-// The process call that starts `harbor run`. It records its arguments and writes Harbor's
-// output layout (`<jobs>/<job>/<trial>/result.json`, `agent/`) under the `-o` folder.
-function fakeHarborProcess() {
-  const calls: HarborCall[] = [];
+// A fake Harbor: records the args it was run with and leaves a recorded output folder under `-o`.
+// It simulates nothing of what Harbor does with the task folder.
+function fakeHarbor() {
+  const runs: HarborRun[] = [];
   let output: TrialOutput | undefined;
 
-  function writeTrialOutput(
+  // Harbor's layout: `<jobs>/<job>/<trial>/result.json` (a TrialResult) and, for the
+  // `claude-code` agent, `agent/claude-code.txt`, the agent's stream-json output teed by Harbor.
+  function leaveOutputFolder(
     jobsFolder: string,
-    { startedAt, finishedAt, claudeResult }: TrialOutput,
+    { agentStartedAt, agentFinishedAt, claudeResult }: TrialOutput,
   ) {
     const trialFolder = join(jobsFolder, "2026-11-09__14-00-00", "widgets__k7Qp2Xa");
     mkdirSync(join(trialFolder, "agent"), { recursive: true });
-    mkdirSync(join(trialFolder, "verifier"), { recursive: true });
     writeFileSync(
       join(trialFolder, "result.json"),
       JSON.stringify({
         task_name: "widgets",
         trial_name: "widgets__k7Qp2Xa",
-        started_at: startedAt,
-        finished_at: finishedAt,
+        // The whole trial, environment build and verifier included: longer than the agent's run.
+        started_at: "2026-11-09T13:55:00.000000Z",
+        finished_at: "2026-11-09T14:10:00.000000Z",
+        environment_setup: {
+          started_at: "2026-11-09T13:55:00.000000Z",
+          finished_at: "2026-11-09T13:58:00.000000Z",
+        },
+        agent_execution: { started_at: agentStartedAt, finished_at: agentFinishedAt },
         exception_info: null,
-        agent_result: { n_input_tokens: 0, n_cache_tokens: 0, n_output_tokens: 0 },
-        verifier_result: null,
       }),
     );
-    writeFileSync(join(trialFolder, "agent", "claude.json"), JSON.stringify(claudeResult));
+    const systemMessage = { type: "system", subtype: "init", model: "claude-opus-4-1" };
+    writeFileSync(
+      join(trialFolder, "agent", "claude-code.txt"),
+      [
+        "Not JSON: a line of the agent's other output",
+        JSON.stringify(systemMessage),
+        JSON.stringify(claudeResult),
+        "",
+      ].join("\n"),
+    );
   }
 
   return {
-    calls,
-    /** What the next `harbor run` leaves in its output folder. */
-    producesTrial(trialOutput: TrialOutput) {
+    runs,
+    /** What `harbor run` leaves in its output folder. */
+    leavesOutput(trialOutput: TrialOutput) {
       output = trialOutput;
     },
-    run(command: string, args: string[], env: Record<string, string>) {
-      calls.push({ command, args, env });
+    run: (args: string[]) => {
+      runs.push({ args });
       const jobsFolder = args[args.indexOf("-o") + 1];
-      if (output !== undefined && jobsFolder !== undefined) writeTrialOutput(jobsFolder, output);
+      if (output !== undefined && jobsFolder !== undefined) leaveOutputFolder(jobsFolder, output);
       return { exitCode: 0 };
     },
-    /** The task folder the trial handed to `harbor run -p`. */
-    taskFolder(): string {
-      return this.calls[0]?.args[this.calls[0].args.indexOf("-p") + 1] ?? "";
+    /** The task folder the trial gave Harbor, `harbor run -p <task folder>`. */
+    taskFolder: (): string => {
+      const args = runs[0]?.args ?? [];
+      return args[args.indexOf("-p") + 1] ?? "";
     },
   };
 }
@@ -247,7 +264,7 @@ export const test = base
   .extend("repository", () => fakeRepository())
   .extend("trials", () => fakeTrials())
   .extend("folders", () => ({ filesUnder, fileText, isGitRoot }))
-  .extend("harbor", () => fakeHarborProcess())
+  .extend("harbor", () => fakeHarbor())
   .extend("workFolder", ({}, { onCleanup }) => {
     const folder = mkdtempSync(join(tmpdir(), "benchmark-trial-"));
     onCleanup(() => rmSync(folder, { recursive: true, force: true }));

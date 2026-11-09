@@ -59,9 +59,9 @@ const foremanOnlyFiles = [
   "tools/specs/specs.ts",
 ];
 
-/** The repository in a Harbor task folder's `environment/`, less the Dockerfile Harbor needs beside it. */
-function repositoryFiles(listFiles: (folder: string) => string[], taskFolder: string): string[] {
-  return listFiles(join(taskFolder, "environment")).filter((path) => path !== "Dockerfile");
+/** The repository the task folder's Dockerfile copies in: `environment/repo/`. */
+function repositoryFolder(taskFolder: string): string {
+  return join(taskFolder, "environment", "repo");
 }
 
 test("B10: gives a baseline trial only the task, the standards, the config and the bench tracker", ({
@@ -75,11 +75,12 @@ test("B10: gives a baseline trial only the task, the standards, the config and t
 
   runTrial(
     { task: "widgets", agent: "baseline" },
-    { root: tasks.root, workFolder, runProcess: harbor.run.bind(harbor) },
+    { root: tasks.root, workFolder, harbor: harbor.run },
   );
 
-  expect(repositoryFiles(folders.filesUnder, harbor.taskFolder())).toEqual(baselineFiles);
-  expect(folders.isGitRoot(join(harbor.taskFolder(), "environment"))).toBe(true);
+  const repository = repositoryFolder(harbor.taskFolder());
+  expect(folders.filesUnder(repository)).toEqual(baselineFiles);
+  expect(folders.isGitRoot(repository)).toBe(true);
 });
 
 test("B10: gives a foreman trial its own process too", ({ tasks, harbor, folders, workFolder }) => {
@@ -88,13 +89,14 @@ test("B10: gives a foreman trial its own process too", ({ tasks, harbor, folders
 
   runTrial(
     { task: "widgets", agent: "foreman" },
-    { root: tasks.root, workFolder, runProcess: harbor.run.bind(harbor) },
+    { root: tasks.root, workFolder, harbor: harbor.run },
   );
 
-  expect(repositoryFiles(folders.filesUnder, harbor.taskFolder())).toEqual(
+  const repository = repositoryFolder(harbor.taskFolder());
+  expect(folders.filesUnder(repository)).toEqual(
     [...baselineFiles, ...foremanOnlyFiles].toSorted(),
   );
-  expect(folders.isGitRoot(join(harbor.taskFolder(), "environment"))).toBe(true);
+  expect(folders.isGitRoot(repository)).toBe(true);
 });
 
 test("B10: puts the bench tracker's instructions in ISSUE-TRACKER.md and the starter code at the root", ({
@@ -108,14 +110,14 @@ test("B10: puts the bench tracker's instructions in ISSUE-TRACKER.md and the sta
 
   runTrial(
     { task: "widgets", agent: "baseline" },
-    { root: tasks.root, workFolder, runProcess: harbor.run.bind(harbor) },
+    { root: tasks.root, workFolder, harbor: harbor.run },
   );
 
-  const environment = join(harbor.taskFolder(), "environment");
-  expect(folders.fileText(environment, "ISSUE-TRACKER.md")).toBe(
+  const repository = repositoryFolder(harbor.taskFolder());
+  expect(folders.fileText(repository, "ISSUE-TRACKER.md")).toBe(
     "Merge the ticket's branch with --no-ff.\n",
   );
-  expect(folders.fileText(environment, "src/widgets.ts")).toBe(`export const mode = "starter";\n`);
+  expect(folders.fileText(repository, "src/widgets.ts")).toBe(`export const mode = "starter";\n`);
 });
 
 test("B11: runs foreman once on the issue, with the bench tracker", ({
@@ -129,14 +131,35 @@ test("B11: runs foreman once on the issue, with the bench tracker", ({
 
   runTrial(
     { task: "widgets", agent: "foreman" },
-    { root: tasks.root, workFolder, runProcess: harbor.run.bind(harbor) },
+    { root: tasks.root, workFolder, harbor: harbor.run },
   );
 
-  expect(harbor.calls).toHaveLength(1);
-  expect(harbor.calls[0]?.command).toBe("harbor");
-  expect(harbor.calls[0]?.args[0]).toBe("run");
+  expect(harbor.runs).toHaveLength(1);
+  const args = harbor.runs[0]?.args ?? [];
+  expect(args[0]).toBe("run");
+  expect(args[args.indexOf("-a") + 1]).toBe("claude-code");
+  expect(args[args.indexOf("--ae") + 1]).toBe("ISSUE_TRACKER=bench");
+  expect(args.filter((arg) => arg === "--ae")).toHaveLength(1);
   expect(folders.fileText(harbor.taskFolder(), "instruction.md")?.trim()).toBe("/foreman widgets");
-  expect(harbor.calls[0]?.args.join(" ")).toContain("--ae ISSUE_TRACKER=bench");
+});
+
+// The 2-hour limit is a sentence of the spec, not a scenario; B14 records the timeout itself.
+test("B11: gives the agent a 2-hour timeout in the task folder", ({
+  tasks,
+  harbor,
+  folders,
+  workFolder,
+}) => {
+  tasks.addTask("widgets");
+  tasks.addFiles(projectFiles);
+
+  runTrial(
+    { task: "widgets", agent: "foreman" },
+    { root: tasks.root, workFolder, harbor: harbor.run },
+  );
+
+  const taskToml = folders.fileText(harbor.taskFolder(), "task.toml") ?? "";
+  expect(taskToml).toMatch(/\[agent\][^[]*\btimeout_sec\s*=\s*7200(\.0)?\s*$/mu);
 });
 
 test("B16: records a trial's wall-clock time, and its tokens by model, subagents included", ({
@@ -146,12 +169,14 @@ test("B16: records a trial's wall-clock time, and its tokens by model, subagents
 }) => {
   tasks.addTask("widgets");
   tasks.addFiles(projectFiles);
-  harbor.producesTrial({
-    startedAt: "2026-11-09T14:00:00.000000Z",
-    finishedAt: "2026-11-09T14:01:30.000000Z",
+  harbor.leavesOutput({
+    agentStartedAt: "2026-11-09T14:00:00.000000Z",
+    agentFinishedAt: "2026-11-09T14:01:30.000000Z",
     claudeResult: {
       type: "result",
+      subtype: "success",
       duration_ms: 5_000,
+      total_cost_usd: 0.5,
       modelUsage: {
         "claude-opus-4-1": {
           inputTokens: 1200,
@@ -173,7 +198,7 @@ test("B16: records a trial's wall-clock time, and its tokens by model, subagents
 
   const record = runTrial(
     { task: "widgets", agent: "foreman" },
-    { root: tasks.root, workFolder, runProcess: harbor.run.bind(harbor) },
+    { root: tasks.root, workFolder, harbor: harbor.run },
   );
 
   expect(record.wallClockMs).toBe(90_000);

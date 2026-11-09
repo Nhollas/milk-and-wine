@@ -9,8 +9,8 @@ type TrialOptions = {
   root: string;
   /** A folder the trial may write its Harbor task folder and Harbor's output folder in. */
   workFolder: string;
-  /** Starts a process and waits for it: the one call the trial makes to run `harbor run`. */
-  runProcess(command: string, args: string[], env: Record<string, string>): { exitCode: number };
+  /** Harbor: takes the arguments after `harbor` (`run -p <task folder> ...`) and waits for it to finish. */
+  harbor(args: string[]): { exitCode: number };
 };
 
 type TrialRecord = {
