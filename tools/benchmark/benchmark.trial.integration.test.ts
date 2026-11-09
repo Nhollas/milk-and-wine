@@ -153,16 +153,16 @@ test("B11: runs foreman once on the issue, with the bench tracker", ({
     { root: tasks.root, workFolder, harbor: harbor.run },
   );
 
-  // The arguments handed to Harbor are this scenario's outcome. Written whole, the list also pins
-  // the folders and forbids other `--ae` values, which B11 leaves open.
+  // The arguments handed to Harbor are this scenario's outcome. Written whole, the list pins the
+  // agent and its environment, not the folders, which B11 doesn't name.
   expect(harbor.runs).toEqual([
     {
       args: [
         "run",
         "-p",
-        join(workFolder, "widgets"),
+        expect.any(String),
         "-o",
-        join(workFolder, "jobs"),
+        expect.any(String),
         "-a",
         "claude-code",
         "--ae",
