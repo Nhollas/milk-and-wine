@@ -472,6 +472,18 @@
           "  harbor([\"run\", \"-p\", taskFolder, \"-o\", jobsFolder]);",
           "  const { exitCode } = harbor(["
         ]
+      },
+      {
+        "breaks": "The trial adds a second environment variable besides `ISSUE_TRACKER=bench`.",
+        "file": "tools/benchmark/trial.ts",
+        "find": ["    \"ISSUE_TRACKER=bench\","],
+        "replace": ["    \"ISSUE_TRACKER=bench\",", "    \"--ae\",", "    \"CI=true\","]
+      },
+      {
+        "breaks": "The trial adds a second environment variable to the same `--ae` value, alongside `ISSUE_TRACKER=bench`.",
+        "file": "tools/benchmark/trial.ts",
+        "find": ["    \"ISSUE_TRACKER=bench\","],
+        "replace": ["    `ISSUE_TRACKER=bench,AGENT=${trial.agent}`,"]
       }
     ]
   },
