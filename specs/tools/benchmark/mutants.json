@@ -344,7 +344,7 @@
     ]
   },
   "B10": {
-    "then": "Its sandbox holds a new git repository with only the task's spec at `specs/<task>/spec.md`, its issue and tickets under `.issues/<task>/` where the `bench` tracker keeps them, its starter code at the root, `CODING-STANDARDS.md`, the trial config in `tools/benchmark/trial-config/` at its root, and an `ISSUE-TRACKER.md` at its root: a copy of `docs/agents/issue-tracker/bench.md`, which says how to use the `bench` issue tracker. A foreman trial's also has `.claude/`, and what its skills read: `GLOSSARY.md`, `docs/adr/`, `docs/agents/issue-tracker/`, `tools/specs/` and `tools/spec-mutants/`",
+    "then": "Its sandbox holds a new git repository with only the task's spec at `specs/<task>/spec.md`, its issue and tickets under `.issues/<task>/` where the `bench` tracker keeps them, its starter code at the root, `CODING-STANDARDS.md`, the files of `tools/benchmark/trial-config/` at its root, and an `ISSUE-TRACKER.md` at its root: a copy of `docs/agents/issue-tracker/bench.md`, which says how to use the `bench` issue tracker. A foreman trial's also has `.claude/`, and what its skills read: `GLOSSARY.md`, `docs/adr/`, `docs/agents/issue-tracker/`, `tools/specs/` and `tools/spec-mutants/`",
     "mutants": [
       {
         "breaks": "The task's spec is put at specs/spec.md instead of specs/<task>/spec.md.",
@@ -379,8 +379,22 @@
       {
         "breaks": "The trial config is put in a trial-config/ subfolder instead of at the root.",
         "file": "tools/benchmark/trial.ts",
-        "find": ["  copy(join(root, TRIAL_CONFIG_FOLDER), \".\");"],
-        "replace": ["  copy(join(root, TRIAL_CONFIG_FOLDER), \"trial-config\");"]
+        "find": ["  cpSync(join(root, TRIAL_CONFIG_FOLDER), repository, {"],
+        "replace": [
+          "  cpSync(join(root, TRIAL_CONFIG_FOLDER), join(repository, \"trial-config\"), {"
+        ]
+      },
+      {
+        "breaks": "The trial config's JSON files are left out of the trial's repository.",
+        "file": "tools/benchmark/trial.ts",
+        "find": ["    filter: (path) => basename(path) !== \"node_modules\","],
+        "replace": ["    filter: (path) => !path.endsWith(\".json\"),"]
+      },
+      {
+        "breaks": "A foreman trial's repository lacks docs/adr/, which its skills read.",
+        "file": "tools/benchmark/trial.ts",
+        "find": ["  \"docs/adr\","],
+        "replace": []
       },
       {
         "breaks": "The issue tracker guide is copied to docs/ISSUE-TRACKER.md instead of ISSUE-TRACKER.md at the root.",
@@ -424,7 +438,7 @@
     ]
   },
   "B11": {
-    "then": "Runs Harbor's `claude-code` agent once on the instruction `/foreman <issue>`, with `ISSUE_TRACKER=bench` and a 2-hour timeout",
+    "then": "Runs Harbor's `claude-code` agent once on the instruction `/foreman <issue>`, with `ISSUE_TRACKER=bench` as the only environment it adds and a 2-hour timeout",
     "mutants": [
       {
         "breaks": "The foreman instruction omits the issue, so it is just `/foreman`.",
@@ -453,13 +467,16 @@
       {
         "breaks": "Harbor is run twice for one trial instead of once.",
         "file": "tools/benchmark/trial.ts",
-        "find": ["  harbor(["],
-        "replace": ["  for (let attempt = 0; attempt < 2; attempt++) harbor(["]
+        "find": ["  const { exitCode } = harbor(["],
+        "replace": [
+          "  harbor([\"run\", \"-p\", taskFolder, \"-o\", jobsFolder]);",
+          "  const { exitCode } = harbor(["
+        ]
       }
     ]
   },
   "B16": {
-    "then": "Records how long its agent ran, not counting building the sandbox or grading, and its tokens by model, subagents included",
+    "then": "Records how long its agent ran, not counting building the sandbox or grading, and its tokens by model, subagents included: input, output, cache-read and cache-creation tokens for each",
     "mutants": [
       {
         "breaks": "Time runs from the agent's start to now, so it counts everything after the agent finished, such as grading.",
@@ -472,22 +489,62 @@
       {
         "breaks": "Only the first model's tokens are recorded, not every model's.",
         "file": "tools/benchmark/trial.ts",
-        "find": ["    Object.entries(result?.data?.modelUsage ?? {}).map(([model, usage]) => ["],
+        "find": ["    tokens: result.data.modelUsage,"],
         "replace": [
-          "    Object.entries(result?.data?.modelUsage ?? {}).slice(0, 1).map(([model, usage]) => ["
+          "    tokens: Object.fromEntries(Object.entries(result.data.modelUsage).slice(0, 1)),"
         ]
       },
       {
         "breaks": "Output tokens are always recorded as 0.",
         "file": "tools/benchmark/trial.ts",
-        "find": ["        outputTokens: usage.outputTokens,"],
-        "replace": ["        outputTokens: 0,"]
+        "find": ["    tokens: result.data.modelUsage,"],
+        "replace": [
+          "    tokens: Object.fromEntries(",
+          "      Object.entries(result.data.modelUsage).map(([model, usage]) => [",
+          "        model,",
+          "        { ...usage, outputTokens: 0 },",
+          "      ]),",
+          "    ),"
+        ]
       },
       {
         "breaks": "Cache-read input tokens are always recorded as 0.",
         "file": "tools/benchmark/trial.ts",
-        "find": ["        cacheReadInputTokens: usage.cacheReadInputTokens,"],
-        "replace": ["        cacheReadInputTokens: 0,"]
+        "find": ["    tokens: result.data.modelUsage,"],
+        "replace": [
+          "    tokens: Object.fromEntries(",
+          "      Object.entries(result.data.modelUsage).map(([model, usage]) => [",
+          "        model,",
+          "        { ...usage, cacheReadInputTokens: 0 },",
+          "      ]),",
+          "    ),"
+        ]
+      },
+      {
+        "breaks": "Cache-creation input tokens are always recorded as 0.",
+        "file": "tools/benchmark/trial.ts",
+        "find": ["    tokens: result.data.modelUsage,"],
+        "replace": [
+          "    tokens: Object.fromEntries(",
+          "      Object.entries(result.data.modelUsage).map(([model, usage]) => [",
+          "        model,",
+          "        { ...usage, cacheCreationInputTokens: 0 },",
+          "      ]),",
+          "    ),"
+        ]
+      },
+      {
+        "breaks": "Input tokens are always recorded as 0.",
+        "file": "tools/benchmark/trial.ts",
+        "find": ["    tokens: result.data.modelUsage,"],
+        "replace": [
+          "    tokens: Object.fromEntries(",
+          "      Object.entries(result.data.modelUsage).map(([model, usage]) => [",
+          "        model,",
+          "        { ...usage, inputTokens: 0 },",
+          "      ]),",
+          "    ),"
+        ]
       },
       {
         "breaks": "Tokens come from the first result message rather than the final one that totals all models and subagents.",
