@@ -15,6 +15,7 @@ type RunOptions = {
   hiddenTests: HiddenTests;
   repository: Repository;
   trials: Trials;
+  print(text: string): void;
 };
 
 type RunResult = { exitCode: number; output: string };
@@ -61,6 +62,9 @@ if (import.meta.main) {
     root,
     hiddenTests: vitestHiddenTests(root),
     repository: gitRepository(root),
+    print: (text) => {
+      process.stdout.write(text);
+    },
     trials: {
       start(trial) {
         const workFolder = mkdtempSync(join(tmpdir(), "bench-trial-"));

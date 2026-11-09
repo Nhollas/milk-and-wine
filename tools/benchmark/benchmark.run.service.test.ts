@@ -2,11 +2,8 @@ import { expect } from "vitest";
 import { test } from "../../tests/support/benchmark.fixtures.ts";
 import { run } from "./run.ts";
 
-function jsonLines(output: string): { wallClockMs: number }[] {
-  return output
-    .split("\n")
-    .filter((line) => line !== "")
-    .map((line) => JSON.parse(line) as { wallClockMs: number });
+function jsonLines(lines: string[]): { task: string; agent: string }[] {
+  return lines.map((line) => JSON.parse(line) as { task: string; agent: string });
 }
 
 test("B8: refuses to run with uncommitted changes", ({
@@ -14,6 +11,7 @@ test("B8: refuses to run with uncommitted changes", ({
   hiddenTests,
   repository,
   trials,
+  output,
 }) => {
   tasks.addTask("widgets");
   repository.addUncommittedChanges();
@@ -23,6 +21,7 @@ test("B8: refuses to run with uncommitted changes", ({
     hiddenTests,
     repository,
     trials,
+    print: output.print,
   });
 
   expect(result).toEqual({
@@ -32,7 +31,7 @@ test("B8: refuses to run with uncommitted changes", ({
   expect(trials.started).toEqual([]);
 });
 
-test("B9: refuses to run an invalid task", ({ tasks, hiddenTests, repository, trials }) => {
+test("B9: refuses to run an invalid task", ({ tasks, hiddenTests, repository, trials, output }) => {
   tasks.addTask("gadgets", { without: ["issue"] });
   tasks.addTask("widgets", { without: ["solution"] });
 
@@ -41,6 +40,7 @@ test("B9: refuses to run an invalid task", ({ tasks, hiddenTests, repository, tr
     hiddenTests,
     repository,
     trials,
+    print: output.print,
   });
 
   expect(result.exitCode).toBe(1);
@@ -54,6 +54,7 @@ test("B27: starts --trials trials of each agent on each task, printing each tria
   hiddenTests,
   repository,
   trials,
+  output,
 }) => {
   tasks.addTask("gadgets");
   tasks.addTask("widgets");
@@ -61,7 +62,7 @@ test("B27: starts --trials trials of each agent on each task, printing each tria
 
   const result = run(
     ["gadgets", "widgets", "--agent", "foreman", "--agent", "baseline", "--trials", "2"],
-    { root: tasks.root, hiddenTests, repository, trials },
+    { root: tasks.root, hiddenTests, repository, trials, print: output.print },
   );
 
   expect(trials.started.map(({ task, agent }) => `${task}/${agent}`).toSorted()).toEqual([
@@ -74,9 +75,21 @@ test("B27: starts --trials trials of each agent on each task, printing each tria
     "widgets/foreman",
     "widgets/foreman",
   ]);
-  expect(jsonLines(result.output).map(({ wallClockMs }) => wallClockMs)).toEqual([
-    1, 2, 3, 4, 5, 6, 7, 8,
+  expect(
+    jsonLines(output.lines)
+      .map(({ task, agent }) => `${task}/${agent}`)
+      .toSorted(),
+  ).toEqual([
+    "gadgets/baseline",
+    "gadgets/baseline",
+    "gadgets/foreman",
+    "gadgets/foreman",
+    "widgets/baseline",
+    "widgets/baseline",
+    "widgets/foreman",
+    "widgets/foreman",
   ]);
+  expect(trials.linesPrintedAtStart).toEqual([0, 1, 2, 3, 4, 5, 6, 7]);
   expect(result.exitCode).toBe(0);
 });
 
@@ -85,6 +98,7 @@ test("B27: starts 1 trial of each agent on each task when --trials isn't given",
   hiddenTests,
   repository,
   trials,
+  output,
 }) => {
   tasks.addTask("widgets");
   hiddenTests.onSolution([{ title: "B1: costs 2 each" }]);
@@ -94,14 +108,18 @@ test("B27: starts 1 trial of each agent on each task when --trials isn't given",
     hiddenTests,
     repository,
     trials,
+    print: output.print,
   });
 
-  expect(trials.started).toEqual([
-    { task: "widgets", agent: "foreman" },
-    { task: "widgets", agent: "baseline" },
+  expect(trials.started.map(({ task, agent }) => `${task}/${agent}`).toSorted()).toEqual([
+    "widgets/baseline",
+    "widgets/foreman",
   ]);
-  expect(jsonLines(result.output)).toEqual([
-    { task: "widgets", agent: "foreman", wallClockMs: 1 },
-    { task: "widgets", agent: "baseline", wallClockMs: 2 },
-  ]);
+  expect(
+    jsonLines(output.lines)
+      .map(({ task, agent }) => `${task}/${agent}`)
+      .toSorted(),
+  ).toEqual(["widgets/baseline", "widgets/foreman"]);
+  expect(trials.linesPrintedAtStart).toEqual([0, 1]);
+  expect(result.exitCode).toBe(0);
 });

@@ -12,6 +12,7 @@ import {
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { test as base } from "vitest";
+import { fakeOutput, fakeTrials } from "./fake-trial-client.ts";
 
 type TaskPart = "spec" | "issue" | "ticket" | "starter code" | "hidden tests" | "solution";
 
@@ -146,20 +147,6 @@ function fakeRepository() {
   };
 }
 
-type StartedTrial = { task: string; agent: string };
-
-function fakeTrials() {
-  const started: StartedTrial[] = [];
-
-  return {
-    started,
-    start(trial: StartedTrial) {
-      started.push(trial);
-      return { ...trial, wallClockMs: started.length };
-    },
-  };
-}
-
 type HarborRun = { args: string[] };
 
 type TrialOutput = {
@@ -289,7 +276,8 @@ export const test = base
   })
   .extend("hiddenTests", () => fakeHiddenTests())
   .extend("repository", () => fakeRepository())
-  .extend("trials", () => fakeTrials())
+  .extend("output", () => fakeOutput())
+  .extend("trials", ({ output }) => fakeTrials(output))
   .extend("folders", () => ({ filesUnder, fileText, textsOf, isGitRoot }))
   .extend("harbor", () => fakeHarbor())
   .extend("workFolder", ({}, { onCleanup }) => {
