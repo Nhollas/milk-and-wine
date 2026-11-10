@@ -6,7 +6,7 @@ import {
   CAP_UNCHECKED,
   CODE_PATH,
   contradicts,
-  EASY,
+  TASK_TOML,
   environmentWith,
   PRICES_TESTS,
   replacingCapCheck,
@@ -107,7 +107,7 @@ test("B6: a contradiction the tests don't fail on is not a gap", SLOW, async () 
     "judge-001-agrees   not a gap  the tests don't fail with the contradiction planted\n",
   );
   expect(output).toContain(
-    "judge-002-no-cap   ok         contradicts_requirement, easy: The test expects 7 widgets to cost 14\n",
+    "judge-002-no-cap   ok         contradicts_requirement: The test expects 7 widgets to cost 14\n",
   );
   expect(output).toContain(
     "judge-003-broken   not a gap  the tests don't fail with the contradiction planted\n",
@@ -141,48 +141,36 @@ test(
     expect(output).toContain(
       "judge-001-breaks    fails      the tests fail against the fixture's code\n",
     );
-    expect(output).toContain(
-      "judge-002-at-eight  ok         aligned, easy: The cap is checked at 8\n",
-    );
-    expect(output).toContain(
-      "judge-003-as-is     ok         aligned, easy: The cap is checked at 7\n",
-    );
+    expect(output).toContain("judge-002-at-eight  ok         aligned: The cap is checked at 8\n");
+    expect(output).toContain("judge-003-as-is     ok         aligned: The cap is checked at 7\n");
     expect(output).toMatch(/eval:check failed · 1 problems\n$/u);
   },
 );
 
-test(
-  "B8: prints each task's expected verdict, difficulty and title, and passes",
-  SLOW,
-  async () => {
-    using repo = createTempRoot();
-    repo.writeFixture("widgets", WIDGETS);
-    repo.writeTask(
-      "judge-001-cap",
-      CAP_UNCHECKED,
-      "# The cap is never checked\n\nMore about it.\n",
-    );
-    repo.writeTask("judge-002-cap-again", CAP_UNCHECKED, "# The cap is never checked\n");
-    repo.writeTask(
-      "judge-003-off-by-one",
-      {
-        taskToml: EASY,
-        expected: { scenario: "B1", verdict: "adds_requirement", test_line: 6 },
-        environment: environmentWith(
-          PRICES_TESTS.replace(
-            "  expect(priceOf(7)).toBe(10);",
-            "  expect(priceOf(7)).toBe(10);\n  expect(priceOf(8)).toBe(10);",
-          ),
+test("B8: prints each task's expected verdict and title, and passes", SLOW, async () => {
+  using repo = createTempRoot();
+  repo.writeFixture("widgets", WIDGETS);
+  repo.writeTask("judge-001-cap", CAP_UNCHECKED, "# The cap is never checked\n\nMore about it.\n");
+  repo.writeTask("judge-002-cap-again", CAP_UNCHECKED, "# The cap is never checked\n");
+  repo.writeTask(
+    "judge-003-off-by-one",
+    {
+      taskToml: TASK_TOML,
+      expected: { scenario: "B1", verdict: "adds_requirement", test_line: 6 },
+      environment: environmentWith(
+        PRICES_TESTS.replace(
+          "  expect(priceOf(7)).toBe(10);",
+          "  expect(priceOf(7)).toBe(10);\n  expect(priceOf(8)).toBe(10);",
         ),
-      },
-      "# The test checks 8 widgets, which B1 never mentions\n",
-    );
+      ),
+    },
+    "# The test checks 8 widgets, which B1 never mentions\n",
+  );
 
-    const { exitCode, output } = await check(repo.root);
+  const { exitCode, output } = await check(repo.root);
 
-    expect(exitCode).toBe(0);
-    expect(output).toMatch(
-      /^judge-001-cap {9}ok {9}misses_requirement, easy: The cap is never checked\njudge-002-cap-again {3}ok {9}misses_requirement, easy: The cap is never checked\njudge-003-off-by-one {2}ok {9}adds_requirement, easy: The test checks 8 widgets, which B1 never mentions\neval:check passed\n$/su,
-    );
-  },
-);
+  expect(exitCode).toBe(0);
+  expect(output).toMatch(
+    /^judge-001-cap {9}ok {9}misses_requirement: The cap is never checked\njudge-002-cap-again {3}ok {9}misses_requirement: The cap is never checked\njudge-003-off-by-one {2}ok {9}adds_requirement: The test checks 8 widgets, which B1 never mentions\neval:check passed\n$/su,
+  );
+});

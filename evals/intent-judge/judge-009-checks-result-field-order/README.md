@@ -4,4 +4,4 @@ B3 says the priced order has no lines and totals 0. The planted test also assert
 
 The judge should report the extra assertion as something the scenario doesn't say.
 
-Easy because the extra line checks shape, not price, and sits apart from the real assertion.
+The extra line checks shape, not price, and sits apart from the real assertion.

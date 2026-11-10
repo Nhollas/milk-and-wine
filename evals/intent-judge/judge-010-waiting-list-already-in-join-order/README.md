@@ -8,4 +8,4 @@ Also fair to report:
 
 - "in the order they joined": a list already in join order can't show the offers are put in that order either.
 
-Hard because nothing in the test file says when anyone joined. The judge has to read `tests/support/waiting.ts` to learn the list is sorted, then see what a sorted list can't show.
+Tricky because nothing in the test file says when anyone joined. The judge has to read `tests/support/waiting.ts` to learn the list is sorted, then see what a sorted list can't show.

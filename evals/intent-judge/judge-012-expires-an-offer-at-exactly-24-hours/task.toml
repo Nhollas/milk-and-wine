@@ -1,6 +1,5 @@
 [metadata]
 fixture = "waitlist"
-difficulty = "hard"
 
 [agent]
 timeout_sec = 600

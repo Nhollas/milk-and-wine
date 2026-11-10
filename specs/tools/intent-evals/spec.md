@@ -4,7 +4,7 @@ Measures how well the [intent judge](../../../.claude/agents/intent-judge/intent
 
 | Scope |  |
 | --- | --- |
-| **Owns** | Fixtures, the task folder, `eval:check`, the grader, `eval:gate` and the targets. |
+| **Owns** | Fixtures, the task folder, `eval:check`, the grader, `eval:gate` and its target. |
 | **Depends on** | The intent judge. Harbor and Docker, which run each trial. `tools/specs`, to read scenarios. Vitest, to run a scenario's tests. |
 | **Excluded** | The judge's own instructions. Writing fixtures and tasks; people and agents write them, and this tool checks and grades them. `pnpm check`, which never runs the judge. |
 
@@ -28,7 +28,7 @@ Measures how well the [intent judge](../../../.claude/agents/intent-judge/intent
 | B30 | A task expecting `misses_requirement` whose scenario's tests still fail with its bug once the gap is planted | `eval:check` runs | Reports `not a gap` with the task, and exits `1` | service |
 | B6 | A task expecting `contradicts_requirement` whose scenario's tests don't fail against its fixture's code | `eval:check` runs | Reports `not a gap` with the task, and exits `1` | service |
 | B25 | A task expecting `aligned` whose scenario's tests fail against its fixture's code | `eval:check` runs | Reports `fails` with the task, and exits `1` | service |
-| B8 | Nothing B1 to B6, B25 or B27 to B31 reports | `eval:check` runs | Prints `ok` and each task's expected verdict, difficulty and README heading, then `eval:check passed`, and exits `0` | service |
+| B8 | Nothing B1 to B6, B25 or B27 to B31 reports | `eval:check` runs | Prints `ok` and each task's expected verdict and README heading, then `eval:check passed`, and exits `0` | service |
 
 ### Grading a trial
 
@@ -45,17 +45,13 @@ The grader reads the judge's last reply in the trial and writes its rewards: `re
 
 ### Gating a job
 
-| Difficulty | Target                     |
-| ---------- | -------------------------- |
-| Easy       | Mean reward at least 0.95  |
-| Medium     | Mean reward at least 0.75  |
-| Hard       | Reported, not pass or fail |
+Every task has the same target: a mean reward of at least 0.8, which is 5 of 6 trials.
 
 | ID | Given | When | Then | Verified |
 | --- | --- | --- | --- | --- |
-| B36 | A job whose tasks each meet their difficulty's target | `eval:gate` runs | Prints each task's difficulty, mean reward, trials and target, then `eval:gate passed`, and exits `0` | service |
+| B36 | A job whose tasks each meet the target | `eval:gate` runs | Prints each task's mean reward, trials and target, then `eval:gate passed`, and exits `0` | service |
 | B41 | A job whose trials carry `noticed`, `labelled` or `false_alarms` | `eval:gate` runs | Prints each one's mean over the task's trials that carry it, after the task's target | service |
-| B37 | A job with a task below its difficulty's target | `eval:gate` runs | Marks the task `below`, prints `eval:gate failed · <count> below target`, and exits `1` | service |
+| B37 | A job with a task below the target | `eval:gate` runs | Marks the task `below`, prints `eval:gate failed · <count> below target`, and exits `1` | service |
 | B38 | A job with a trial that broke before it was graded | `eval:gate` runs | Scores the trial 0 and counts it as broke | service |
 
 **Why**
@@ -69,7 +65,7 @@ The grader reads the judge's last reply in the trial and writes its rewards: `re
 - **B34:** On an `aligned` task everything the judge reports as wrong is a false alarm.
 - **B40:** One number says whether a reader could act on the reply as it stands. The other three say why not.
 - **B38:** A judge that breaks finds nothing for whoever relies on it.
-- **Targets:** Set before the first full run, so its results can't bend them. Revisited once, after it, with the reason for any change written down.
+- **Target:** One for every task. Tasks had a difficulty, easy, medium or hard, each with its own target, but that was the writer's guess, and the first runs didn't bear it out: two of the three hard tasks scored 1.00 and a medium one 0.50. How hard a task is shows in its mean reward, so it's measured rather than declared.
 
 ## Limitations
 

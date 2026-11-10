@@ -4,4 +4,4 @@ B1's test lists three members in neither join order nor the order of the expecte
 
 The judge should report nothing.
 
-Easy because every requirement is in plain sight. It's here to catch a judge that splits the scenario finely and then can't find a separate assertion for each part.
+Every requirement is in plain sight. It's here to catch a judge that splits the scenario finely and then can't find a separate assertion for each part.

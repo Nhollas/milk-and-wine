@@ -4,8 +4,6 @@ import { parse as parseToml } from "smol-toml";
 import { z } from "zod";
 import { EVALS_FOLDER } from "./workspace.ts";
 
-const DIFFICULTIES = ["easy", "medium", "hard"] as const;
-
 /** The verdict that says the tests don't show a requirement, and so needs a bug to prove it. */
 export const BUG_VERDICT = "misses_requirement";
 
@@ -13,7 +11,7 @@ export const BUG_VERDICT = "misses_requirement";
 const FOLDER_NAME = /^judge-(?<number>\d{3})-[a-z0-9]+(?:-[a-z0-9]+)*$/u;
 
 const taskToml = z.object({
-  metadata: z.strictObject({ fixture: z.string().min(1), difficulty: z.enum(DIFFICULTIES) }),
+  metadata: z.strictObject({ fixture: z.string().min(1) }),
 });
 
 const scenario = z.string().regex(/^B\d+$/u);

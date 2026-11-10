@@ -9,4 +9,4 @@ Also fair to report:
 - "totals them": nothing asserts the total either.
 - The line count on line 17 as a check the scenario doesn't ask for: it's the same assertion, seen from the test's side.
 
-Easy because the assertion is about a different thing entirely, and the scenario's words never appear in it.
+The assertion is about a different thing entirely, and the scenario's words never appear in it.

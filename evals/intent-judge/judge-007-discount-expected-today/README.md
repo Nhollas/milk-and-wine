@@ -8,4 +8,4 @@ Also fair to report:
 
 - "totals them": the expected total is the sum of the discounted lines, not of the prices the scenario leaves alone.
 
-Easy because the expected prices are plainly discounted, and the scenario says they shouldn't be.
+The expected prices are plainly discounted, and the scenario says they shouldn't be.

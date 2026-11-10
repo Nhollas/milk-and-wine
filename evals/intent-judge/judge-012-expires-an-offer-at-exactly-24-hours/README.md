@@ -8,4 +8,4 @@ Also fair to report:
 
 - "Expires it": the same contradiction, pinned on the Then: the test expects an expiry the spec says shouldn't happen.
 
-Hard because the two timestamps look like "yesterday", and only the sum shows they are exactly 24 hours apart. The test of the same scenario in the messages file is right.
+Tricky because the two timestamps look like "yesterday", and only the sum shows they are exactly 24 hours apart. The test of the same scenario in the messages file is right.

@@ -1,6 +1,5 @@
 [metadata]
 fixture = "discounts"
-difficulty = "medium"
 
 [agent]
 timeout_sec = 600

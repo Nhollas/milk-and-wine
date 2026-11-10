@@ -4,4 +4,4 @@ B1 says the order "totals the lines". The planted test asserts the discounted li
 
 The judge should report that nothing checks the total.
 
-Easy because a whole clause of the scenario has no assertion at all.
+A whole clause of the scenario has no assertion at all.

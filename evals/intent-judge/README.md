@@ -6,8 +6,8 @@ Measures the [intent judge](../../.claude/agents/intent-judge/intent-judge.md). 
 
 - `fixtures/<fixture>/` is a small made-up subject laid out like this repository: `specs/`, `src/` and, if it needs them, `tests/`. Its tests run only through `eval:check`. There are two, `discounts` and `waitlist`. The judge's instructions must never take an example from a fixture: a task whose answer is in the instructions measures whether the judge can read them.
 - `judge-<number>-<slug>/` is one task: one thing the judge might get wrong. It's named for the mistake, and its number is its lasting name.
-  - `README.md` says what the trap is, what the judge should report, and how hard the writer expects it to be.
-  - `task.toml` names the task's fixture and difficulty, and gives Harbor its timeouts.
+  - `README.md` says what the trap is and what the judge should report.
+  - `task.toml` names the task's fixture, and gives Harbor its timeouts.
   - `instruction.md` is what the judge is asked.
   - `environment/` is everything the judge sees: a `Dockerfile`, then the fixture's spec and tests with the gap planted, and none of the code under test.
   - `tests/` is how Harbor grades a trial once the judge stops: `expected.json` says what the judge should report on the scenario, and under `fair` anything else the planted tests get wrong, each with the verdict that is true of it, which the judge may report too. `test.sh` runs the grader on its last reply.
@@ -34,7 +34,7 @@ Runs every task. Needs Docker, [Harbor](https://harborframework.com/docs/getting
 pnpm eval:gate
 ```
 
-Checks the latest job against the targets in the spec, or the job folder given. Beside each task's mean reward it prints why a trial lost it: `noticed`, the share of trials that gave the gap a wrong verdict; `labelled`, the share that gave it the expected one; and `false alarms`, the mean number of other wrong verdicts a trial. Read these here, not in Harbor's own summary, which counts a task with no gap as noticing nothing.
+Checks the latest job against the target in the spec, or the job folder given. Beside each task's mean reward it prints why a trial lost it: `noticed`, the share of trials that gave the gap a wrong verdict; `labelled`, the share that gave it the expected one; and `false alarms`, the mean number of other wrong verdicts a trial. Read these here, not in Harbor's own summary, which counts a task with no gap as noticing nothing.
 
 ## Adding a task
 

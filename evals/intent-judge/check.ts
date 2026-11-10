@@ -76,7 +76,7 @@ async function checkFixture(fixture: string, tasks: Task[], root: string): Promi
 }
 
 async function checkTask(task: Task, tested: string[], root: string): Promise<Line> {
-  const { fixture, expected, difficulty, title } = task;
+  const { fixture, expected, title } = task;
   if (!tested.includes(expected.scenario)) {
     return taskLine(
       task,
@@ -111,7 +111,7 @@ async function checkTask(task: Task, tested: string[], root: string): Promise<Li
   } else if (expected.verdict === "aligned" && (await scenarioTests([environment])) !== "passed") {
     return taskLine(task, "fails", "the tests fail against the fixture's code", true);
   }
-  return taskLine(task, "ok", `${expected.verdict}, ${difficulty}: ${title}`, false);
+  return taskLine(task, "ok", `${expected.verdict}: ${title}`, false);
 }
 
 /**

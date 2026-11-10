@@ -4,7 +4,7 @@ import { createTempRoot } from "./temp-root.ts";
 import {
   CAP_UNCHECKED,
   CODE_PATH,
-  EASY,
+  TASK_TOML,
   NO_CAP,
   NO_CAP_CHECK,
   SPEC_PATH,
@@ -49,7 +49,7 @@ test(
     repo.writeFixture("widgets", WIDGETS);
     repo.writeTask("judge-001-tricky", {
       ...CAP_UNCHECKED,
-      taskToml: EASY.replace('"easy"', '"tricky"'),
+      taskToml: `${TASK_TOML}difficulty = "easy"\n`,
     });
     repo.writeTask("judge-002-weakened", {
       ...CAP_UNCHECKED,
@@ -88,7 +88,7 @@ test("B2: reports a task naming a fixture or a scenario that doesn't exist", SLO
   repo.writeFixture("widgets", WIDGETS);
   repo.writeTask("judge-001-cap", {
     ...CAP_UNCHECKED,
-    taskToml: EASY.replace('"widgets"', '"gadgets"'),
+    taskToml: TASK_TOML.replace('"widgets"', '"gadgets"'),
   });
   repo.writeTask("judge-002-cap", {
     ...CAP_UNCHECKED,

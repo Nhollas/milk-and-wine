@@ -27,7 +27,7 @@ export const CODE_PATH = "src/widgets/widgets.ts";
 
 const WIDGETS_SPEC = specMarkdown("widgets", SCENARIOS);
 
-export const EASY = `[metadata]\nfixture = "widgets"\ndifficulty = "easy"\n`;
+export const TASK_TOML = `[metadata]\nfixture = "widgets"\n`;
 
 /** The fixture's tests with the check of the cap removed. */
 export const NO_CAP_CHECK = PRICES_TESTS.replace("  expect(priceOf(7)).toBe(10);\n", "");
@@ -42,7 +42,7 @@ export function environmentWith(tests: string): Record<string, string> {
 
 /** A task whose tests never check the cap, and the bug that shows it. */
 export const CAP_UNCHECKED = {
-  taskToml: EASY,
+  taskToml: TASK_TOML,
   expected: { scenario: "B1", verdict: "misses_requirement", requirement: "up to 10" },
   environment: environmentWith(NO_CAP_CHECK),
   bug: { [CODE_PATH]: NO_CAP },
@@ -56,7 +56,7 @@ export function replacingCapCheck(line: string): string {
 /** A task expecting its tests, `tests`, to contradict the cap. */
 export function contradicts(tests: string) {
   return {
-    taskToml: EASY,
+    taskToml: TASK_TOML,
     expected: { scenario: "B1", verdict: "contradicts_requirement", requirement: "up to 10" },
     environment: environmentWith(tests),
   };
@@ -65,7 +65,7 @@ export function contradicts(tests: string) {
 /** A task expecting its tests, `tests`, to be aligned with B1. */
 export function aligned(tests: string) {
   return {
-    taskToml: EASY,
+    taskToml: TASK_TOML,
     expected: { scenario: "B1", verdict: "aligned" },
     environment: environmentWith(tests),
   };

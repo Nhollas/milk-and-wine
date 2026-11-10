@@ -4,4 +4,4 @@ B4's test offers a place at 18:00 on 31 December 2026 and expects the message to
 
 The judge should report nothing.
 
-Easy because the sum is one day. It's here to catch a judge that reads the change of year as a mistake.
+The sum is one day. It's here to catch a judge that reads the change of year as a mistake.

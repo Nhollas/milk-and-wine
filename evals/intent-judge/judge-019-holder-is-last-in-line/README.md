@@ -8,4 +8,4 @@ Also fair to report:
 
 - "offers the place to the next member": ben is first in line, not next after a skipped member.
 
-Hard because the assertion is exactly what the scenario asks for, and the order members joined in comes from `tests/support/waiting.ts`, not the test. The judge has to ask what the test would do if nobody were skipped.
+Tricky because the assertion is exactly what the scenario asks for, and the order members joined in comes from `tests/support/waiting.ts`, not the test. The judge has to ask what the test would do if nobody were skipped.
