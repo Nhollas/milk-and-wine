@@ -7,5 +7,5 @@
     "erasableSyntaxOnly": true
   },
   "include": ["src/**/*.ts", "tests/**/*.ts", "tools/**/*.ts", "*.config.ts", ".claude/**/*.ts"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "tools/benchmark/tasks"]
 }

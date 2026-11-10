@@ -2,6 +2,14 @@ import { execFileSync } from "node:child_process";
 import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { basename, join } from "node:path";
 import { z } from "zod";
+import { scenarioLines } from "../specs/specs.ts";
+import {
+  HIDDEN_TESTS_CONFIG,
+  HIDDEN_TESTS_CONFIG_SOURCE,
+  HIDDEN_TESTS_FOLDER,
+  hiddenTestResults,
+} from "./hidden-tests.ts";
+import { gradeScenarios } from "./measure.ts";
 
 const TASKS_FOLDER = "tools/benchmark/tasks";
 
@@ -29,9 +37,17 @@ WORKDIR /app
 COPY repo/ /app/
 `;
 
-// Grading lands with the measures that need it; Harbor needs a verifier to run.
+// Harbor uploads `tests/` to `/tests` once the agent is done, runs this, and keeps `/logs/verifier`.
+// The reward is only what Harbor needs to call the trial graded: the measures read the report.
+const VERIFIER_REPORT = "vitest-report.json";
+
 const TEST_SCRIPT = `#!/bin/sh
-echo 0 > /logs/verifier/reward.txt
+cd /app
+rm -rf ${HIDDEN_TESTS_FOLDER}
+cp -R /tests/${HIDDEN_TESTS_FOLDER} ${HIDDEN_TESTS_FOLDER}
+pnpm install > /logs/verifier/install.txt 2>&1
+pnpm exec vitest run --root /app --config ${HIDDEN_TESTS_CONFIG} --reporter=json --outputFile=/logs/verifier/${VERIFIER_REPORT} > /logs/verifier/vitest.txt 2>&1
+if grep -q '"numFailedTests":0' /logs/verifier/${VERIFIER_REPORT}; then echo 1; else echo 0; fi > /logs/verifier/reward.txt
 `;
 
 type TrialOptions = {
@@ -47,6 +63,10 @@ type TrialRecord = {
   agent: string;
   wallClockMs: number;
   tokens: z.infer<typeof claudeResult>["modelUsage"];
+  /** Scenarios whose hidden tests all pass, over the task's scenarios. */
+  passRate: number;
+  /** The scenarios with a hidden test that failed or never ran. */
+  failedScenarios: string[];
 };
 
 const trialResult = z.object({
@@ -85,7 +105,12 @@ export function runTrial(
     "ISSUE_TRACKER=bench",
   ]);
   if (exitCode !== 0) throw new Error(`harbor exited ${exitCode}`);
-  return { ...trial, ...measure(jobsFolder) };
+  const trialFolder = trialFolderUnder(jobsFolder);
+  return {
+    ...trial,
+    ...measure(trialFolder),
+    ...grade(trialFolder, join(root, TASKS_FOLDER, trial.task)),
+  };
 }
 
 function writeTaskFolder(
@@ -101,6 +126,10 @@ function writeTaskFolder(
   write("instruction.md", `${instruction(task, agent)}\n`);
   write("environment/Dockerfile", DOCKERFILE);
   write("tests/test.sh", TEST_SCRIPT);
+  cpSync(join(root, TASKS_FOLDER, task, "tests"), join(taskFolder, "tests", HIDDEN_TESTS_FOLDER), {
+    recursive: true,
+  });
+  write(`tests/${HIDDEN_TESTS_CONFIG}`, HIDDEN_TESTS_CONFIG_SOURCE);
   writeRepository(task, agent, root, join(taskFolder, "environment", "repo"));
 }
 
@@ -144,8 +173,7 @@ function writeRepository(task: string, agent: string, root: string, repository: 
 
 // Harbor leaves `<jobs>/<job>/<trial>/result.json`, and `<trial>/agent/claude-code.txt`, whose final
 // `result` message counts every model's tokens, subagents' included.
-function measure(jobsFolder: string): Pick<TrialRecord, "wallClockMs" | "tokens"> {
-  const trialFolder = trialFolderUnder(jobsFolder);
+function measure(trialFolder: string): Pick<TrialRecord, "wallClockMs" | "tokens"> {
   const { agent_execution } = trialResult.parse(
     JSON.parse(readFileSync(join(trialFolder, "result.json"), "utf8")),
   );
@@ -158,6 +186,16 @@ function measure(jobsFolder: string): Pick<TrialRecord, "wallClockMs" | "tokens"
     wallClockMs: Date.parse(agent_execution.finished_at) - Date.parse(agent_execution.started_at),
     tokens: result.data.modelUsage,
   };
+}
+
+// With no report, because the agent's code couldn't be installed or run, no scenario passes.
+function grade(trialFolder: string, taskFolder: string) {
+  const scenarioIds = [...scenarioLines(readFileSync(join(taskFolder, "spec.md"), "utf8"))].map(
+    ({ cells: [id = ""] }) => id,
+  );
+  const reportPath = join(trialFolder, "verifier", VERIFIER_REPORT);
+  const results = existsSync(reportPath) ? hiddenTestResults(readFileSync(reportPath, "utf8")) : [];
+  return gradeScenarios(scenarioIds, results);
 }
 
 function trialFolderUnder(jobsFolder: string): string {

@@ -1,0 +1,4 @@
+saveExact: true
+allowBuilds:
+  msw: false
+  node: true

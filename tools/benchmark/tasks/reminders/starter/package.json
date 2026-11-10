@@ -1,0 +1,35 @@
+{
+  "name": "library",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start:loans": "node src/loans/main.ts",
+    "start:reminders": "node src/reminders/main.ts",
+    "typecheck": "tsc",
+    "test": "vitest run",
+    "check": "pnpm typecheck && pnpm test"
+  },
+  "dependencies": {
+    "@hono/node-server": "2.1.1",
+    "hono": "4.13.7",
+    "zod": "4.6.1"
+  },
+  "devDependencies": {
+    "@types/node": "24.13.4",
+    "msw": "2.15.0",
+    "typescript": "7.0.2",
+    "vitest": "5.0.0"
+  },
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "12.3.4",
+      "onFail": "download"
+    },
+    "runtime": {
+      "name": "node",
+      "version": ">=24 <25",
+      "onFail": "download"
+    }
+  }
+}
