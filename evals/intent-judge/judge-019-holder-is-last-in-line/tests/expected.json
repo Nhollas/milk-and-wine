@@ -1,0 +1,11 @@
+{
+  "scenario": "B6",
+  "verdict": "misses_requirement",
+  "requirement": "Skips them",
+  "fair": [
+    {
+      "requirement": "offers the place to the next member",
+      "verdict": "misses_requirement"
+    }
+  ]
+}

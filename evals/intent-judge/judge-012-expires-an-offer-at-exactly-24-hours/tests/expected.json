@@ -1,0 +1,11 @@
+{
+  "scenario": "B8",
+  "verdict": "contradicts_requirement",
+  "requirement": "more than 24 hours ago",
+  "fair": [
+    {
+      "requirement": "Expires it",
+      "verdict": "contradicts_requirement"
+    }
+  ]
+}

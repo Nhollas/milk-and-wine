@@ -15,7 +15,16 @@ const RESULTS_FOLDER = `${EVALS_FOLDER}/results`;
 const trialResult = z.object({
   task_name: z.string(),
   config: z.object({ task: z.object({ path: z.string() }) }),
-  verifier_result: z.object({ rewards: z.object({ reward: z.number() }) }).nullish(),
+  verifier_result: z
+    .object({
+      rewards: z.object({
+        reward: z.number(),
+        noticed: z.number().optional(),
+        labelled: z.number().optional(),
+        false_alarms: z.number().optional(),
+      }),
+    })
+    .nullish(),
   exception_info: z.object({ exception_type: z.string() }).nullish(),
 });
 
@@ -24,6 +33,13 @@ const taskToml = z.object({
 });
 
 type Trial = z.infer<typeof trialResult>;
+
+/** The rewards that say why a trial lost its reward, and what the gate calls each. */
+const REASONS = [
+  ["noticed", "noticed"],
+  ["labelled", "labelled"],
+  ["false_alarms", "false alarms"],
+] as const;
 
 /** Checks each task in a Harbor job against its difficulty's target. A broken trial scores 0. */
 export function gate(root: string, jobFolder: string): GateResult {
@@ -49,19 +65,31 @@ function taskRow(root: string, name: string, trials: Trial[]) {
   const { difficulty } = taskToml.parse(
     parseToml(readFileSync(join(taskPath, "task.toml"), "utf8")),
   ).metadata;
-  const rewards = trials.map((trial) => trial.verifier_result?.rewards.reward ?? 0);
-  const mean = rewards.reduce((sum, reward) => sum + reward, 0) / rewards.length;
+  const mean = meanOf(trials.map((trial) => trial.verifier_result?.rewards.reward ?? 0));
   const broke = trials.filter((trial) => trial.exception_info).length;
   const score = `${mean.toFixed(2)} over ${trials.length} trials${broke > 0 ? ` (${broke} broke)` : ""}`;
   const target = TARGETS[difficulty];
-  if (target === undefined) return { name, difficulty, below: false, text: `${score}, reported` };
-  const below = mean < target;
+  const below = target !== undefined && mean < target;
+  const against =
+    target === undefined ? "reported" : `target ${target.toFixed(2)}${below ? ", below" : ""}`;
   return {
     name,
     difficulty,
     below,
-    text: `${score}, target ${target.toFixed(2)}${below ? ", below" : ""}`,
+    text: [`${score}, ${against}`, ...reasons(trials)].join(" · "),
   };
+}
+
+/** The mean of each reason over the trials that carry it, such as `false alarms 0.50`. */
+function reasons(trials: Trial[]): string[] {
+  return REASONS.flatMap(([key, label]) => {
+    const carried = trials.flatMap((trial) => trial.verifier_result?.rewards[key] ?? []);
+    return carried.length === 0 ? [] : [`${label} ${meanOf(carried).toFixed(2)}`];
+  });
+}
+
+function meanOf(values: number[]): number {
+  return values.reduce((sum, value) => sum + value, 0) / values.length;
 }
 
 function trialFolders(jobFolder: string): string[] {

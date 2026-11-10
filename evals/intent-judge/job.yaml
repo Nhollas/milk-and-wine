@@ -3,7 +3,7 @@
 # from each task's environment/ folder.
 jobs_dir: evals/intent-judge/results
 n_attempts: 6
-n_concurrent_trials: 4
+n_concurrent_trials: 8
 datasets:
   - path: evals/intent-judge
 agents:

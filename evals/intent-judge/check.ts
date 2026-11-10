@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { BUG_VERDICTS, readTaskFiles, type Task } from "./task-files.ts";
+import { BUG_VERDICT, readTaskFiles, type Task } from "./task-files.ts";
 import {
   filesUnder,
   fixtureFolder,
@@ -96,7 +96,7 @@ async function checkTask(task: Task, tested: string[], root: string): Promise<Li
     inWorkspace(root, fixture, overlays, async (directory) =>
       outcomeOf(await runTests(directory), expected.scenario),
     );
-  if ((BUG_VERDICTS as readonly string[]).includes(expected.verdict)) {
+  if (expected.verdict === BUG_VERDICT) {
     if ((await scenarioTests([bug])) === "passed") {
       return taskLine(task, "not a gap", "the tests pass with the bug alone", true);
     }

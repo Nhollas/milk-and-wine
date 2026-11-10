@@ -1,0 +1,19 @@
+{
+  "scenario": "B9",
+  "verdict": "misses_requirement",
+  "requirement": "however old",
+  "fair": [
+    {
+      "requirement": "An accepted offer",
+      "verdict": "misses_requirement"
+    },
+    {
+      "requirement": "Keeps it",
+      "verdict": "misses_requirement"
+    },
+    {
+      "requirement": "sends no message",
+      "verdict": "misses_requirement"
+    }
+  ]
+}

@@ -1,5 +1,14 @@
 {
   "scenario": "B2",
-  "verdict": "checks_something_else",
-  "requirement": "Takes nothing off"
+  "verdict": "misses_requirement",
+  "requirement": "Takes nothing off",
+  "fair": [
+    {
+      "requirement": "totals them",
+      "verdict": "misses_requirement"
+    },
+    {
+      "test_line": 17
+    }
+  ]
 }

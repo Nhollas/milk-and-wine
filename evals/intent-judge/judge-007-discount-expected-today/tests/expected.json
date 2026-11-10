@@ -1,5 +1,11 @@
 {
   "scenario": "B2",
   "verdict": "contradicts_requirement",
-  "requirement": "Takes nothing off"
+  "requirement": "Takes nothing off",
+  "fair": [
+    {
+      "requirement": "totals them",
+      "verdict": "contradicts_requirement"
+    }
+  ]
 }

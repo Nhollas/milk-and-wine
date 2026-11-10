@@ -64,7 +64,7 @@ test("B30: a bug the tests still catch once the gap is planted is not a gap", SL
   repo.writeFixture("widgets", WIDGETS);
   repo.writeTask("judge-002-still-caught", {
     ...CAP_UNCHECKED,
-    expected: { scenario: "B1", verdict: "checks_something_else", requirement: "up to 10" },
+    expected: { scenario: "B1", verdict: "misses_requirement", requirement: "up to 10" },
     environment: environmentWith(
       PRICES_TESTS.replace(
         "expect(priceOf(7)).toBe(10)",

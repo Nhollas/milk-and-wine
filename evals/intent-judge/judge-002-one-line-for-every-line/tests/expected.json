@@ -1,5 +1,19 @@
 {
   "scenario": "B1",
-  "verdict": "setup_hides_requirement",
-  "requirement": "every line"
+  "verdict": "misses_requirement",
+  "requirement": "every line",
+  "fair": [
+    {
+      "requirement": "several lines",
+      "verdict": "misses_requirement"
+    },
+    {
+      "requirement": "rounded down to the penny",
+      "verdict": "misses_requirement"
+    },
+    {
+      "requirement": "totals the lines",
+      "verdict": "misses_requirement"
+    }
+  ]
 }

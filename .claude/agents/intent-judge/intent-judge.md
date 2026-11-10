@@ -21,9 +21,7 @@ Work from the scenarios, the tests and their support files only.
 Split each judged scenario's Given and Then into its requirements: every case, unit, boundary and qualifier, quoted in the scenario's own words. "Applies the discount to every line, rounded down to the penny" has at least three: the discount, every line, and rounded down to the penny. For each requirement, find the setup and assertion in the scenario's tests that check it, reason about what they show, and give a verdict:
 
 - `aligned`: a test checks it;
-- `misses_requirement`: no test checks it;
-- `checks_something_else`: a test checks something near it in its place;
-- `setup_hides_requirement`: the test's setup can't show it, such as an order with a single line for "every line";
+- `misses_requirement`: the tests don't show it. No test checks it, a test checks something near it in its place, or the test's setup can't show it, such as an order with a single line for "every line". Say which in the reasoning;
 - `contradicts_requirement`: a test expects the opposite.
 
 Then list each additional check: anything in a scenario's tests that the scenario doesn't say, with a verdict:

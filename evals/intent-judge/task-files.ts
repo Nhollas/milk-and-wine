@@ -6,12 +6,8 @@ import { EVALS_FOLDER } from "./workspace.ts";
 
 const DIFFICULTIES = ["easy", "medium", "hard"] as const;
 
-/** Verdicts that say a test is wrong about a requirement, and so need a bug to show it. */
-export const BUG_VERDICTS = [
-  "misses_requirement",
-  "checks_something_else",
-  "setup_hides_requirement",
-] as const;
+/** The verdict that says the tests don't show a requirement, and so needs a bug to prove it. */
+export const BUG_VERDICT = "misses_requirement";
 
 /** `judge-003-setup-hides-every-line`: a number that never changes, then what the task tests. */
 const FOLDER_NAME = /^judge-(?<number>\d{3})-[a-z0-9]+(?:-[a-z0-9]+)*$/u;
@@ -22,19 +18,33 @@ const taskToml = z.object({
 
 const scenario = z.string().regex(/^B\d+$/u);
 
+const requirement = z.string().min(1);
+const testLine = z.int().positive();
+
+const requirementVerdict = z.enum([BUG_VERDICT, "contradicts_requirement"]);
+
+// Something else the planted tests get wrong, which the judge may report without it counting as a
+// false alarm: a requirement's words with the verdict that is true of it, or the line of a check
+// the scenario doesn't ask for.
+const fair = z
+  .array(
+    z.union([
+      z.strictObject({ requirement, verdict: requirementVerdict }),
+      z.strictObject({ test_line: testLine }),
+    ]),
+  )
+  .optional();
+
 // What the judge should report on the task's scenario, in its own verdicts.
 const expectedFile = z.discriminatedUnion("verdict", [
   z.strictObject({ scenario, verdict: z.literal("aligned") }),
   z.strictObject({
     scenario,
-    verdict: z.enum([...BUG_VERDICTS, "contradicts_requirement"]),
-    requirement: z.string().min(1),
+    verdict: requirementVerdict,
+    requirement,
+    fair,
   }),
-  z.strictObject({
-    scenario,
-    verdict: z.literal("adds_requirement"),
-    test_line: z.int().positive(),
-  }),
+  z.strictObject({ scenario, verdict: z.literal("adds_requirement"), test_line: testLine, fair }),
 ]);
 
 /** A task: its folder name as `id`, its number, its README's heading as `title`, and its parts. */
@@ -75,9 +85,8 @@ function readTaskFolder(root: string, id: string): TaskFile {
   if (!toml.success) return invalid(`task.toml: ${z.prettifyError(toml.error)}`);
   const expected = expectedFile.safeParse(parsed(join(folder, "tests/expected.json"), JSON.parse));
   if (!expected.success) return invalid(`tests/expected.json: ${z.prettifyError(expected.error)}`);
-  const needsBug = (BUG_VERDICTS as readonly string[]).includes(expected.data.verdict);
-  if (needsBug && !existsSync(join(folder, "bug"))) {
-    return invalid(`bug/ must hold the code change that ${expected.data.verdict} lets through`);
+  if (expected.data.verdict === BUG_VERDICT && !existsSync(join(folder, "bug"))) {
+    return invalid(`bug/ must hold the code change that ${BUG_VERDICT} lets through`);
   }
 
   return {

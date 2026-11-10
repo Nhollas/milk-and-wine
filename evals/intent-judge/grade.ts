@@ -1,15 +1,20 @@
 import { readFileSync } from "node:fs";
 
 /**
- * Grades one trial: `node grade.ts <claude-code stream> <expected.json>` prints Harbor's reward.
+ * Grades one trial: `node grade.ts <claude-code stream> <expected.json>` prints Harbor's rewards.
  *
  * It runs inside the trial's container, which has Node and nothing else, so it imports nothing.
  */
 
+/** What a gap or a fair finding is known by: a requirement's words, or an added check's line. */
+type Mark = { requirement: string } | { test_line: number };
+
+/** A fair finding with the verdict that is true of it. An added check's is `adds_requirement`. */
+type Fair = { requirement: string; verdict: string } | { test_line: number };
+
 type Expected =
   | { scenario: string; verdict: "aligned" }
-  | { scenario: string; verdict: string; requirement: string }
-  | { scenario: string; verdict: "adds_requirement"; test_line: number };
+  | ({ scenario: string; verdict: string; fair?: Fair[] } & Mark);
 
 type Finding = {
   scenario?: unknown;
@@ -20,47 +25,69 @@ type Finding = {
 
 type Reply = { requirements?: Finding[]; additional_checks?: Finding[] };
 
+/** A finding with a wrong verdict, and the list of the reply it came from. */
+type WrongFinding = Finding & { list: "requirements" | "additional_checks" };
+
+/** A trial's rewards. Only a task with a gap has `noticed` and `labelled`. */
+export type Rewards = { reward: number; false_alarms: number; noticed?: number; labelled?: number };
+
 /** Verdicts that say something is wrong with a scenario's tests. */
-const WRONG = new Set([
-  "misses_requirement",
-  "checks_something_else",
-  "setup_hides_requirement",
-  "contradicts_requirement",
-  "adds_requirement",
-]);
+const WRONG = new Set(["misses_requirement", "contradicts_requirement", "adds_requirement"]);
 
 /**
- * 1 when the judge's reply reports what the task expects, else 0. For `aligned`, that means it
- * reports nothing wrong with the scenario; otherwise one finding on the scenario with the verdict,
- * quoting the requirement or pointing at the added test's line.
+ * What the judge's reply earns on a task. `noticed` is 1 when it gives the task's gap a wrong
+ * verdict, and `labelled` when that verdict is the expected one. `false_alarms` counts its other
+ * wrong verdicts on the scenario: those not on the gap under one verdict, nor on a fair finding
+ * under its own. `reward` is 1 when nothing stops a reader acting on the reply: no false alarm, and
+ * the gap, if the task has one, under its verdict.
  */
-export function rewardOf(replyText: string, expected: Expected): number {
+export function rewardsOf(replyText: string, expected: Expected): Rewards {
   const reply = replyOf(replyText);
-  if (reply === undefined) return 0;
-  const onScenario = (findings: Finding[] = []) =>
-    findings.filter((finding) => finding.scenario === expected.scenario);
-  const requirements = onScenario(reply.requirements);
-  const additions = onScenario(reply.additional_checks);
+  const wrong = reply === undefined ? [] : wrongFindingsOn(expected.scenario, reply);
 
   if (!("requirement" in expected) && !("test_line" in expected)) {
-    const wrong = [...requirements, ...additions].some((finding) =>
-      WRONG.has(String(finding.verdict)),
-    );
-    return wrong ? 0 : 1;
+    return {
+      reward: reply !== undefined && wrong.length === 0 ? 1 : 0,
+      false_alarms: wrong.length,
+    };
   }
-  if ("test_line" in expected) {
-    const found = additions.some(
-      (finding) => finding.verdict === expected.verdict && finding.test_line === expected.test_line,
-    );
-    return found ? 1 : 0;
-  }
-  const quote = expected.requirement.toLowerCase();
-  const found = requirements.some(
+  const ofGap = wrong.filter((finding) => bears(finding, expected));
+  const noticed = ofGap.length > 0 ? 1 : 0;
+  const labelled = ofGap.some((finding) => finding.verdict === expected.verdict) ? 1 : 0;
+  // The gap under two verdicts tells the reader two things, so only one of them is the gap.
+  const gapVerdict = labelled === 1 ? expected.verdict : ofGap[0]?.verdict;
+  const fair = expected.fair ?? [];
+  const falseAlarms = wrong.filter(
     (finding) =>
-      finding.verdict === expected.verdict &&
-      String(finding.requirement).toLowerCase().includes(quote),
+      !(bears(finding, expected) && finding.verdict === gapVerdict) &&
+      !fair.some((mark) => bears(finding, mark) && finding.verdict === verdictOf(mark)),
+  ).length;
+  return {
+    reward: labelled === 1 && falseAlarms === 0 ? 1 : 0,
+    noticed,
+    labelled,
+    false_alarms: falseAlarms,
+  };
+}
+
+function verdictOf(fair: Fair): string {
+  return "verdict" in fair ? fair.verdict : "adds_requirement";
+}
+
+function wrongFindingsOn(scenario: string, reply: Reply): WrongFinding[] {
+  const from = (list: WrongFinding["list"]) =>
+    (reply[list] ?? []).map((finding) => ({ ...finding, list }));
+  return [...from("requirements"), ...from("additional_checks")].filter(
+    (finding) => finding.scenario === scenario && WRONG.has(String(finding.verdict)),
   );
-  return found ? 1 : 0;
+}
+
+/** Whether a finding quotes the mark's words as a requirement, or is an added check at its line. */
+function bears(finding: WrongFinding, mark: Mark): boolean {
+  return "requirement" in mark
+    ? finding.list === "requirements" &&
+        String(finding.requirement).toLowerCase().includes(mark.requirement.toLowerCase())
+    : finding.list === "additional_checks" && finding.test_line === mark.test_line;
 }
 
 /** The JSON object in the judge's reply, fenced or not. */
@@ -91,6 +118,6 @@ export function finalReplyOf(stream: string): string {
 if (import.meta.main) {
   const [streamPath = "", expectedPath = ""] = process.argv.slice(2);
   const expected = JSON.parse(readFileSync(expectedPath, "utf8")) as Expected;
-  const reward = rewardOf(finalReplyOf(readFileSync(streamPath, "utf8")), expected);
-  process.stdout.write(`${JSON.stringify({ reward })}\n`);
+  const rewards = rewardsOf(finalReplyOf(readFileSync(streamPath, "utf8")), expected);
+  process.stdout.write(`${JSON.stringify(rewards)}\n`);
 }

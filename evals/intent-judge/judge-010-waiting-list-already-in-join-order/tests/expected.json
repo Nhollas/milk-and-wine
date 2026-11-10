@@ -1,0 +1,11 @@
+{
+  "scenario": "B1",
+  "verdict": "misses_requirement",
+  "requirement": "joined earliest",
+  "fair": [
+    {
+      "requirement": "in the order they joined",
+      "verdict": "misses_requirement"
+    }
+  ]
+}
