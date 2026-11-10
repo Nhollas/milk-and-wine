@@ -4,7 +4,7 @@ description: Break an issue into tracer-bullet tickets from a slice map, created
 argument-hint: <issue>
 arguments: [issue]
 disable-model-invocation: true
-allowed-tools: Bash(${CLAUDE_PROJECT_DIR}/docs/agents/issue-tracker/active.sh)
+allowed-tools: Bash(${CLAUDE_PROJECT_DIR}/.claude/issue-tracker/active.sh)
 ---
 
 Break issue $issue into **tickets**: tracer-bullet vertical slices, each naming the tickets that **block** it.
@@ -82,4 +82,4 @@ Set each slice's `ticket` to how the tracker refers to it, such as `"#43"`, and 
 
 ## Issue tracker
 
-!`${CLAUDE_PROJECT_DIR}/docs/agents/issue-tracker/active.sh`
+!`${CLAUDE_PROJECT_DIR}/.claude/issue-tracker/active.sh`

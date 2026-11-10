@@ -3,7 +3,7 @@ name: specify
 description: Grill the user until a change's behaviour is settled, agree the spec in a shared doc, then open its issue and put the spec up for review.
 argument-hint: <subject or idea>
 disable-model-invocation: true
-allowed-tools: Bash(${CLAUDE_PROJECT_DIR}/docs/agents/issue-tracker/active.sh)
+allowed-tools: Bash(${CLAUDE_PROJECT_DIR}/.claude/issue-tracker/active.sh)
 ---
 
 Specify this change: $ARGUMENTS
@@ -56,4 +56,4 @@ Draft the issue from [the issue template](assets/issue.md), titled with the chan
 
 ## Issue tracker
 
-!`${CLAUDE_PROJECT_DIR}/docs/agents/issue-tracker/active.sh`
+!`${CLAUDE_PROJECT_DIR}/.claude/issue-tracker/active.sh`
