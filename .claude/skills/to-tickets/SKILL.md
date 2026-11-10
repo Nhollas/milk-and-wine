@@ -57,7 +57,7 @@ Show the map, then the proposed breakdown as a numbered list. For each ticket, s
 - **Title**: short descriptive name
 - **Blocked by**: which other tickets (if any) must complete first
 - **Delivers**: the scenarios it delivers, and what the user could see working once it lands
-- **Decisions**: each choice about how it's built that its scenarios leave open and a test writer would otherwise guess at, such as a test seam, how an outside tool behaves, or a default, with your recommended answer
+- **Decisions**: each choice about how it's built that its scenarios leave open and whoever builds it would otherwise guess at, such as a test seam, how an outside tool behaves, or a default, with your recommended answer
 
 Find the facts behind a decision yourself, with a sub-agent reading the code, docs or source. A slice that relies on a tool nobody here has run yet gets a spike ticket that blocks it: a throwaway that tries the tool and records what it finds on the tickets it blocks.
 

@@ -109,10 +109,5 @@
       }
     }
   ],
-  "ignorePatterns": [
-    "node_modules/**",
-    ".claude/skills/intent-judge/evals/examples/**",
-    "tools/benchmark/trial-config/**",
-    "tools/benchmark/tasks/**"
-  ]
+  "ignorePatterns": ["node_modules/**", ".claude/skills/intent-judge/evals/examples/**"]
 }

@@ -8,7 +8,6 @@ Skills say what to do with an issue or a ticket, and when. A kind of tracker say
 | ------------------- | -------------------------------------------------- | ------------------ |
 | [github](github.md) | GitHub issues, with tickets as sub-issues          | A PR               |
 | [local](local.md)   | Markdown files under `.issues/`, which git ignores | A branch you merge |
-| [bench](bench.md)   | As local, for a benchmark trial                    | Merged at once     |
 
 ## Adding a kind
 

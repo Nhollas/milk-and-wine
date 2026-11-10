@@ -8,7 +8,5 @@
     ".claude/skills/intent-judge/evals/tools/stage-case.ts",
     ".claude/skills/to-tickets/scripts/draw-slice-map.ts"
   ],
-  "ignore": ["tools/benchmark/trial-config/**", "tools/benchmark/tasks/**"],
-  "ignoreBinaries": ["harbor"],
   "project": ["src/**/*.ts", "tests/**/*.ts", "tools/**/*.ts", ".claude/**/*.ts"]
 }

@@ -3,8 +3,7 @@ import { configDefaults, defineConfig, type TestUserConfig } from "vitest/config
 const testFolders = ["src", "tests", "tools", ".claude"];
 
 // Examples are laid out like this repository, but their tests run only through the intent evals.
-// A benchmark task's tests run only through `bench:check` and in a trial.
-const runElsewhere = [".claude/skills/intent-judge/evals/examples/**", "tools/benchmark/tasks/**"];
+const examples = [".claude/skills/intent-judge/evals/examples/**"];
 
 const levels = ["service", "integration", "system"] as const;
 
@@ -30,7 +29,7 @@ export default defineConfig({
           include: testFolders.map((folder) => `${folder}/**/*.test.ts`),
           exclude: [
             ...configDefaults.exclude,
-            ...runElsewhere,
+            ...examples,
             ...levels.flatMap((level) => testsAt(level)),
           ],
           ...interceptedHttp,
@@ -41,7 +40,7 @@ export default defineConfig({
         test: {
           name: { label: "service", color: "cyan" },
           include: testsAt("service"),
-          exclude: [...configDefaults.exclude, ...runElsewhere],
+          exclude: [...configDefaults.exclude, ...examples],
           ...interceptedHttp,
         },
       },
@@ -50,7 +49,7 @@ export default defineConfig({
         test: {
           name: { label: "integration", color: "blue" },
           include: testsAt("integration"),
-          exclude: [...configDefaults.exclude, ...runElsewhere],
+          exclude: [...configDefaults.exclude, ...examples],
           ...interceptedHttp,
         },
       },
@@ -59,7 +58,7 @@ export default defineConfig({
         test: {
           name: { label: "system", color: "magenta" },
           include: testsAt("system"),
-          exclude: [...configDefaults.exclude, ...runElsewhere],
+          exclude: [...configDefaults.exclude, ...examples],
           ...interceptedHttp,
         },
       },

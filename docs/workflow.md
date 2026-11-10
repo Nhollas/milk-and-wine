@@ -2,13 +2,11 @@
 
 How a change gets from an idea to merged code. It takes three Claude sessions, and each one starts fresh from what the last left in the issue tracker or the repository.
 
-![Three sessions: specify the behaviour, break it into tickets, and deliver each ticket through five agents](assets/workflow/delivery-flow.svg)
-
 ## Where things live
 
 Only the wine goes in the repository. Everything about one piece of work lives in the issue tracker and closes when the work is done.
 
-The skills say what to do with an issue or a ticket, and [the issue tracker](agents/issue-tracker/README.md) says how, in the kind `ISSUE_TRACKER` names: **github**, with issues, sub-issues and PRs, **local**, with markdown files under a gitignored `.issues/` and a branch for each change, or **bench**, which is local but merges a change as soon as it goes up for review, for a benchmark trial.
+The skills say what to do with an issue or a ticket, and [the issue tracker](agents/issue-tracker/README.md) says how, in the kind `ISSUE_TRACKER` names: **github**, with issues, sub-issues and PRs or **local**, with markdown files under a gitignored `.issues/` and a branch for each change.
 
 | What | Where | Lasts |
 | --- | --- | --- |
@@ -32,28 +30,25 @@ Before anything is created, it draws a slice map: the system, what each ticket a
 
 It needs `rsvg-convert` to turn the map into a PNG (`brew install librsvg`).
 
-## 3. Deliver each ticket
+## 3. Build each ticket
 
-Run `/foreman` with the issue. It takes each ticket with no open blockers in landing order, gives it a branch, and runs `/deliver` on it. A ticket blocked by an unmerged change waits for you to merge it; run `/foreman` again to carry on.
+Take the tickets in landing order, one whose blockers have all merged at a time. Give it a branch and ask Claude to build it, however it likes. Nothing here says how the code or its tests get written, beyond [CODING-STANDARDS.md](../CODING-STANDARDS.md) and that each scenario's test starts its title with the scenario's ID.
 
-`/deliver` takes one ticket's subject and scenario IDs, and passes them through five agents, a fresh subagent for each step. You can run it on its own, on a branch you've made.
+Then run `/review-checks` with the ticket's subject and scenario IDs. It runs two checks, each in a fresh subagent, and fixes the tests until both pass.
 
-| Agent | Does | Deliver sends the work back to |
+| Check | Asks | Kept honest by |
 | --- | --- | --- |
-| Test writer | Turns the ticket's `test.todo` entries into failing tests |  |
-| Intent judge | Checks the tests check what their scenarios say | The test writer, when they don't |
-| Implementer | Makes the tests pass, and records how it verified the change |  |
-| Mutant writer | Checks the tests fail when the new code is broken | The test writer, when a mutant survives |
-| Standards reviewer | Checks the change against [CODING-STANDARDS.md](../CODING-STANDARDS.md) | The implementer or test writer, when it doesn't meet them |
+| Intent judge | Do the tests check what their scenarios say? | Never reading the code under test |
+| Spec mutants | Do the tests fail when the code is broken? | The mutant writer never reading the tests |
 
-Deliver makes the calls it can recommend an answer to instead of stopping to ask, drafts an ADR for one that's hard to reverse, and rewords a scenario a check finds behind what was decided. It stops only for a question whose every answer changes what a scenario means.
+It rewords a scenario a check finds behind what was agreed, and stops only for a question whose every answer changes what a scenario means.
 
-Foreman then puts the ticket up for review, carrying the implementer's evidence, the decisions to check, the spec changes, and what each check sent back. You review and merge it. Once the last ticket merges, close the issue.
+Put the change up for review with what `/review-checks` replied: what now works, the spec changes, and what each check sent back. You review and merge it. Once the last ticket merges, close the issue.
 
-Each agent is a definition that knows only its own input and output: it's given a subject and scenario IDs, and replies once with its result. Deliver is the only part that knows the order, and sends each finding to a fresh agent of the kind that fixes it. An agent becomes a plugin once it has an eval suite, as the intent judge has.
+Tickets run one at a time, in the main checkout, because the intent judge's and mutant writer's guards resolve paths against the project directory, not a worktree.
 
-Tickets run one at a time, in the main checkout, because the intent judge's and mutant writer's guards resolve paths against the project directory, not a worktree. Every step is a plain subagent, so delivery also runs headless, with `claude -p`.
+An earlier version delivered each ticket through five agents: a test writer, the intent judge, an implementer, the mutant writer and a standards reviewer, with a foreman taking tickets in turn. [Its first playthrough](retros/2026-11-09-first-playthrough.md) cost 22 questions over five tickets, and a plain Claude session given the same kind of spec and tickets built a small feature with its own tests unaided. So the agents that wrote and reviewed code were cut, and the two checks with evidence behind them were kept.
 
 ## What's built
 
-Everything here exists, but none of it has delivered a change yet.
+`/specify` and `/to-tickets` have been through one playthrough. `/review-checks` hasn't run on a change yet.
