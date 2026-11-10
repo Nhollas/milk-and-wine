@@ -61,7 +61,12 @@ function gitRepository(root: string): Repository {
   };
 }
 
-if (import.meta.main) {
+if (import.meta.main && !process.env["CLAUDE_CODE_OAUTH_TOKEN"]) {
+  process.stdout.write(
+    "set CLAUDE_CODE_OAUTH_TOKEN first: a trial's agent runs on it. `claude setup-token` makes one\n",
+  );
+  process.exitCode = 1;
+} else if (import.meta.main) {
   const root = process.cwd();
   const { exitCode, output } = run(process.argv.slice(2), {
     root,

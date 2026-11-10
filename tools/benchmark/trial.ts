@@ -67,10 +67,13 @@ type TrialRecord = {
   passRate: number;
   /** The scenarios with a hidden test that failed or never ran. */
   failedScenarios: string[];
+  /** Why the trial's agent stopped early, as Harbor names it, such as `AgentAuthenticationError`. */
+  broken?: string;
 };
 
 const trialResult = z.object({
   agent_execution: z.object({ started_at: z.string(), finished_at: z.string() }),
+  exception_info: z.object({ exception_type: z.string() }).nullish(),
 });
 
 const claudeResult = z.object({
@@ -173,8 +176,8 @@ function writeRepository(task: string, agent: string, root: string, repository: 
 
 // Harbor leaves `<jobs>/<job>/<trial>/result.json`, and `<trial>/agent/claude-code.txt`, whose final
 // `result` message counts every model's tokens, subagents' included.
-function measure(trialFolder: string): Pick<TrialRecord, "wallClockMs" | "tokens"> {
-  const { agent_execution } = trialResult.parse(
+function measure(trialFolder: string): Pick<TrialRecord, "wallClockMs" | "tokens" | "broken"> {
+  const { agent_execution, exception_info } = trialResult.parse(
     JSON.parse(readFileSync(join(trialFolder, "result.json"), "utf8")),
   );
   const result = readFileSync(join(trialFolder, "agent", "claude-code.txt"), "utf8")
@@ -185,6 +188,7 @@ function measure(trialFolder: string): Pick<TrialRecord, "wallClockMs" | "tokens
   return {
     wallClockMs: Date.parse(agent_execution.finished_at) - Date.parse(agent_execution.started_at),
     tokens: result.data.modelUsage,
+    ...(exception_info ? { broken: exception_info.exception_type } : {}),
   };
 }
 

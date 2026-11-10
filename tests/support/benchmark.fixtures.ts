@@ -157,6 +157,8 @@ type TrialOutput = {
   claudeMessages?: Record<string, unknown>[];
   /** The final `result` message of Claude Code's stream-json output. */
   claudeResult: Record<string, unknown>;
+  /** The exception Harbor names in `result.json` when the agent stopped early. */
+  exceptionType?: string;
 };
 
 // A finished trial's output, which the fake Harbor leaves unless a test says otherwise.
@@ -187,7 +189,13 @@ function fakeHarbor() {
   // `claude-code` agent, `agent/claude-code.txt`, the agent's stream-json output teed by Harbor.
   function leaveOutputFolder(
     jobsFolder: string,
-    { agentStartedAt, agentFinishedAt, claudeMessages = [], claudeResult }: TrialOutput,
+    {
+      agentStartedAt,
+      agentFinishedAt,
+      claudeMessages = [],
+      claudeResult,
+      exceptionType,
+    }: TrialOutput,
   ) {
     const trialFolder = join(jobsFolder, "2026-11-09__14-00-00", "widgets__k7Qp2Xa");
     mkdirSync(join(trialFolder, "agent"), { recursive: true });
@@ -204,7 +212,10 @@ function fakeHarbor() {
           finished_at: "2026-11-09T13:58:00.000000Z",
         },
         agent_execution: { started_at: agentStartedAt, finished_at: agentFinishedAt },
-        exception_info: null,
+        exception_info:
+          exceptionType === undefined
+            ? null
+            : { exception_type: exceptionType, exception_message: "Command failed (exit 1)" },
       }),
     );
     const systemMessage = { type: "system", subtype: "init", model: "claude-opus-4-1" };
