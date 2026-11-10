@@ -46,7 +46,9 @@ Run `/foreman` with the issue. It takes each ticket with no open blockers in lan
 | Mutant writer | Checks the tests fail when the new code is broken | The test writer, when a mutant survives |
 | Standards reviewer | Checks the change against [CODING-STANDARDS.md](../CODING-STANDARDS.md) | The implementer or test writer, when it doesn't meet them |
 
-Foreman then puts the ticket up for review, carrying the implementer's evidence and what each check sent back. You review and merge it. Once the last ticket merges, move any decision that should outlast the change into an ADR, and close the issue.
+Deliver makes the calls it can recommend an answer to instead of stopping to ask, drafts an ADR for one that's hard to reverse, and rewords a scenario a check finds behind what was decided. It stops only for a question whose every answer changes what a scenario means.
+
+Foreman then puts the ticket up for review, carrying the implementer's evidence, the decisions to check, the spec changes, and what each check sent back. You review and merge it. Once the last ticket merges, close the issue.
 
 Each agent is a definition that knows only its own input and output: it's given a subject and scenario IDs, and replies once with its result. Deliver is the only part that knows the order, and sends each finding to a fresh agent of the kind that fixes it. An agent becomes a plugin once it has an eval suite, as the intent judge has.
 

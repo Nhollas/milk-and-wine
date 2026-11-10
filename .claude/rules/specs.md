@@ -12,6 +12,7 @@ paths:
 - Give every scenario a reason that holds now: a caller's need, a product decision, an external contract or a project standard. The code doing it, "more robust" and "we might need it" are not reasons.
 - Say exactly what happens: the system, the inputs, what the observer gets back, and the values that change it. Write "Asks the Notifications API to notify the loan's member, then records a reminder for today", not "Reminds the member". Leave out constants nothing depends on.
 - Write for someone who hasn't read the code. Don't name internal parts such as a guard, hook or schema. Names an observer sees, such as `POST /loans`, are fine.
+- Specify a choice only if an observer could tell the difference. One they couldn't, such as a test seam or which of a tool's fields to read, goes in the ticket's Decisions, and in an ADR if it outlasts the change.
 - Connect a domain word to the everyday word it narrows the first time a spec uses it, and never use an everyday word in a narrower sense without saying so.
 - Set Verified to `service`, `integration`, `system`, `dependency <link>` for a guarantee from something we don't own, or `manual <link>` for a runbook step.
 - In Terms, define only words the scenarios use and the glossary lacks.

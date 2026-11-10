@@ -13,7 +13,7 @@ Deliver the tickets of issue $issue in landing order, one at a time, in this che
 
 1. **Find the next ticket.** Read the issue and find its ready tickets, then take the first. With none ready, tell the user which changes to review and merge, and stop.
 2. **Branch** for the ticket on a clean tree, or check out its branch if it exists.
-3. **Deliver** it with the `deliver` skill, given the ticket's subject and scenario IDs. When it replies with a question, put it to the user, then deliver again with the answer.
+3. **Deliver** it with the `deliver` skill, given the ticket's subject, scenario IDs and decisions. When it replies with a question, put it to the user, then deliver again with the answer.
 4. **Put it up for review** with the review `deliver` replied with. Check out `main`, and go back to step 1.
 
 Stop by giving the user each change you put up for review, and anything unresolved: a blocker, a disagreement, or a check that couldn't run.

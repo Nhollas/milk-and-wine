@@ -6,6 +6,7 @@
 ## Branches and PRs
 
 - A spec change and each ticket land as their own PR, on their own branch, as [the workflow](docs/workflow.md) describes. A ticket's PR closes its sub-issue.
+- A spec change that delivering a ticket finds lands in that ticket's PR instead, listed under its Spec changes.
 - Commit anything else straight to `main`. Don't create a branch for it unless you're asked to.
 
 ## Specs
