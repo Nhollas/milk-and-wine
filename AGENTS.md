@@ -8,6 +8,7 @@
 - A spec change and each ticket land as their own PR, on their own branch, as [the workflow](docs/workflow.md) describes. A ticket's PR closes its sub-issue.
 - A spec change that delivering a ticket finds lands in that ticket's PR instead, listed under its Spec changes.
 - Commit anything else straight to `main`. Don't create a branch for it unless you're asked to.
+- The tools that measure the workflow, under `tools/benchmark/`, don't go through it. Change them straight on `main` with ordinary tests, and no spec change or ticket: delivering them through the workflow they measure cost more than it taught.
 
 ## Specs
 

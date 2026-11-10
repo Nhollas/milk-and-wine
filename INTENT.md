@@ -41,3 +41,30 @@ Would the tests catch a bug? Only tests the intent judge has already passed coun
 | Missed bugs that show a real weakness in a test | Most of them                           |
 | Bugs a refactor of the code leaves out of date  | Fewer than half                        |
 | Time spent keeping the bugs up to date          | Less than reading the tests would take |
+
+## Whether the workflow earns its cost
+
+The review checks above say whether each check works. They don't say whether delivering with them beats delivering without. Two measures do, and the workflow has to keep meeting both.
+
+### Workflow benchmark
+
+Does foreman deliver a task's tickets better than Claude Code left to itself? Both get the same spec, tickets and starter code in a sandbox, and hidden tests grade what they leave. `pnpm bench:run <task> --agent foreman --agent baseline --trials 3` runs it.
+
+| Result over three trials of each on a task | What it means |
+| --- | --- |
+| Foreman passes more scenarios than baseline | Foreman is kept for tasks like it |
+| Both pass the same, and foreman costs under twice the time and tokens | Not settled. The task needs to be harder, or the measures finer |
+| Both pass the same, and foreman costs twice the time and tokens or more | Foreman loses on tasks like it. Find what the extra buys, or drop it there |
+| Foreman passes fewer scenarios than baseline | Foreman loses. Fix it before anything else is built on it |
+
+So far it measures only scenarios passed, time and tokens. What foreman is meant to buy is confidence at review, which shows in the tests an agent leaves behind, and nothing measures those yet. Until something does, the benchmark can show foreman losing but can't show it winning on its own terms.
+
+### Attention
+
+How much of my attention does a ticket cost? The benchmark can't see this, because nobody answers a question in a trial. Each playthrough's [retro](docs/retros/) counts it instead.
+
+| Measure, per ticket                    | Target                                   |
+| -------------------------------------- | ---------------------------------------- |
+| Questions delivery asked me            | Only real judgment calls                 |
+| Rounds a check sent the work back      | Falling from one playthrough to the next |
+| Spec edits made inside the ticket's PR | Falling from one playthrough to the next |
