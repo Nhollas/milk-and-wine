@@ -4,9 +4,11 @@
     "tools/spec-mutants/replay-config.ts",
     ".claude/agents/mutant-writer/guard.ts",
     ".claude/agents/mutant-writer/check-before-stop.ts",
-    ".claude/skills/intent-judge/hooks/guard.ts",
-    ".claude/skills/intent-judge/evals/tools/stage-case.ts",
+    ".claude/agents/intent-judge/guard.ts",
+    "evals/intent-judge/grade.ts",
     ".claude/skills/to-tickets/scripts/draw-slice-map.ts"
   ],
-  "project": ["src/**/*.ts", "tests/**/*.ts", "tools/**/*.ts", ".claude/**/*.ts"]
+  "project": ["src/**/*.ts", "tests/**/*.ts", "tools/**/*.ts", ".claude/**/*.ts", "evals/**/*.ts"],
+  "ignore": ["evals/*/judge-*/**"],
+  "ignoreBinaries": ["harbor"]
 }

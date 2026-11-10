@@ -109,5 +109,5 @@
       }
     }
   ],
-  "ignorePatterns": ["node_modules/**", ".claude/skills/intent-judge/evals/examples/**"]
+  "ignorePatterns": ["node_modules/**", "evals/*/fixtures/**", "evals/*/judge-*/**"]
 }

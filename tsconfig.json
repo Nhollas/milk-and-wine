@@ -6,6 +6,13 @@
     "verbatimModuleSyntax": true,
     "erasableSyntaxOnly": true
   },
-  "include": ["src/**/*.ts", "tests/**/*.ts", "tools/**/*.ts", "*.config.ts", ".claude/**/*.ts"],
-  "exclude": ["node_modules"]
+  "include": [
+    "src/**/*.ts",
+    "tests/**/*.ts",
+    "tools/**/*.ts",
+    "*.config.ts",
+    ".claude/**/*.ts",
+    "evals/**/*.ts"
+  ],
+  "exclude": ["node_modules", "evals/*/judge-*/**"]
 }

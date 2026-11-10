@@ -16,8 +16,9 @@
     "check": "pnpm lint && pnpm format:check && pnpm knip && pnpm test",
     "spec:mutants": "node tools/spec-mutants/replay.ts",
     "spec:mutants:check": "node tools/spec-mutants/check.ts",
-    "eval:check": "node .claude/skills/intent-judge/evals/tools/check-cases.ts",
-    "eval:judge": "claude plugin eval .claude/skills/intent-judge --scaffold --ablation none --no-publish --trust-plugin -j 4 --threshold 0.95 --output-dir .claude/skills/intent-judge/evals/results/$(git rev-parse --short HEAD)-$(date -u +%Y-%m-%dT%H-%M-%SZ)"
+    "eval:check": "node evals/intent-judge/check.ts",
+    "eval:judge": "harbor run --config evals/intent-judge/job.yaml --job-name $(date -u +%Y-%m-%dT%H-%M-%SZ)-$(git rev-parse --short HEAD)",
+    "eval:gate": "node evals/intent-judge/gate.ts"
   },
   "dependencies": {
     "@hono/node-server": "2.1.1",
@@ -40,6 +41,7 @@
     "oxfmt": "0.74.0",
     "oxlint": "1.89.0",
     "oxlint-tsgolint": "7.0.2004",
+    "smol-toml": "1.9.1",
     "typescript": "7.0.2",
     "vitest": "5.0.0"
   },

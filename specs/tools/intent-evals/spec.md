@@ -1,57 +1,74 @@
 # Intent evals
 
-Measures how well the [intent judge](../../../.claude/skills/intent-judge/agents/intent-judge.md) finds where tests don't match their scenarios. It plants gaps in examples and checks whether the judge reports them, and gives it tests that are right and checks that it reports nothing. It's for whoever looks after the judge: how to word it, which model runs it, and whether it still meets its targets.
+Measures how well the [intent judge](../../../.claude/agents/intent-judge/intent-judge.md) finds where tests don't match their scenarios. Each task plants a gap in a fixture's tests, or leaves them right, and [Harbor](https://harborframework.com) runs the judge on it in a container of its own and grades its reply. It's for whoever looks after the judge: how to word it, which model runs it, and whether it still meets its targets. [The evals README](../../../evals/intent-judge/README.md) says where everything lives and how to run it.
 
 | Scope |  |
 | --- | --- |
-| **Owns** | Examples, the case folder and its format, `eval:check`, `eval:judge` and the pass marks. |
-| **Depends on** | The intent judge, packaged as a plugin that keeps it from reading the code under test. [`claude plugin eval`](https://code.claude.com/docs/en/plugin-evals), which runs each case and scores each run. `tools/specs`, to read scenarios. Vitest, to run a scenario's tests. |
-| **Excluded** | The judge's own instructions. Writing examples and cases; people and agents write them, and this tool checks and runs them. `pnpm check`, which never runs the judge. |
+| **Owns** | Fixtures, the task folder, `eval:check`, the grader, `eval:gate` and the targets. |
+| **Depends on** | The intent judge. Harbor and Docker, which run each trial. `tools/specs`, to read scenarios. Vitest, to run a scenario's tests. |
+| **Excluded** | The judge's own instructions. Writing fixtures and tasks; people and agents write them, and this tool checks and grades them. `pnpm check`, which never runs the judge. |
 
-**Terms.** An _example_ is a small made-up subject, with spec, tests and code, that never changes with the app. A _case_ is one thing the judge might get wrong, staged in an example, with a kind and the difficulty its writer expects: easy, medium or hard. [The evals README](../../../.claude/skills/intent-judge/evals/README.md) says what a case's folder holds. A case's _plant_ is its edits to the example's tests, each replacing `find` lines in a file. A _gap_ is what a plant leaves wrong with the tests. A case's _bug_ is one such edit to the example's code, which the tests catch until the gap is planted. A kind says what the planted tests do to the scenario: `misses_requirement` (no test checks something it says), `checks_something_else` (a test checks something near it instead), `setup_hides_requirement` (the setup can't show whether it holds), `contradicts_requirement` (a test expects the opposite), `adds_requirement` (a test checks something it doesn't say) and `tests_are_right` (nothing is wrong, and the judge should report nothing).
+**Terms.** A _fixture_ is a small made-up subject, with spec, tests and code, that never changes with the app. A _task_ is one thing the judge might get wrong, staged on a fixture, as a Harbor task folder. Its environment holds the fixture's spec and tests, with the task's _gap_ planted in the tests, and none of the code under test. Its _expected verdict_ is what the judge should report on the task's scenario, in the judge's own verdicts: `aligned` when nothing is wrong, or the verdict for what the gap does. A task's _bug_ is a change to the fixture's code that the fixture's tests catch until the gap is planted. A _trial_ is one run of the judge on a task, and a _job_ is one Harbor run of trials.
 
 ## Behaviour
 
-### Checking cases
+### Checking tasks
 
 | ID | Given | When | Then | Verified |
 | --- | --- | --- | --- | --- |
-| B1 | A case folder, other than `examples/` or `results/`, isn't named `judge-<number>-<slug>` | `eval:check` runs | Prints `<path> is not valid:` and `the folder must be named judge-<number>-<slug>`, and exits `1` | service |
-| B27 | A case's README doesn't start with a `#` heading | `eval:check` runs | Prints `<path> is not valid:` and `README.md must start with a # heading`, and exits `1` | service |
-| B28 | A case's `plant.json` doesn't match the case format | `eval:check` runs | Prints `<path> is not valid:` and `plant.json:` with what's wrong, and exits `1` | service |
-| B29 | Two cases share a number | `eval:check` runs | Reports `duplicate` with each case sharing the number, and exits `1` | service |
-| B2 | A case names an example, or a scenario in it, that doesn't exist | `eval:check` runs | Reports `unknown` with the case and the name, and exits `1` | service |
-| B3 | A case's edit `find` lines don't appear exactly once in their file, or the file is gone | `eval:check` runs | Reports `stale` with the case, and exits `1` | service |
-| B4 | An example's tests fail, or a scenario verified by a test has none, with no case planted | `eval:check` runs | Reports that the example's tests must pass as they are, checks none of its cases, and exits `1` | service |
-| B5 | A misses_requirement, checks_something_else or setup_hides_requirement case whose scenario's tests pass with its bug in the code | `eval:check` runs | Reports `not a gap` with the case, and exits `1` | service |
-| B30 | A misses_requirement, checks_something_else or setup_hides_requirement case whose scenario's tests fail with its bug in the code, and still fail once the gap is planted too | `eval:check` runs | Reports `not a gap` with the case, and exits `1` | service |
-| B6 | A contradicts_requirement case whose scenario's tests don't fail with the gap planted, against the example's code as it is | `eval:check` runs | Reports `not a gap` with the case, and exits `1` | service |
-| B25 | A tests_are_right case whose scenario's tests fail with its plant | `eval:check` runs | Reports `fails` with the case, and exits `1` | service |
-| B8 | Nothing B1 to B6, B25 or B27 to B30 reports | `eval:check` runs | Prints `ok` and each case's kind, difficulty and README heading, then `eval:check passed`, and exits `0` | service |
+| B1 | A task folder, other than `fixtures/` or `results/`, isn't named `judge-<number>-<slug>` | `eval:check` runs | Prints `<path> is not valid:` and `the folder must be named judge-<number>-<slug>`, and exits `1` | service |
+| B27 | A task's README doesn't start with a `#` heading | `eval:check` runs | Prints `<path> is not valid:` and `README.md must start with a # heading`, and exits `1` | service |
+| B28 | A task's `task.toml` or `tests/expected.json` doesn't match the task format, or it expects `misses_requirement`, `checks_something_else` or `setup_hides_requirement` with no `bug/` | `eval:check` runs | Prints `<path> is not valid:` and what's wrong, and exits `1` | service |
+| B29 | Two tasks share a number | `eval:check` runs | Reports `duplicate` with each task sharing the number, and exits `1` | service |
+| B2 | A task names a fixture, or a scenario in it, that doesn't exist | `eval:check` runs | Reports `unknown` with the task and the name, and exits `1` | service |
+| B3 | A task's environment holds a file its fixture doesn't, or a spec that differs from its fixture's, or its `bug/` holds a file that isn't its fixture's code under test | `eval:check` runs | Reports `stale` with the task and the file, and exits `1` | service |
+| B31 | A task's environment holds code under test | `eval:check` runs | Reports `leaks` with the task and the file, and exits `1` | service |
+| B4 | A fixture's tests fail, or a scenario verified by a test has none | `eval:check` runs | Reports that the fixture's tests must pass as they are, checks none of its tasks, and exits `1` | service |
+| B5 | A task expecting `misses_requirement`, `checks_something_else` or `setup_hides_requirement` whose scenario's tests pass with its bug in the code | `eval:check` runs | Reports `not a gap` with the task, and exits `1` | service |
+| B30 | A task expecting `misses_requirement`, `checks_something_else` or `setup_hides_requirement` whose scenario's tests still fail with its bug once the gap is planted | `eval:check` runs | Reports `not a gap` with the task, and exits `1` | service |
+| B6 | A task expecting `contradicts_requirement` whose scenario's tests don't fail against its fixture's code | `eval:check` runs | Reports `not a gap` with the task, and exits `1` | service |
+| B25 | A task expecting `aligned` whose scenario's tests fail against its fixture's code | `eval:check` runs | Reports `fails` with the task, and exits `1` | service |
+| B8 | Nothing B1 to B6, B25 or B27 to B31 reports | `eval:check` runs | Prints `ok` and each task's expected verdict, difficulty and README heading, then `eval:check passed`, and exits `0` | service |
 
-### Pass marks
+### Grading a trial
 
-A run is right when the judge ran, never read the example's code under test, and either reported the case's gap or, on a tests_are_right case, reported nothing on its scenario. The judge's verdicts are named as the kinds are, so reporting the gap means judging it the case's kind and quoting the scenario's words, or, for an adds_requirement case, pointing at the planted line. A run that breaks is wrong.
+The grader reads the judge's last reply in the trial and writes its reward, 1 or 0.
 
-| Measure      | Pass mark                     | How                                        |
-| ------------ | ----------------------------- | ------------------------------------------ |
-| Easy cases   | Right in at least 95% of runs | `eval:judge`, which gates at 0.95          |
-| Medium cases | Right in at least 75% of runs | `eval:judge --tag medium --threshold 0.75` |
-| Hard cases   | Reported, not pass or fail    | `eval:judge --tag hard --threshold 0`      |
+| ID | Given | When | Then | Verified |
+| --- | --- | --- | --- | --- |
+| B32 | A task expecting a verdict on a requirement | A trial is graded | Rewards 1 when the reply judges a requirement of the task's scenario with that verdict and quotes the expected words, in any case; otherwise 0 | service |
+| B33 | A task expecting `adds_requirement` | A trial is graded | Rewards 1 when the reply lists an additional check on the task's scenario with that verdict at the expected test line; otherwise 0 | service |
+| B34 | A task expecting `aligned` | A trial is graded | Rewards 1 when the reply gives no requirement or additional check on the task's scenario a verdict that says its tests are wrong; otherwise 0 | service |
+| B35 | A trial whose last reply holds no JSON object | It's graded | Rewards 0 | service |
+
+### Gating a job
+
+| Difficulty | Target                     |
+| ---------- | -------------------------- |
+| Easy       | Mean reward at least 0.95  |
+| Medium     | Mean reward at least 0.75  |
+| Hard       | Reported, not pass or fail |
+
+| ID | Given | When | Then | Verified |
+| --- | --- | --- | --- | --- |
+| B36 | A job whose tasks each meet their difficulty's target | `eval:gate` runs | Prints each task's difficulty, mean reward, trials and target, then `eval:gate passed`, and exits `0` | service |
+| B37 | A job with a task below its difficulty's target | `eval:gate` runs | Marks the task `below`, prints `eval:gate failed · <count> below target`, and exits `1` | service |
+| B38 | A job with a trial that broke before it was graded | `eval:gate` runs | Scores the trial 0 and counts it as broke | service |
 
 **Why**
 
-- **B5, B6, B30:** A wrong case marks the judge down for being right, and a hard case no model finds might be wrong rather than hard. So each case is checked without the judge. An adds_requirement case can't be checked this way, since no bug gets past an extra check, so its README says why the scenario doesn't ask for it.
-- **Examples:** The judge sees only the example, so nothing in the app can confuse it, and examples never change with the app, so cases don't go stale.
-- **Right runs:** A judge that quotes the right words under another verdict has told its reader something else is wrong. One that read the code under test has seen the answer, so its findings mean nothing. One that breaks finds nothing for whoever relies on it.
-- **tests_are_right cases:** On a planted case, anything else the judge reports could be a false alarm or the planted gap in other words. On a tests_are_right case everything it reports is a false alarm, so nobody has to read it. One that turns out to be a real gap in the example is fixed in the example, once.
-- **Pass marks:** Set before the first full run, so its results can't bend them. They're revisited once, after it, with the reason for any change written down.
+- **Containers:** The judge sees only the task's environment: no code under test, no task README saying what the trap is, nothing else in this repository. So nothing has to stop it reading the answer.
+- **B5, B6, B30:** A wrong task marks the judge down for being right, and a hard task no model finds might be wrong rather than hard. So each task is checked without the judge. An `adds_requirement` task can't be checked this way, since no bug gets past an extra check, so its README says why the scenario doesn't ask for it.
+- **B3:** A task holds its own copy of its fixture's spec and tests, so a reader sees exactly what the judge sees. The copy must not drift from the fixture.
+- **B32:** A judge that quotes the right words under another verdict has told its reader something else is wrong.
+- **B34:** On a task with a gap, anything else the judge reports could be a false alarm or the gap in other words. On an `aligned` task everything it reports is a false alarm.
+- **B38:** A judge that breaks finds nothing for whoever relies on it.
+- **Targets:** Set before the first full run, so its results can't bend them. Revisited once, after it, with the reason for any change written down.
 
 ## Limitations
 
-- The judge only reads this repository's layout, so examples are laid out the same way.
-- A case is found only when the judge quotes its scenario's words, or points at its planted line. A judge that finds the gap in other words isn't counted.
-- A broken run and a miss score the same; only the result's `error` tells them apart.
+- A gap is found only when the judge quotes its scenario's words, or points at its planted line. A judge that finds the gap in other words isn't counted.
+- Harbor and Docker must be installed, and a trial runs on `CLAUDE_CODE_OAUTH_TOKEN`.
 
 ## Open questions
 

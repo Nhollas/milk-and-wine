@@ -1,0 +1,29 @@
+# How `pnpm eval:judge` runs the intent judge on every task in this folder.
+# Harbor reads these paths from the repository root, except a mount's source, which Docker reads
+# from each task's environment/ folder.
+jobs_dir: evals/intent-judge/results
+n_attempts: 6
+n_concurrent_trials: 4
+datasets:
+  - path: evals/intent-judge
+agents:
+  - name: claude-code
+    env:
+      # Trials run on CLAUDE_CODE_OAUTH_TOKEN, not an API key.
+      CLAUDE_FORCE_OAUTH: "1"
+    kwargs:
+      # The session is the judge, so its reply is the session's last message.
+      config:
+        agent: intent-judge
+environment:
+  mounts:
+    # The judge as this commit defines it, in place of a copy in every task.
+    - type: bind
+      source: ../../../../.claude/agents/intent-judge
+      target: /app/.claude/agents/intent-judge
+      read_only: true
+    # What each task's tests/test.sh grades a trial with.
+    - type: bind
+      source: ../../grade.ts
+      target: /grader/grade.ts
+      read_only: true

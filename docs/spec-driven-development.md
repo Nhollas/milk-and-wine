@@ -145,7 +145,7 @@ The judge runs first. If a mutant gets past a test the judge hasn't passed, ther
 
 Neither check can find a behaviour that's missing from both the code and the tests. Only a person reading the scenario can do that.
 
-How each check works is written up for the [intent judge](../.claude/skills/intent-judge/agents/intent-judge.md) and the [spec mutants](../specs/tools/spec-mutants/spec.md). The targets each one has to hit are in [INTENT.md](../INTENT.md#review-checks).
+How each check works is written up for the [intent judge](../.claude/agents/intent-judge/intent-judge.md) and the [spec mutants](../specs/tools/spec-mutants/spec.md). The targets each one has to hit are in [INTENT.md](../INTENT.md#review-checks).
 
 ## 9. Delivering a change
 
