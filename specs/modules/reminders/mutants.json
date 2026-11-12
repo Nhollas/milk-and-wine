@@ -162,8 +162,8 @@
       {
         "breaks": "`{NOTIFY_URL}/notifications`",
         "file": "src/reminders/notifications-client.ts",
-        "find": ["      const response = await fetch(endpoint(baseUrl, \"notifications\"), {"],
-        "replace": ["      const response = await fetch(endpoint(baseUrl, \"notification\"), {"]
+        "find": ["      const response = await fetch(`${baseUrl}/notifications`, {"],
+        "replace": ["      const response = await fetch(`${baseUrl}/notification`, {"]
       },
       {
         "breaks": "with JSON",
@@ -226,7 +226,7 @@
       {
         "breaks": "`{NOTIFY_URL}/notifications` (drops NOTIFY_URL's path)",
         "file": "src/reminders/notifications-client.ts",
-        "find": ["      const response = await fetch(endpoint(baseUrl, \"notifications\"), {"],
+        "find": ["      const response = await fetch(`${baseUrl}/notifications`, {"],
         "replace": ["      const response = await fetch(new URL(\"/notifications\", baseUrl), {"]
       }
     ]

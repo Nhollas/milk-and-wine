@@ -1,6 +1,6 @@
 import { test as base } from "vitest";
 import { openDatabase } from "../../src/database.ts";
-import { createLogger, type LogEntry } from "../../src/log.ts";
+import { createLogger, type LogEntry } from "../../src/logger.ts";
 import { createLoansApp } from "../../src/loans/loans-app.ts";
 import { sendOverdueReminders } from "../../src/reminders/send-overdue-reminders.ts";
 import { fakeCatalogueClient } from "./fake-catalogue-client.ts";

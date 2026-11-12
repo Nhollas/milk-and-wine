@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { systemClock } from "../clock.ts";
 import { openDatabase } from "../database.ts";
-import { logger } from "../log.ts";
+import { logger } from "../logger.ts";
 import { createNotificationsClient } from "./notifications-client.ts";
 import { sendOverdueReminders } from "./send-overdue-reminders.ts";
 

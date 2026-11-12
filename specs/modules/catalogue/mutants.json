@@ -5,8 +5,8 @@
       {
         "breaks": "Requests the wrong path, not /copies/{copyId}",
         "file": "src/catalogue/catalogue-client.ts",
-        "find": ["      const url = endpoint(baseUrl, `copies/${encodeURIComponent(copyId)}`);"],
-        "replace": ["      const url = endpoint(baseUrl, `copy/${encodeURIComponent(copyId)}`);"]
+        "find": ["      const url = `${baseUrl}/copies/${encodeURIComponent(copyId)}`;"],
+        "replace": ["      const url = `${baseUrl}/copy/${encodeURIComponent(copyId)}`;"]
       },
       {
         "breaks": "Every found copy is reported available, even when withdrawn",

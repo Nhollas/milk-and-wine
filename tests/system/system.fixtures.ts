@@ -1,7 +1,7 @@
 import { test as base } from "vitest";
 import { createCatalogueClient } from "../../src/catalogue/catalogue-client.ts";
 import { openDatabase } from "../../src/database.ts";
-import { createLogger } from "../../src/log.ts";
+import { createLogger } from "../../src/logger.ts";
 import { createLoansApp } from "../../src/loans/loans-app.ts";
 import { createNotificationsClient } from "../../src/reminders/notifications-client.ts";
 import { sendOverdueReminders } from "../../src/reminders/send-overdue-reminders.ts";

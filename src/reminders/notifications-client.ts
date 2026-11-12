@@ -1,5 +1,3 @@
-import { endpoint } from "../http.ts";
-
 export type OverdueReminder = { memberId: string; loanId: string; dueOn: string };
 
 type ReminderDelivery = { kind: "accepted" } | { kind: "failed"; reason: string };
@@ -11,7 +9,7 @@ export type NotificationsClient = {
 export function createNotificationsClient(baseUrl: string): NotificationsClient {
   return {
     async sendOverdueReminder({ memberId, loanId, dueOn }) {
-      const response = await fetch(endpoint(baseUrl, "notifications"), {
+      const response = await fetch(`${baseUrl}/notifications`, {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ memberId, template: "loan-overdue", data: { loanId, dueOn } }),

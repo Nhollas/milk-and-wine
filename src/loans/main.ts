@@ -3,7 +3,7 @@ import { z } from "zod";
 import { createCatalogueClient } from "../catalogue/catalogue-client.ts";
 import { systemClock } from "../clock.ts";
 import { openDatabase } from "../database.ts";
-import { logger } from "../log.ts";
+import { logger } from "../logger.ts";
 import { createLoansApp } from "./loans-app.ts";
 
 const env = z

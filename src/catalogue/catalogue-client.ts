@@ -1,6 +1,5 @@
 import { setTimeout } from "node:timers/promises";
 import { z } from "zod";
-import { endpoint } from "../http.ts";
 
 type Copy = { copyId: string; title: string; available: boolean };
 
@@ -29,7 +28,7 @@ export function createCatalogueClient(
   const { attempts, attemptTimeoutMs, retryDelayMs } = retryPolicy;
   return {
     async getCopy(copyId) {
-      const url = endpoint(baseUrl, `copies/${encodeURIComponent(copyId)}`);
+      const url = `${baseUrl}/copies/${encodeURIComponent(copyId)}`;
       for (let attempt = 1; ; attempt++) {
         const response = await fetch(url, {
           headers: { accept: "application/json" },

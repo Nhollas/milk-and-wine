@@ -1,6 +1,6 @@
 import type { DatabaseSync } from "node:sqlite";
 import { type Clock, utcDate } from "../clock.ts";
-import type { Logger } from "../log.ts";
+import type { Logger } from "../logger.ts";
 import type { NotificationsClient } from "./notifications-client.ts";
 import { createReminderStore } from "./reminder-store.ts";
 
