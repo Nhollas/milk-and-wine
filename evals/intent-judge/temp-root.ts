@@ -36,7 +36,7 @@ export function createTempRoot() {
       write(`${folder}/specs/modules/${fixture}/spec.md`, specMarkdown(fixture, files.scenarios));
       write(`${folder}/src/${fixture}/${fixture}.ts`, files.code);
       if (files.tests !== undefined) {
-        write(`${folder}/src/${fixture}/${fixture}.service.test.ts`, files.tests);
+        write(`${folder}/src/${fixture}/${fixture}.test.ts`, files.tests);
       }
     },
     /** A task folder: its README, titled with its id unless `readme` says otherwise, and its files. */
@@ -74,7 +74,7 @@ export function specMarkdown(fixture: string, scenarios: SpecScenario[]): string
     "| ID | Given | When | Then | Verified |",
     "| --- | --- | --- | --- | --- |",
     ...scenarios.map(
-      ([id, then, verified = "service"]) =>
+      ([id, then, verified = "unit"]) =>
         `| ${id} | A widget exists | It is priced | ${then} | ${verified} |`,
     ),
     "",

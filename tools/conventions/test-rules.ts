@@ -1,6 +1,6 @@
 import { existsSync } from "node:fs";
 import { join, posix } from "node:path";
-import { isTestLevel } from "../specs/specs.ts";
+import { levelOfTestFile } from "../specs/specs.ts";
 import { exportedNamesOf, importedNameOf, repoPathOf, type Rule } from "./rule-context.ts";
 
 export const testPlacement: Rule = {
@@ -139,14 +139,13 @@ export const testImports: Rule = {
 const SHARED_HELPERS = "tests/support";
 
 function expectedTestFolderOf(fileName: string, root: string): string | undefined {
-  const parts = fileName.split(".");
-  const level = parts.at(-3);
-  const subject = parts[0];
-  if (parts.length < 4 || !isTestLevel(level) || subject === undefined) return undefined;
+  const level = levelOfTestFile(fileName);
+  const subject = fileName.split(".")[0];
+  if (level === undefined || subject === undefined) return undefined;
   const codeFolder = ["src", "tools"]
     .map((top) => `${top}/${subject}`)
     .find((folder) => existsSync(join(root, folder)));
-  return codeFolder ?? `tests/${level}`;
+  return codeFolder ?? (level === "unit" ? undefined : `tests/${level}`);
 }
 
 function isTestHelper(path: string): boolean {

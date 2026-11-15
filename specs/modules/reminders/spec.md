@@ -14,15 +14,15 @@ Reminds members about overdue loans, once a day, through the organisation's Noti
 
 | ID | Given | When | Then | Verified |
 | --- | --- | --- | --- | --- |
-| B1 | A current loan's `dueOn` is before today (UTC), and it has no reminder recorded today | The reminders job runs | Asks the Notifications API to notify the loan's member, then records a reminder for today | service |
-| B2 | A current loan already has a reminder recorded today | The reminders job runs | Sends nothing for that loan | service |
-| B7 | A loan's copy has been returned | The reminders job runs | Sends nothing for that loan | service |
-| B8 | A current loan's `dueOn` is today (UTC) or later | The reminders job runs | Sends nothing for that loan | service |
-| B3 | The Notifications API doesn't accept a reminder | The job sends a reminder | Records nothing for that loan and doesn't ask again for it in this run | service |
-| B9 | The Notifications API doesn't accept a reminder | The job sends a reminder | Logs `reminder.failed` at `warn` with `loanId` and the failure's `error` | service |
-| B10 | The Notifications API doesn't accept a reminder, and other loans are overdue | The job sends a reminder | Still asks the Notifications API to notify the other loans' members | service |
-| B6 | Several loans are overdue | The reminders job runs | Asks the Notifications API to notify their members, oldest `dueOn` first | service |
-| B4 | The job has handled every overdue loan | The job finishes | Logs `reminders.finished` at `info` with `accepted` and `failed` counts | service |
+| B1 | A current loan's `dueOn` is before today (UTC), and it has no reminder recorded today | The reminders job runs | Asks the Notifications API to notify the loan's member, then records a reminder for today | unit |
+| B2 | A current loan already has a reminder recorded today | The reminders job runs | Sends nothing for that loan | unit |
+| B7 | A loan's copy has been returned | The reminders job runs | Sends nothing for that loan | unit |
+| B8 | A current loan's `dueOn` is today (UTC) or later | The reminders job runs | Sends nothing for that loan | unit |
+| B3 | The Notifications API doesn't accept a reminder | The job sends a reminder | Records nothing for that loan and doesn't ask again for it in this run | unit |
+| B9 | The Notifications API doesn't accept a reminder | The job sends a reminder | Logs `reminder.failed` at `warn` with `loanId` and the failure's `error` | unit |
+| B10 | The Notifications API doesn't accept a reminder, and other loans are overdue | The job sends a reminder | Still asks the Notifications API to notify the other loans' members | unit |
+| B6 | Several loans are overdue | The reminders job runs | Asks the Notifications API to notify their members, oldest `dueOn` first | unit |
+| B4 | The job has handled every overdue loan | The job finishes | Logs `reminders.finished` at `info` with `accepted` and `failed` counts | unit |
 
 ### Calling the Notifications API
 

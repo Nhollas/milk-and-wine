@@ -21,7 +21,7 @@ export const WIDGETS = { scenarios: SCENARIOS, code: PRICES, tests: PRICES_TESTS
 
 export const SPEC_PATH = "specs/modules/widgets/spec.md";
 
-const TESTS_PATH = "src/widgets/widgets.service.test.ts";
+const TESTS_PATH = "src/widgets/widgets.test.ts";
 
 export const CODE_PATH = "src/widgets/widgets.ts";
 

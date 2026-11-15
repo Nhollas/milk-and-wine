@@ -24,7 +24,7 @@
 <text x="310" y="96" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="14px" fill="#f0f6fc">arrives with it</text>
 <text x="515" y="76" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="14px" fill="#f0f6fc">Responds 409 email-taken, creates</text>
 <text x="515" y="96" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="14px" fill="#f0f6fc">no account, sends no welcome email</text>
-<text x="695" y="85" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="14px" fill="#f0f6fc">service</text>
+<text x="695" y="85" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="14px" fill="#f0f6fc">unit</text>
 
 <path d="M50 114V150M160 114V150M310 114V150M515 114V150M695 114V150" stroke="#9198a1" stroke-width="1" stroke-dasharray="3 3" fill="none"></path>
 <text x="50" y="168" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="12px" fill="#9198a1">Never moves,</text>

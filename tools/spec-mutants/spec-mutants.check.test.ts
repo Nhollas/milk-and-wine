@@ -172,7 +172,7 @@ test("B13: passes when every mutant is ok", () => {
   using repo = createTempRepo();
   repo.writeSpec("widgets", [["B1", "Costs 2 each"]]);
   repo.writeFile("src/widgets/widgets.ts", PRICES);
-  repo.writeFile("src/widgets/widgets.service.test.ts", PRICES_TESTS);
+  repo.writeFile("src/widgets/widgets.test.ts", PRICES_TESTS);
   repo.writeMutants("widgets", {
     B1: {
       then: "Costs 2 each",

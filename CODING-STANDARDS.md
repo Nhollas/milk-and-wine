@@ -14,7 +14,7 @@ These are defaults, not laws. When a case genuinely doesn't fit, deviate and say
 
 ## Tests
 
-- A test file's level says what stands in for the systems we don't own. A service test uses a fake: a small working implementation of one of our clients, such as `fakeCatalogueClient()`. An integration test runs our client against MSW handlers for the external API's endpoints, never the real system, and never checks that its owners agree. A system test uses the same handlers around the whole app. Call them fakes and handlers, not mocks or stubs.
+- A test file's level says what stands in for the systems we don't own. A unit test has no level in its name and runs in the test's process, with a fake for each of our clients it needs: a small working implementation, such as `fakeCatalogueClient()`. An integration test runs our client against MSW handlers for the external API's endpoints, never the real system, and never checks that its owners agree. A system test uses the same handlers around the whole app. Call them fakes and handlers, not mocks or stubs.
 - Write out what a test sends and expects: method, path and body; status, response body and rows. Build neither from the code under test (route constants, response types, generated clients).
 - A test body has no loops or branches, so a reader can see what it does without tracing code. Cases that differ only in data can share one body through `test.each`, with each case's inputs and expected outcome written out in its table.
 - Order a test as setup, call, assertions, with a blank line between each. A call with one assertion can sit inside it. Setup goes through fixtures named for what they are (`fakeCatalogue.addCopies(...)`, `clock.setToday(...)`) or `httpInterceptor.use(...)`.

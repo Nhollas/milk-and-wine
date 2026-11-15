@@ -1,5 +1,7 @@
 # 2. Test file names carry the subject and the level
 
+Superseded in part by [ADR 5](0005-unit-tests-can-prove-scenarios.md): unit tests can prove scenarios, and `service` is gone.
+
 ## Context
 
 Scenario IDs are plain (`B5`) so they stay short in specs, tests and conversation. Every subject has its own `B5`, so a test's title can't say which subject it means.

@@ -5,7 +5,8 @@ const testFolders = ["src", "tests", "tools", ".claude", "evals"];
 // Fixtures and tasks are laid out like this repository, but their tests run only through the evals.
 const examples = ["evals/*/fixtures/**", "evals/*/judge-*/**"];
 
-const levels = ["service", "integration", "system"] as const;
+// A unit test has no level in its file name, so it runs in the unit project.
+const levels = ["integration", "system"] as const;
 
 type Level = (typeof levels)[number];
 
@@ -32,15 +33,6 @@ export default defineConfig({
             ...examples,
             ...levels.flatMap((level) => testsAt(level)),
           ],
-          ...interceptedHttp,
-        },
-      },
-      {
-        extends: true,
-        test: {
-          name: { label: "service", color: "cyan" },
-          include: testsAt("service"),
-          exclude: [...configDefaults.exclude, ...examples],
           ...interceptedHttp,
         },
       },

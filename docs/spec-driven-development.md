@@ -59,19 +59,19 @@ An ID never changes and is never reused, so B2 in a test's name always means the
 
 ## 5. Testing from the outside
 
-B2's Then is what a caller of the API sees, a `409` and no new account. So the test that proves it has to call the API the way a real client would. It sends `POST /signup` and checks the response and what the request left behind, without calling any of the code's functions directly.
+B2's Then is what a caller of the API sees, a `409` and no new account. So the test that proves it has to check those, and the plainest way is to call the API the way a real client would. It sends `POST /signup` and checks the response and what the request left behind, without calling any of the code's functions directly. It's still a unit test: the app runs in the test's process, with a fake standing in for the email service.
 
-![A service test sends POST /signup into accounts and reads the 409, so it proves B2; a unit test of one function inside proves no scenario](assets/spec-driven-development/boundary.svg)
+![A unit test sends POST /signup into accounts and reads the 409, so it proves B2; a test of one function inside can't see B2's Then](assets/spec-driven-development/boundary.svg)
 
-Unit tests that check one function inside are still welcome. They help while building, but they don't prove any scenario, because no caller ever sees what they check.
+Tests that check one function inside are welcome too. They help while building, and they can prove a scenario whose Then they check, but not B2, because no caller of that function ever sees a `409`.
 
 ## 6. Linking tests to scenarios
 
-A test names the scenario it proves at the start of its title. The test for B2 is called "B2: refuses an email that's already in use". Its file name says which spec it belongs to and what kind of test it is, so `accounts.service.test.ts` holds service tests for the accounts spec.
+A test names the scenario it proves at the start of its title. The test for B2 is called "B2: refuses an email that's already in use". Its file name says which spec it belongs to and, unless it's a unit test, what kind of test it is, so `accounts.test.ts` holds unit tests for the accounts spec and `accounts.integration.test.ts` its integration tests.
 
 ![A test file name carries its spec, part and level, and a test title starts with its scenario ID](assets/spec-driven-development/names.svg)
 
-Both are needed because every spec has its own B1, B2 and so on, so the file name says which spec's B2 a test means ([ADR 0002](adr/0002-test-file-names-carry-subject-and-level.md)).
+Both are needed because every spec has its own B1, B2 and so on, so the file name says which spec's B2 a test means ([ADR 0002](adr/0002-test-file-names-carry-subject-and-level.md), [ADR 0005](adr/0005-unit-tests-can-prove-scenarios.md)).
 
 Here's the B2 test in full. Sam signs up, then Alex tries to sign up with the same email.
 

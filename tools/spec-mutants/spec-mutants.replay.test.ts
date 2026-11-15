@@ -34,7 +34,7 @@ test("B15: shows what a changed Then was and now is, and skips that scenario's m
   using repo = createTempRepo();
   repo.writeSpec("widgets", [["B1", "Costs 2 each, rounded up"]]);
   repo.writeFile("src/widgets/widgets.ts", PRICES);
-  repo.writeFile("src/widgets/widgets.service.test.ts", PRICES_TESTS);
+  repo.writeFile("src/widgets/widgets.test.ts", PRICES_TESTS);
   repo.writeMutants("widgets", { B1: { then: "Costs 2 each", mutants: [TIMES_THREE] } });
 
   expect(replay(["widgets"], repo.root)).toEqual({
@@ -59,7 +59,7 @@ test("B16: skips a scenario whose tests fail, or don't exist, with no mutant pla
     "src/widgets/widgets.ts",
     "export function priceOf(quantity: number): number {\n  return quantity * 5;\n}\n",
   );
-  repo.writeFile("src/widgets/widgets.service.test.ts", PRICES_TESTS);
+  repo.writeFile("src/widgets/widgets.test.ts", PRICES_TESTS);
   repo.writeMutants("widgets", {
     B1: { then: "Costs 2 each", mutants: [TIMES_THREE] },
     B2: { then: "Is never negative", mutants: [FREE_AT_SEVEN] },
@@ -80,7 +80,7 @@ test("B17: marks a mutant killed when a scenario test fails", () => {
   using repo = createTempRepo();
   repo.writeSpec("widgets", [["B1", "Costs 2 each"]]);
   repo.writeFile("src/widgets/widgets.ts", PRICES);
-  repo.writeFile("src/widgets/widgets.service.test.ts", PRICES_TESTS);
+  repo.writeFile("src/widgets/widgets.test.ts", PRICES_TESTS);
   repo.writeMutants("widgets", { B1: { then: "Costs 2 each", mutants: [TIMES_THREE] } });
 
   const { output } = replay(["widgets"], repo.root);
@@ -92,7 +92,7 @@ test("B27: marks a mutant survived when a scenario's tests all pass", () => {
   using repo = createTempRepo();
   repo.writeSpec("widgets", [["B1", "Costs 2 each"]]);
   repo.writeFile("src/widgets/widgets.ts", PRICES);
-  repo.writeFile("src/widgets/widgets.service.test.ts", PRICES_TESTS);
+  repo.writeFile("src/widgets/widgets.test.ts", PRICES_TESTS);
   repo.writeMutants("widgets", { B1: { then: "Costs 2 each", mutants: [FREE_AT_SEVEN] } });
 
   const { output } = replay(["widgets"], repo.root);
@@ -105,7 +105,7 @@ test("B28: doesn't count a test whose title starts with another scenario's ID", 
   repo.writeSpec("widgets", [["B1", "Costs 2 each"]]);
   repo.writeFile("src/widgets/widgets.ts", PRICES);
   repo.writeFile(
-    "src/widgets/widgets.service.test.ts",
+    "src/widgets/widgets.test.ts",
     `import { expect, test } from "vitest";
 import { priceOf } from "./widgets.ts";
 
@@ -129,7 +129,7 @@ test("B21: reports a stale mutant without planting it", () => {
   using repo = createTempRepo();
   repo.writeSpec("widgets", [["B1", "Costs 2 each"]]);
   repo.writeFile("src/widgets/widgets.ts", PRICES);
-  repo.writeFile("src/widgets/widgets.service.test.ts", PRICES_TESTS);
+  repo.writeFile("src/widgets/widgets.test.ts", PRICES_TESTS);
   repo.writeMutants("widgets", {
     B1: {
       then: "Costs 2 each",
@@ -154,7 +154,7 @@ test("B22: prints each scenario's Then, then each mutant as killed or survived, 
   using repo = createTempRepo();
   repo.writeSpec("widgets", [["B1", "Costs 2 each"]]);
   repo.writeFile("src/widgets/widgets.ts", PRICES);
-  repo.writeFile("src/widgets/widgets.service.test.ts", PRICES_TESTS);
+  repo.writeFile("src/widgets/widgets.test.ts", PRICES_TESTS);
   repo.writeMutants("widgets", {
     B1: { then: "Costs 2 each", mutants: [TIMES_THREE, FREE_AT_SEVEN] },
   });
@@ -175,7 +175,7 @@ test("B29: passes when every mutant is killed", () => {
   using repo = createTempRepo();
   repo.writeSpec("widgets", [["B1", "Costs 2 each"]]);
   repo.writeFile("src/widgets/widgets.ts", PRICES);
-  repo.writeFile("src/widgets/widgets.service.test.ts", PRICES_TESTS);
+  repo.writeFile("src/widgets/widgets.test.ts", PRICES_TESTS);
   repo.writeMutants("widgets", { B1: { then: "Costs 2 each", mutants: [TIMES_THREE] } });
 
   expect(replay(["widgets"], repo.root)).toEqual({
@@ -189,7 +189,7 @@ test("B25: never changes a file under src/ on disk", () => {
   repo.writeSpec("widgets", [["B1", "Costs 2 each"]]);
   repo.writeFile("src/widgets/widgets.ts", PRICES);
   repo.writeFile(
-    "src/widgets/widgets.service.test.ts",
+    "src/widgets/widgets.test.ts",
     `import { readFileSync } from "node:fs";
 import { expect, test } from "vitest";
 

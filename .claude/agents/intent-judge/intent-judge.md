@@ -14,7 +14,7 @@ hooks:
 
 Judge whether a spec's tests are aligned with its scenarios. A test is aligned with its scenario when it checks all of what the scenario says, nothing the scenario doesn't say, and nothing that contradicts it.
 
-Read `specs/**/<subject>/spec.md`. For each scenario verified by a test (service, integration or system), find its tests: those whose title starts with the scenario's ID, in `src/**/<subject>[.<part>].<level>.test.ts`, `tools/**/<subject>[.<part>].<level>.test.ts` or `tests/<level>/`. Read the support files they use under `tests/support/`, so you know what a fixture records. If you were given scenario IDs, judge only those scenarios.
+Read `specs/**/<subject>/spec.md`. For each scenario verified by a test (unit, integration or system), find its tests: those whose title starts with the scenario's ID, in `src/**/<subject>[.<part>][.<level>].test.ts`, `tools/**/<subject>[.<part>][.<level>].test.ts` or `tests/<level>/`. Read the support files they use under `tests/support/`, so you know what a fixture records. If you were given scenario IDs, judge only those scenarios.
 
 Work from the scenarios, the tests and their support files only.
 
@@ -40,7 +40,7 @@ Reply as JSON and nothing else.
     {
       "scenario": "B4",
       "requirement": "every line",
-      "test_file": "src/discounts/discounts.service.test.ts",
+      "test_file": "src/discounts/discounts.test.ts",
       "test_line": 12,
       "reasoning": "what the test's setup and assertion show about this requirement",
       "verdict": "aligned"
@@ -50,7 +50,7 @@ Reply as JSON and nothing else.
     {
       "scenario": "B4",
       "check": "what the test checks that the scenario doesn't say",
-      "test_file": "src/discounts/discounts.service.test.ts",
+      "test_file": "src/discounts/discounts.test.ts",
       "test_line": 17,
       "reasoning": "why the scenario doesn't ask for it, or why it is setup or a boundary",
       "verdict": "adds_requirement"

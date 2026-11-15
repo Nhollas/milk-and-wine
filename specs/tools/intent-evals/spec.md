@@ -16,19 +16,19 @@ Measures how well the [intent judge](../../../.claude/agents/intent-judge/intent
 
 | ID | Given | When | Then | Verified |
 | --- | --- | --- | --- | --- |
-| B1 | A task folder, other than `fixtures/` or `results/`, isn't named `judge-<number>-<slug>` | `eval:check` runs | Prints `<path> is not valid:` and `the folder must be named judge-<number>-<slug>`, and exits `1` | service |
-| B27 | A task's README doesn't start with a `#` heading | `eval:check` runs | Prints `<path> is not valid:` and `README.md must start with a # heading`, and exits `1` | service |
-| B28 | A task's `task.toml` or `tests/expected.json` doesn't match the task format, or it expects `misses_requirement` with no `bug/` | `eval:check` runs | Prints `<path> is not valid:` and what's wrong, and exits `1` | service |
-| B29 | Two tasks share a number | `eval:check` runs | Reports `duplicate` with each task sharing the number, and exits `1` | service |
-| B2 | A task names a fixture, or a scenario in it, that doesn't exist | `eval:check` runs | Reports `unknown` with the task and the name, and exits `1` | service |
-| B3 | A task's environment holds a file its fixture doesn't, or a spec that differs from its fixture's, or its `bug/` holds a file that isn't its fixture's code under test | `eval:check` runs | Reports `stale` with the task and the file, and exits `1` | service |
-| B31 | A task's environment holds code under test | `eval:check` runs | Reports `leaks` with the task and the file, and exits `1` | service |
-| B4 | A fixture's tests fail, or a scenario verified by a test has none | `eval:check` runs | Reports that the fixture's tests must pass as they are, checks none of its tasks, and exits `1` | service |
-| B5 | A task expecting `misses_requirement` whose scenario's tests pass with its bug in the code | `eval:check` runs | Reports `not a gap` with the task, and exits `1` | service |
-| B30 | A task expecting `misses_requirement` whose scenario's tests still fail with its bug once the gap is planted | `eval:check` runs | Reports `not a gap` with the task, and exits `1` | service |
-| B6 | A task expecting `contradicts_requirement` whose scenario's tests don't fail against its fixture's code | `eval:check` runs | Reports `not a gap` with the task, and exits `1` | service |
-| B25 | A task expecting `aligned` whose scenario's tests fail against its fixture's code | `eval:check` runs | Reports `fails` with the task, and exits `1` | service |
-| B8 | Nothing B1 to B6, B25 or B27 to B31 reports | `eval:check` runs | Prints `ok` and each task's expected verdict and README heading, then `eval:check passed`, and exits `0` | service |
+| B1 | A task folder, other than `fixtures/` or `results/`, isn't named `judge-<number>-<slug>` | `eval:check` runs | Prints `<path> is not valid:` and `the folder must be named judge-<number>-<slug>`, and exits `1` | unit |
+| B27 | A task's README doesn't start with a `#` heading | `eval:check` runs | Prints `<path> is not valid:` and `README.md must start with a # heading`, and exits `1` | unit |
+| B28 | A task's `task.toml` or `tests/expected.json` doesn't match the task format, or it expects `misses_requirement` with no `bug/` | `eval:check` runs | Prints `<path> is not valid:` and what's wrong, and exits `1` | unit |
+| B29 | Two tasks share a number | `eval:check` runs | Reports `duplicate` with each task sharing the number, and exits `1` | unit |
+| B2 | A task names a fixture, or a scenario in it, that doesn't exist | `eval:check` runs | Reports `unknown` with the task and the name, and exits `1` | unit |
+| B3 | A task's environment holds a file its fixture doesn't, or a spec that differs from its fixture's, or its `bug/` holds a file that isn't its fixture's code under test | `eval:check` runs | Reports `stale` with the task and the file, and exits `1` | unit |
+| B31 | A task's environment holds code under test | `eval:check` runs | Reports `leaks` with the task and the file, and exits `1` | unit |
+| B4 | A fixture's tests fail, or a scenario verified by a test has none | `eval:check` runs | Reports that the fixture's tests must pass as they are, checks none of its tasks, and exits `1` | unit |
+| B5 | A task expecting `misses_requirement` whose scenario's tests pass with its bug in the code | `eval:check` runs | Reports `not a gap` with the task, and exits `1` | unit |
+| B30 | A task expecting `misses_requirement` whose scenario's tests still fail with its bug once the gap is planted | `eval:check` runs | Reports `not a gap` with the task, and exits `1` | unit |
+| B6 | A task expecting `contradicts_requirement` whose scenario's tests don't fail against its fixture's code | `eval:check` runs | Reports `not a gap` with the task, and exits `1` | unit |
+| B25 | A task expecting `aligned` whose scenario's tests fail against its fixture's code | `eval:check` runs | Reports `fails` with the task, and exits `1` | unit |
+| B8 | Nothing B1 to B6, B25 or B27 to B31 reports | `eval:check` runs | Prints `ok` and each task's expected verdict and README heading, then `eval:check passed`, and exits `0` | unit |
 
 ### Grading a trial
 
@@ -36,12 +36,12 @@ The grader reads the judge's last reply in the trial and writes its rewards: `re
 
 | ID | Given | When | Then | Verified |
 | --- | --- | --- | --- | --- |
-| B32 | A task expecting a verdict on a requirement | A trial is graded | `noticed` is 1 when the reply gives a requirement of the task's scenario a wrong verdict and quotes the expected words, in any case, and `labelled` is 1 when that verdict is the expected one; otherwise each is 0 | service |
-| B33 | A task expecting `adds_requirement` | A trial is graded | `noticed` is 1 when the reply gives an additional check on the task's scenario a wrong verdict at the expected test line, and `labelled` is 1 when that verdict is `adds_requirement`; otherwise each is 0 | service |
-| B39 | A task with a gap | A trial is graded | `false_alarms` counts the wrong verdicts on the task's scenario, less those on its gap under one verdict, the expected one if the reply gives it, and those on a fair finding under its verdict. A finding is on a gap or a fair finding when it's a requirement quoting its words, or an additional check at its test line | service |
-| B34 | A task expecting `aligned` | A trial is graded | `false_alarms` counts every wrong verdict on the task's scenario | service |
-| B40 | Any task | A trial is graded | `reward` is 1 when `false_alarms` is 0 and, for a task with a gap, `labelled` is 1; otherwise 0 | service |
-| B35 | A trial whose last reply holds no JSON object | It's graded | Every reward is 0 | service |
+| B32 | A task expecting a verdict on a requirement | A trial is graded | `noticed` is 1 when the reply gives a requirement of the task's scenario a wrong verdict and quotes the expected words, in any case, and `labelled` is 1 when that verdict is the expected one; otherwise each is 0 | unit |
+| B33 | A task expecting `adds_requirement` | A trial is graded | `noticed` is 1 when the reply gives an additional check on the task's scenario a wrong verdict at the expected test line, and `labelled` is 1 when that verdict is `adds_requirement`; otherwise each is 0 | unit |
+| B39 | A task with a gap | A trial is graded | `false_alarms` counts the wrong verdicts on the task's scenario, less those on its gap under one verdict, the expected one if the reply gives it, and those on a fair finding under its verdict. A finding is on a gap or a fair finding when it's a requirement quoting its words, or an additional check at its test line | unit |
+| B34 | A task expecting `aligned` | A trial is graded | `false_alarms` counts every wrong verdict on the task's scenario | unit |
+| B40 | Any task | A trial is graded | `reward` is 1 when `false_alarms` is 0 and, for a task with a gap, `labelled` is 1; otherwise 0 | unit |
+| B35 | A trial whose last reply holds no JSON object | It's graded | Every reward is 0 | unit |
 
 ### Gating a job
 
@@ -49,10 +49,10 @@ Every task has the same target: a mean reward of at least 0.8, which is 5 of 6 t
 
 | ID | Given | When | Then | Verified |
 | --- | --- | --- | --- | --- |
-| B36 | A job whose tasks each meet the target | `eval:gate` runs | Prints each task's mean reward, trials and target, then `eval:gate passed`, and exits `0` | service |
-| B41 | A job whose trials carry `noticed`, `labelled` or `false_alarms` | `eval:gate` runs | Prints each one's mean over the task's trials that carry it, after the task's target | service |
-| B37 | A job with a task below the target | `eval:gate` runs | Marks the task `below`, prints `eval:gate failed · <count> below target`, and exits `1` | service |
-| B38 | A job with a trial that broke before it was graded | `eval:gate` runs | Scores the trial 0 and counts it as broke | service |
+| B36 | A job whose tasks each meet the target | `eval:gate` runs | Prints each task's mean reward, trials and target, then `eval:gate passed`, and exits `0` | unit |
+| B41 | A job whose trials carry `noticed`, `labelled` or `false_alarms` | `eval:gate` runs | Prints each one's mean over the task's trials that carry it, after the task's target | unit |
+| B37 | A job with a task below the target | `eval:gate` runs | Marks the task `below`, prints `eval:gate failed · <count> below target`, and exits `1` | unit |
+| B38 | A job with a trial that broke before it was graded | `eval:gate` runs | Scores the trial 0 and counts it as broke | unit |
 
 **Why**
 

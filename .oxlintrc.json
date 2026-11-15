@@ -53,7 +53,7 @@
         "patterns": [
           {
             "group": ["msw", "msw/*", "**/http-interceptor.ts"],
-            "message": "Only integration tests, system tests and tests/support/ intercept HTTP. Service tests use in-memory fakes of our clients."
+            "message": "Only integration tests, system tests and tests/support/ intercept HTTP. Unit tests use in-memory fakes of our clients."
           }
         ]
       }

@@ -16,7 +16,7 @@ const VITEST_CONFIG = `import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   test: {
-    projects: [{ extends: true, test: { name: "service", include: ["src/**/*.service.test.ts"] } }],
+    projects: [{ extends: true, test: { name: "unit", include: ["src/**/*.test.ts"] } }],
   },
 });
 `;
@@ -67,9 +67,7 @@ function specMarkdown(subject: string, scenarios: SpecScenario[]): string {
     "",
     "| ID | Given | When | Then | Verified |",
     "| --- | --- | --- | --- | --- |",
-    ...scenarios.map(
-      ([id, then]) => `| ${id} | A widget exists | It is priced | ${then} | service |`,
-    ),
+    ...scenarios.map(([id, then]) => `| ${id} | A widget exists | It is priced | ${then} | unit |`),
     "",
   ].join("\n");
 }

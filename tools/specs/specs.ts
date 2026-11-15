@@ -1,7 +1,7 @@
 import { posix } from "node:path";
 import type { Repository } from "./repository.ts";
 
-const TEST_LEVELS = ["service", "integration", "system"] as const;
+const TEST_LEVELS = ["unit", "integration", "system"] as const;
 
 export type TestLevel = (typeof TEST_LEVELS)[number];
 
@@ -24,8 +24,16 @@ function subjectOfSpecPath(path: string): string | undefined {
   return SPEC_PATH.exec(path)?.[1];
 }
 
-export function isTestLevel(value: string | undefined): value is TestLevel {
+function isTestLevel(value: string | undefined): value is TestLevel {
   return (TEST_LEVELS as readonly (string | undefined)[]).includes(value);
+}
+
+// A test file is <subject>[.<part>][.<level>].test.ts, and a file with no level is a unit test.
+export function levelOfTestFile(path: string): TestLevel | undefined {
+  const parts = posix.basename(path).split(".");
+  if (parts.length < 3 || !path.endsWith(".test.ts")) return undefined;
+  const named = parts.at(-3);
+  return parts.length >= 4 && isTestLevel(named) ? named : "unit";
 }
 
 export function readSubjects(repository: Repository): { subjects: Subject[]; problems: Problem[] } {
