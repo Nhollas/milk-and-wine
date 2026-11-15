@@ -16,7 +16,7 @@
 
 | ID | Given | When | Then | Verified |
 | --- | --- | --- | --- | --- |
-| B1 | <State already true> | <The one event, and from whom> | <What an observer at the boundary sees> | service |
+| B1 | <State already true> | <The one event, and from whom> | <What an observer at the boundary sees> | unit |
 
 **Why**
 

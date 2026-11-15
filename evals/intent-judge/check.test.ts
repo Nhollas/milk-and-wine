@@ -123,7 +123,7 @@ test(
     });
     repo.writeTask("judge-003-tested-bug", {
       ...CAP_UNCHECKED,
-      bug: { "src/widgets/widgets.service.test.ts": NO_CAP_CHECK },
+      bug: { "src/widgets/widgets.test.ts": NO_CAP_CHECK },
     });
 
     const { exitCode, output } = await check(repo.root);
@@ -136,7 +136,7 @@ test(
       "judge-002-old-spec    stale      environment/specs/modules/widgets/spec.md differs from widgets's\n",
     );
     expect(output).toContain(
-      "judge-003-tested-bug  stale      bug/src/widgets/widgets.service.test.ts is not code under test in widgets\n",
+      "judge-003-tested-bug  stale      bug/src/widgets/widgets.test.ts is not code under test in widgets\n",
     );
     expect(output).toMatch(/eval:check failed · 3 problems\n$/u);
   },

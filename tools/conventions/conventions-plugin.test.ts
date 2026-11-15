@@ -37,10 +37,10 @@ ruleTester.run("file-names", plugin.rules["file-names"], {
   valid: [
     { code: "", filename: at("src/loans/loan-store.ts") },
     { code: "", filename: at("tests/support/http-interceptor.setup.ts") },
-    { code: "", filename: at("tests/support/service.fixtures.ts") },
+    { code: "", filename: at("tests/support/unit.fixtures.ts") },
     { code: "", filename: at("tests/support/catalogue-api.handlers.ts") },
     { code: "", filename: at("tests/support/fake-catalogue-client.ts") },
-    { code: "", filename: at("src/loans/loans.http.service.test.ts") },
+    { code: "", filename: at("src/loans/loans.http.test.ts") },
   ],
   invalid: [
     { code: "", filename: at("tests/support/helpers.ts"), errors: 1 },
@@ -53,13 +53,15 @@ ruleTester.run("file-names", plugin.rules["file-names"], {
 
 ruleTester.run("test-placement", plugin.rules["test-placement"], {
   valid: [
-    { code: "", filename: at("src/loans/loans.service.test.ts") },
+    { code: "", filename: at("src/loans/loans.test.ts") },
     { code: "", filename: at("tests/system/borrow-a-book.system.test.ts") },
     { code: "", filename: at("src/clock.test.ts") },
+    { code: "", filename: at("src/reminders/reminders.failures.test.ts") },
   ],
   invalid: [
-    { code: "", filename: at("tests/service/loans.service.test.ts"), errors: 1 },
-    { code: "", filename: at("tests/service/borrow-a-book.system.test.ts"), errors: 1 },
+    { code: "", filename: at("tests/unit/loans.test.ts"), errors: 1 },
+    { code: "", filename: at("src/reminders/loans.test.ts"), errors: 1 },
+    { code: "", filename: at("tests/integration/borrow-a-book.system.test.ts"), errors: 1 },
     { code: "", filename: at("src/loans/borrow-a-book.system.test.ts"), errors: 1 },
   ],
 });
@@ -67,8 +69,8 @@ ruleTester.run("test-placement", plugin.rules["test-placement"], {
 ruleTester.run("helper-placement", plugin.rules["helper-placement"], {
   valid: [
     {
-      code: 'import { test } from "../../tests/support/service.fixtures.ts";',
-      filename: at("src/loans/loans.service.test.ts"),
+      code: 'import { test } from "../../tests/support/unit.fixtures.ts";',
+      filename: at("src/loans/loans.test.ts"),
     },
     {
       code: 'import { test } from "./system.fixtures.ts";',
@@ -76,18 +78,18 @@ ruleTester.run("helper-placement", plugin.rules["helper-placement"], {
     },
     {
       code: 'import { createLoansApp } from "../../src/loans/loans-app.ts";',
-      filename: at("tests/support/service.fixtures.ts"),
+      filename: at("tests/support/unit.fixtures.ts"),
     },
   ],
   invalid: [
     {
       code: 'import { test } from "../../tests/system/system.fixtures.ts";',
-      filename: at("src/loans/loans.service.test.ts"),
+      filename: at("src/loans/loans.test.ts"),
       errors: 1,
     },
     {
       code: 'import { fakeCatalogueClient } from "../loans/fake-catalogue-client.ts";',
-      filename: at("src/reminders/reminders.service.test.ts"),
+      filename: at("src/reminders/reminders.test.ts"),
       errors: 1,
     },
   ],
@@ -111,7 +113,7 @@ ruleTester.run("support-modules", plugin.rules["support-modules"], {
   valid: [
     {
       code: 'import { test as base } from "vitest";\nexport const test = base;',
-      filename: at("tests/support/service.fixtures.ts"),
+      filename: at("tests/support/unit.fixtures.ts"),
     },
     {
       code: 'import { http } from "msw";',
@@ -142,7 +144,7 @@ ruleTester.run("test-imports", plugin.rules["test-imports"], {
     { code: 'import { expect, test } from "vitest";', filename: at("src/clock.test.ts") },
     {
       code: 'import { test } from "./repo.fixtures.ts";',
-      filename: at("tools/spec-mutants/spec-mutants.service.test.ts"),
+      filename: at("tools/spec-mutants/spec-mutants.test.ts"),
     },
     {
       code: 'import { test as base } from "vitest";',
@@ -151,13 +153,13 @@ ruleTester.run("test-imports", plugin.rules["test-imports"], {
   ],
   invalid: [
     {
-      code: 'import { test as serviceTest } from "../../tests/support/service.fixtures.ts";',
-      filename: at("src/loans/loans.service.test.ts"),
+      code: 'import { test as unitTest } from "../../tests/support/unit.fixtures.ts";',
+      filename: at("src/loans/loans.test.ts"),
       errors: 1,
     },
     {
       code: 'import { test } from "../../tests/support/test-clock.ts";',
-      filename: at("src/loans/loans.service.test.ts"),
+      filename: at("src/loans/loans.test.ts"),
       errors: 1,
     },
     {

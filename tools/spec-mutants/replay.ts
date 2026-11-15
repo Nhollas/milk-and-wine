@@ -3,7 +3,7 @@ import { existsSync, mkdtempDisposableSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { z } from "zod";
-import type { TestLevel } from "../specs/specs.ts";
+import { levelOfTestFile, type TestLevel } from "../specs/specs.ts";
 import { isStale, readSubjectMutants, type Mutant } from "./mutants.ts";
 
 const REPLAY_CONFIG = join(import.meta.dirname, "replay-config.ts");
@@ -103,7 +103,7 @@ function scenarioTests(
   if (!existsSync(reportPath)) return "missing";
   const files = vitestReport
     .parse(JSON.parse(readFileSync(reportPath, "utf8")))
-    .testResults.filter((file) => file.name.endsWith(`.${level}.test.ts`));
+    .testResults.filter((file) => levelOfTestFile(file.name) === level);
   const statuses = new Set(
     files.flatMap((file) =>
       file.assertionResults

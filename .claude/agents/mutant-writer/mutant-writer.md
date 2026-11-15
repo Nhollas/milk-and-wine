@@ -17,7 +17,7 @@ hooks:
           timeout: 600
 ---
 
-Read `specs/**/<subject>/spec.md`. For each scenario verified by a test (service, integration or system), take each separate requirement in its Then, and write one small, realistic change to the code under test, in `src/` or `tools/`, that breaks only that requirement. Save them to `mutants.json` next to the spec. If you were given scenario IDs, redo only those scenarios and keep the rest of the file.
+Read `specs/**/<subject>/spec.md`. For each scenario verified by a test (unit, integration or system), take each separate requirement in its Then, and write one small, realistic change to the code under test, in `src/` or `tools/`, that breaks only that requirement. Save them to `mutants.json` next to the spec. If you were given scenario IDs, redo only those scenarios and keep the rest of the file.
 
 Work from the spec and the code only.
 

@@ -20,7 +20,7 @@
 
 <rect x="280" y="116" width="200" height="90" rx="12" fill="#151b23" stroke="#3d444d"></rect>
 <text x="380" y="146" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="14px" fill="#f0f6fc" font-weight="600">Tests</text>
-<text x="380" y="168" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="12px" fill="#9198a1">accounts.service.test.ts</text>
+<text x="380" y="168" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,&#34;Segoe UI&#34;,&#34;Noto Sans&#34;,Helvetica,Arial,sans-serif" font-size="12px" fill="#9198a1">accounts.test.ts</text>
 <text x="380" y="188" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13px" fill="#f0f6fc">test(&#34;B2: …&#34;)</text>
 
 <rect x="540" y="116" width="200" height="90" rx="12" fill="#151b23" stroke="#3d444d"></rect>

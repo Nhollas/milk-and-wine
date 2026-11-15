@@ -24,7 +24,7 @@ The few words a person and an agent could otherwise mean different things by. A 
 
 **Requirement**: One thing a scenario's Given or Then says that a test can check, such as a case, boundary or qualifier. _Avoid_: Promise
 
-**Verified**: What proves a scenario, named in its last column: a service, integration or system test whose title starts with the scenario's ID and whose file name carries which of the three it is, a dependency's guarantee, or a manual check. _Avoid_: Level, for this column; coverage
+**Verified**: What proves a scenario, named in its last column: a unit, integration or system test whose title starts with the scenario's ID and whose file name carries its level, or none for a unit test, a dependency's guarantee, or a manual check. _Avoid_: Level, for this column; coverage
 
 ## Benchmark
 

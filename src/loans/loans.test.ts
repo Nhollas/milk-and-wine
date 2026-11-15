@@ -1,6 +1,6 @@
 import { expect } from "vitest";
 import { postJson } from "../../tests/support/json-requests.ts";
-import { test } from "../../tests/support/service.fixtures.ts";
+import { test } from "../../tests/support/unit.fixtures.ts";
 
 test("B10: refuses a request that isn't JSON or lacks an ID, asking the catalogue nothing", async ({
   app,
