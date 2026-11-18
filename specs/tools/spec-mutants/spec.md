@@ -12,7 +12,7 @@ Checks that a spec's tests fail when the code breaks a requirement of their scen
 
 ## Behaviour
 
-### Reading mutants
+### A subject must have mutants in the `mutants.json` format
 
 | ID | Given | When | Then | Verified |
 | --- | --- | --- | --- | --- |
@@ -20,7 +20,7 @@ Checks that a spec's tests fail when the code breaks a requirement of their scen
 | B26 | The subject's spec folder has no `mutants.json` | `spec:mutants:check <subject>` or `spec:mutants <subject>` runs | Prints `no mutants for <subject>: expected <path>`, and exits `1` | unit |
 | B2 | A subject's `mutants.json` doesn't match the `mutants.json` format | Either command runs for that subject | Prints `<path> is not valid:` and each error, naming the field, and exits `1` | unit |
 
-### Checking mutants
+### `spec:mutants:check` passes only mutants that can be planted
 
 | ID | Given | When | Then | Verified |
 | --- | --- | --- | --- | --- |
@@ -31,23 +31,38 @@ Checks that a spec's tests fail when the code breaks a requirement of their scen
 | B12 | A scenario verified by a test has no entry in `mutants.json` | `spec:mutants:check <subject>` runs | Lists its ID under `no mutants yet`, without changing the exit code | unit |
 | B13 | Nothing B3, B4, B6 or B10 reports | `spec:mutants:check <subject>` runs | Prints `ok` and the `breaks` of each mutant, then `spec:mutants:check passed`, and exits `0` | unit |
 
-### Replaying mutants
+### A scenario's mutants are replayed only against its current, passing tests
 
 | ID | Given | When | Then | Verified |
 | --- | --- | --- | --- | --- |
 | B15 | A scenario's Then differs from the `then` stored in its entry | `spec:mutants <subject>` runs | Reports `then-changed` with the ID and shows both, as `was … now …`, replays none of that scenario's mutants, and exits `1` | unit |
 | B16 | A scenario's tests fail, or none exist, with no mutant planted | `spec:mutants <subject>` runs | Reports `its tests must pass with no mutant planted, but they failed`, or `but there are none`, replays none of that scenario's mutants, and exits `1` | unit |
+| B21 | A mutant's `find` lines don't appear exactly once in its file, or the file is gone | `spec:mutants <subject>` runs | Reports `stale` for it, doesn't plant it, and exits `1` | unit |
+
+### A mutant is killed only when its own scenario's tests fail
+
+| ID | Given | When | Then | Verified |
+| --- | --- | --- | --- | --- |
 | B17 | At least one of a scenario's tests fails with a mutant planted | `spec:mutants <subject>` replays the mutant | The mutant is `killed` | unit |
 | B27 | All of a scenario's tests pass with a mutant planted | `spec:mutants <subject>` replays the mutant | The mutant is `survived` | unit |
 | B28 | A test of a kind other than the scenario's Verified names, or whose title doesn't start with its ID, would fail with a mutant planted, and the scenario's tests pass | `spec:mutants <subject>` replays the mutant | The mutant is `survived`: only tests of the kind its Verified names whose title starts with its ID run | unit |
-| B21 | A mutant's `find` lines don't appear exactly once in its file, or the file is gone | `spec:mutants <subject>` runs | Reports `stale` for it, doesn't plant it, and exits `1` | unit |
+
+### A replay passes only when every mutant is killed
+
+| ID | Given | When | Then | Verified |
+| --- | --- | --- | --- | --- |
 | B22 | Every mutant to replay has a status, and at least one `survived` | `spec:mutants <subject>` finishes | Prints each scenario's current Then, read from the spec, then one line per mutant with `killed` or `survived` and its `breaks`, and exits `1` | unit |
 | B29 | Nothing B15, B16 or B21 reports, and every mutant is `killed` | `spec:mutants <subject>` finishes | Prints each scenario's current Then, read from the spec, then one line per mutant with `killed` and its `breaks`, and exits `0` | unit |
-| B25 | `spec:mutants <subject>` is planting mutants | The run finishes, fails or is stopped | No file under `src/` changes on disk at any point | unit |
+
+### A replay never leaves a mutant in `src/`
 
 **Why**
 
 - **B25:** A run can be stopped at any point, and one that wrote to `src/` could leave a planted bug there.
+
+| ID | Given | When | Then | Verified |
+| --- | --- | --- | --- | --- |
+| B25 | `spec:mutants <subject>` is planting mutants | The run finishes, fails or is stopped | No file under `src/` changes on disk at any point | unit |
 
 ## Limitations
 

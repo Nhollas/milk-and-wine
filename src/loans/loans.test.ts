@@ -2,31 +2,48 @@ import { expect } from "vitest";
 import { postJson } from "../../tests/support/json-requests.ts";
 import { test } from "../../tests/support/unit.fixtures.ts";
 
-test("B10: refuses a request that isn't JSON or lacks an ID, asking the catalogue nothing", async ({
+test("B10: refuses a body that isn't JSON, asking the catalogue nothing", async ({
   app,
   fakeCatalogue,
 }) => {
   fakeCatalogue.addCopies({ "copy-1": "available" });
 
-  const emptyCopyIdResponse = await app.request(
-    "/loans",
-    postJson({ memberId: "member-1", copyId: "" }),
-  );
+  const response = await app.request("/loans", { method: "POST", body: "not json" });
+
+  expect(response.status).toBe(400);
+  expect(await response.json()).toEqual({ error: "invalid-request" });
+  expect(fakeCatalogue.lookups).toEqual([]);
+});
+
+test("B16: refuses a request with no memberId or an empty one, asking the catalogue nothing", async ({
+  app,
+  fakeCatalogue,
+}) => {
+  fakeCatalogue.addCopies({ "copy-1": "available" });
+
+  const missingMemberIdResponse = await app.request("/loans", postJson({ copyId: "copy-1" }));
   const emptyMemberIdResponse = await app.request(
     "/loans",
     postJson({ memberId: "", copyId: "copy-1" }),
   );
-  const missingMemberIdResponse = await app.request("/loans", postJson({ copyId: "copy-1" }));
-  const notJsonResponse = await app.request("/loans", { method: "POST", body: "not json" });
 
-  expect(emptyCopyIdResponse.status).toBe(400);
-  expect(await emptyCopyIdResponse.json()).toEqual({ error: "invalid-request" });
-  expect(emptyMemberIdResponse.status).toBe(400);
-  expect(await emptyMemberIdResponse.json()).toEqual({ error: "invalid-request" });
   expect(missingMemberIdResponse.status).toBe(400);
   expect(await missingMemberIdResponse.json()).toEqual({ error: "invalid-request" });
-  expect(notJsonResponse.status).toBe(400);
-  expect(await notJsonResponse.json()).toEqual({ error: "invalid-request" });
+  expect(emptyMemberIdResponse.status).toBe(400);
+  expect(await emptyMemberIdResponse.json()).toEqual({ error: "invalid-request" });
+  expect(fakeCatalogue.lookups).toEqual([]);
+});
+
+test("B17: refuses a request with an empty copyId, asking the catalogue nothing", async ({
+  app,
+  fakeCatalogue,
+}) => {
+  fakeCatalogue.addCopies({ "copy-1": "available" });
+
+  const response = await app.request("/loans", postJson({ memberId: "member-1", copyId: "" }));
+
+  expect(response.status).toBe(400);
+  expect(await response.json()).toEqual({ error: "invalid-request" });
   expect(fakeCatalogue.lookups).toEqual([]);
 });
 
@@ -193,6 +210,10 @@ test("B13: refuses to take back a loan already returned, keeping its return date
 test.todo("B8: renews a current loan to 14 days past its due date");
 
 test.todo("B9: refuses to renew an overdue loan");
+
+test.todo("B18: renews a loan renewed once");
+
+test.todo("B19: renews a loan on the day it's due");
 
 test.todo("B14: refuses to renew a loan already renewed twice");
 

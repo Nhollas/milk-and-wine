@@ -79,7 +79,7 @@ test("B3: still answers when the third attempt succeeds", async () => {
   expect((await catalogueClient.getCopy("copy-1")).kind).toBe("found");
 });
 
-test("B3: gives up after three attempts while the connection fails", async () => {
+test("B6: gives up after three attempts while the connection fails", async () => {
   httpInterceptor.use(
     http.get(COPY_PATH, function* () {
       yield HttpResponse.error();
@@ -90,6 +90,18 @@ test("B3: gives up after three attempts while the connection fails", async () =>
   );
 
   expect((await catalogueClient.getCopy("copy-1")).kind).toBe("failed");
+});
+
+test("B6: still answers when the third attempt connects", async () => {
+  httpInterceptor.use(
+    http.get(COPY_PATH, function* () {
+      yield HttpResponse.error();
+      yield HttpResponse.error();
+      return copyResponse("copy-1", "available");
+    }),
+  );
+
+  expect((await catalogueClient.getCopy("copy-1")).kind).toBe("found");
 });
 
 test("B3: leaves 100 ms between attempts", async () => {
@@ -103,7 +115,7 @@ test("B3: leaves 100 ms between attempts", async () => {
   expect(finishedAt - startedAt).toBeGreaterThanOrEqual(200);
 });
 
-test("B3: abandons an attempt after two seconds and tries again", async () => {
+test("B7: abandons an attempt after two seconds and tries again", async () => {
   httpInterceptor.use(
     http.get(COPY_PATH, () => delay("infinite"), { once: true }),
     http.get(COPY_PATH, () => copyResponse("copy-1", "available")),
@@ -136,7 +148,7 @@ test.each([
   expect((await catalogueClient.getCopy("copy-1")).kind).toBe("failed");
 });
 
-test.each([400, 401])("B4: refuses a %i without retrying", async (status) => {
+test.each([400, 401])("B8: refuses a %i without retrying", async (status) => {
   httpInterceptor.use(
     http.get(COPY_PATH, function* () {
       yield new HttpResponse(null, { status });
