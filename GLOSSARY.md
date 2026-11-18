@@ -20,7 +20,9 @@ The few words a person and an agent could otherwise mean different things by. A 
 
 **Module**: A unit of code with one responsibility, used only through its interface, such as loans or reminders. _Avoid_: Feature
 
-**Scenario**: One acceptance criterion: a starting situation, what happens, and the expected result, written as a Given, When and Then with an ID and a Verified. It is proposed until its proof exists, and delivered once that proof does. _Avoid_: Row, AC; done or todo, for its states
+**Rule**: A statement of how a subject behaves, which every scenario under it is an example of. _Avoid_: Requirement, AC
+
+**Scenario**: One example of a rule: a starting situation, what happens, and the expected result, written as a Given, When and Then with an ID and a Verified. It is proposed until its proof exists, and delivered once that proof does. _Avoid_: Row, AC; done or todo, for its states
 
 **Requirement**: One thing a scenario's Given or Then says that a test can check, such as a case, boundary or qualifier. _Avoid_: Promise
 
