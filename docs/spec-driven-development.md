@@ -40,7 +40,7 @@ That last part goes into the behaviour spec for accounts, which describes everyt
 
 ## 4. Writing a scenario
 
-A behaviour spec is a table of scenarios. Each is written in enough detail that someone could check it. Each has an ID, such as B2, so tests and tickets can refer to it, and four parts.
+A behaviour spec is made of scenarios, in tables. Each is written in enough detail that someone could check it. Each has an ID, such as B2, so tests and tickets can refer to it, and four parts.
 
 - **Given** is the situation that's already true before anything happens.
 - **When** is the one event that sets it off.
@@ -54,6 +54,8 @@ Here's B2, the scenario this change adds to the accounts spec.
 Each scenario describes one behaviour, so a failing test says exactly which behaviour broke, and the work can be split into separate tickets. A scenario that tries to do three things gets split into three.
 
 ![A scenario describing three behaviours, split into one scenario each](assets/spec-driven-development/one-behaviour.svg)
+
+Scenarios are grouped under **rules**, an idea taken from [example mapping](https://cucumber.io/docs/bdd/example-mapping/). A rule is one statement of how the subject behaves, such as "A loan can be renewed twice, unless it's overdue", written as a heading with its reason under it. Each scenario beneath it is one example of the rule, with only the values that decide the outcome: the plain case, one each side of every boundary, and each way it's refused. Writing the boundary out is what settles it, such as whether a loan due today can still be renewed.
 
 An ID never changes and is never reused, so B2 in a test's name always means the same thing. When a scenario is no longer needed it's removed, even if the code still does it, and its ID is retired with it.
 
@@ -149,4 +151,4 @@ How each check works is written up for the [intent judge](../.claude/agents/inte
 
 ## 9. Delivering a change
 
-The intent judge and spec mutants are two steps in how a change gets from an idea to merged code. [The workflow](workflow.md) covers the rest: agreeing the spec in a shared doc, slicing the change into tickets, and running the two checks on each ticket once it's built.
+The intent judge and spec mutants are two steps in how a change gets from an idea to merged code. [The workflow](workflow.md) covers the rest: agreeing the spec on its own change, slicing the change into tickets, and running the two checks on each ticket once it's built.

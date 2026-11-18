@@ -12,15 +12,16 @@
 
 ## Behaviour
 
-### <Job the subject does>
+### <Rule: one statement of how the subject behaves>
+
+**Why:** <The rule's reason, unless it's obvious. A consequential trade-off gets an ADR instead.>
 
 | ID | Given | When | Then | Verified |
 | --- | --- | --- | --- | --- |
-| B1 | <State already true> | <The one event, and from whom> | <What an observer at the boundary sees> | unit |
+| B1 | <State already true, with only the values that decide the outcome> | <The one event, and from whom> | <What an observer at the boundary sees> | unit |
+| B2 | <The same rule, on the other side of its boundary> | <…> | <…> | unit |
 
-**Why**
-
-- **B1:** <Only for scenarios whose reason isn't obvious. A consequential trade-off gets an ADR instead.>
+<A scenario that needs a reason of its own, beyond its rule's, gets one after the table: **B2:** <reason>.>
 
 ## Limitations
 

@@ -1,5 +1,10 @@
 {
   "$schema": "./node_modules/oxfmt/configuration_schema.json",
   "printWidth": 100,
-  "proseWrap": "never"
+  "proseWrap": "never",
+  "ignorePatterns": [
+    ".claude/skills/domain-modeling/**",
+    ".claude/skills/grill-with-docs/**",
+    ".claude/skills/grilling/**"
+  ]
 }

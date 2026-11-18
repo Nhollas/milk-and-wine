@@ -18,9 +18,11 @@ The skills say what to do with an issue or a ticket, and [the issue tracker](../
 
 ## 1. Specify the behaviour
 
-Run `/specify` with the subject or idea. It grills you a round at a time until the behaviour is settled, then drafts the spec in a shared Claude doc. You comment on the doc and it revises it, until you say it's agreed.
+Run `/grill-with-docs` with the subject or idea. It grills you a round at a time until the behaviour is settled, and adds any terms it settles to the glossary.
 
-Only then is the spec written to `specs/`, with a `test.todo` for each new scenario. An issue is opened saying why and listing the scenarios it proposes, and the spec change goes up for review. Once you merge it, the new scenarios are proposed: specced, but not built.
+Then, in the same session, run `/to-spec` with the subject. It doesn't ask anything more. It writes each behaviour as a rule with scenarios as its examples, and adds a `test.todo` for each new scenario. It opens an issue saying why, listing the scenarios it proposes, what was left for later, and the decisions the spec leaves out. Then it puts the spec change up for review. You comment on the change and it revises it. Once you merge it, the new scenarios are proposed: specced, but not built.
+
+`/grill-with-docs`, `grilling` and `domain-modeling` are [Matt Pocock's skills](https://github.com/mattpocock/skills), installed unchanged; [`skills-lock.json`](../skills-lock.json) records where each came from, and `pnpm dlx skills experimental_install` restores them. `/to-spec` and `/to-tickets` began as his and are changed for this repository.
 
 ## 2. Break it into tickets
 
@@ -51,4 +53,4 @@ An earlier version delivered each ticket through five agents: a test writer, the
 
 ## What's built
 
-`/specify` and `/to-tickets` have been through one playthrough. `/review-checks` hasn't run on a change yet.
+`/to-tickets` has been through one playthrough, and so had `/specify`, which `/grill-with-docs` and `/to-spec` replaced. `/to-spec` and `/review-checks` haven't run on a change yet.
