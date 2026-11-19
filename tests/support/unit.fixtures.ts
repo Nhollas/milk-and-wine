@@ -1,5 +1,5 @@
 import { test as base } from "vitest";
-import { openDatabase } from "@milk-and-wine/platform/database";
+import { createDatabase } from "@milk-and-wine/platform/database";
 import { createLogger, type LogEntry } from "@milk-and-wine/platform/logger";
 import { createLoansApp } from "@milk-and-wine/loans-api/loans-app";
 import { sendOverdueReminders } from "@milk-and-wine/reminders-job/send-overdue-reminders";
@@ -24,7 +24,7 @@ export const test = base
   })
   .extend("logs", (): LogEntry[] => [])
   .extend("db", ({}, { onCleanup }) => {
-    const db = openDatabase(":memory:");
+    const db = createDatabase(":memory:");
     onCleanup(() => {
       if (db.isOpen) db.close();
     });

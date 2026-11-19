@@ -2,7 +2,7 @@ import { serve } from "@hono/node-server";
 import { z } from "zod";
 import { createCatalogueClient } from "@milk-and-wine/catalogue-client";
 import { systemClock } from "@milk-and-wine/platform/clock";
-import { openDatabase } from "@milk-and-wine/platform/database";
+import { createDatabase } from "@milk-and-wine/platform/database";
 import { logger } from "@milk-and-wine/platform/logger";
 import { createLoansApp } from "./loans-app.ts";
 
@@ -15,7 +15,7 @@ const env = z
   .parse(process.env);
 
 const app = createLoansApp({
-  db: openDatabase(env.DATABASE_PATH),
+  db: createDatabase(env.DATABASE_PATH),
   catalogueClient: createCatalogueClient(env.CATALOGUE_URL),
   clock: systemClock,
 });

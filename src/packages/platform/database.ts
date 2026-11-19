@@ -1,6 +1,6 @@
 import { DatabaseSync } from "node:sqlite";
 
-export function openDatabase(path: string): DatabaseSync {
+export function createDatabase(path: string): DatabaseSync {
   const db = new DatabaseSync(path);
   db.exec(`
     CREATE TABLE IF NOT EXISTS loans (

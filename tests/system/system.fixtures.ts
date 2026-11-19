@@ -1,6 +1,6 @@
 import { test as base } from "vitest";
 import { createCatalogueClient } from "@milk-and-wine/catalogue-client";
-import { openDatabase } from "@milk-and-wine/platform/database";
+import { createDatabase } from "@milk-and-wine/platform/database";
 import { createLogger } from "@milk-and-wine/platform/logger";
 import { createLoansApp } from "@milk-and-wine/loans-api/loans-app";
 import { createNotificationsClient } from "@milk-and-wine/notifications-client";
@@ -12,7 +12,7 @@ import { testClock } from "../support/test-clock.ts";
 export const test = base
   .extend("clock", () => testClock())
   .extend("db", ({}, { onCleanup }) => {
-    const db = openDatabase(":memory:");
+    const db = createDatabase(":memory:");
     onCleanup(() => db.close());
     return db;
   })
