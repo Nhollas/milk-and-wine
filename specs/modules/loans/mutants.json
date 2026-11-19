@@ -24,13 +24,23 @@
           "      return c.json({ error: \"invalid-request\" }, 400);",
           "    }"
         ]
-      },
+      }
+    ]
+  },
+  "B16": {
+    "then": "Responds `400` with `{ \"error\": \"invalid-request\" }` and asks the catalogue nothing",
+    "mutants": [
       {
         "breaks": "An empty memberId is accepted",
         "file": "src/loans/loans-app.ts",
         "find": ["  memberId: z.string().min(1),"],
         "replace": ["  memberId: z.string(),"]
-      },
+      }
+    ]
+  },
+  "B17": {
+    "then": "Responds `400` with `{ \"error\": \"invalid-request\" }` and asks the catalogue nothing",
+    "mutants": [
       {
         "breaks": "An empty copyId is accepted",
         "file": "src/loans/loans-app.ts",

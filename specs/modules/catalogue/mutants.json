@@ -73,6 +73,28 @@
         "replace": ["  retryDelayMs: 10,"]
       },
       {
+        "breaks": "A 500 answer is not retried",
+        "file": "src/catalogue/catalogue-client.ts",
+        "find": ["        if (response && response.status < 500) return { kind: \"failed\" };"],
+        "replace": ["        if (response && response.status <= 500) return { kind: \"failed\" };"]
+      }
+    ]
+  },
+  "B6": {
+    "then": "Makes 3 attempts in total, 100 ms apart, then returns \"failed\"",
+    "mutants": [
+      {
+        "breaks": "A connection failure is not retried",
+        "file": "src/catalogue/catalogue-client.ts",
+        "find": ["        if (response && response.status < 500) return { kind: \"failed\" };"],
+        "replace": ["        if (!response || response.status < 500) return { kind: \"failed\" };"]
+      }
+    ]
+  },
+  "B7": {
+    "then": "Makes 3 attempts in total, 100 ms apart, then returns \"failed\"",
+    "mutants": [
+      {
         "breaks": "Attempt timeout is 10 seconds instead of 2",
         "file": "src/catalogue/catalogue-client.ts",
         "find": ["  attemptTimeoutMs: 2_000,"],
@@ -83,18 +105,6 @@
         "file": "src/catalogue/catalogue-client.ts",
         "find": ["          signal: AbortSignal.timeout(attemptTimeoutMs),"],
         "replace": [""]
-      },
-      {
-        "breaks": "A connection failure is not retried",
-        "file": "src/catalogue/catalogue-client.ts",
-        "find": ["        if (response && response.status < 500) return { kind: \"failed\" };"],
-        "replace": ["        if (!response || response.status < 500) return { kind: \"failed\" };"]
-      },
-      {
-        "breaks": "A 500 answer is not retried",
-        "file": "src/catalogue/catalogue-client.ts",
-        "find": ["        if (response && response.status < 500) return { kind: \"failed\" };"],
-        "replace": ["        if (response && response.status <= 500) return { kind: \"failed\" };"]
       }
     ]
   },
@@ -112,7 +122,12 @@
         "file": "src/catalogue/catalogue-client.ts",
         "find": ["  title: z.string(),"],
         "replace": ["  title: z.string().catch(\"\"),"]
-      },
+      }
+    ]
+  },
+  "B8": {
+    "then": "Returns \"failed\" without retrying",
+    "mutants": [
       {
         "breaks": "A 4xx other than 404 is retried",
         "file": "src/catalogue/catalogue-client.ts",

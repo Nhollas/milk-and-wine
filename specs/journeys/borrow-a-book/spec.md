@@ -10,7 +10,7 @@ A member borrows a copy of a book, is reminded if it's overdue, and brings it ba
 
 ## Behaviour
 
-### Borrowing and returning
+### A copy is lent to one member at a time, for 14 days
 
 | ID | Given | When | Then | Verified |
 | --- | --- | --- | --- | --- |
@@ -18,13 +18,13 @@ A member borrows a copy of a book, is reminded if it's overdue, and brings it ba
 | B5 | A member has a copy on loan | Another member tries to borrow it | They are refused | system |
 | B2 | A member has returned a copy | Another member borrows it | The copy is on loan to them | system |
 
-### Being reminded
+### A member who keeps a copy past its due date is reminded once a day
 
 | ID | Given | When | Then | Verified |
 | --- | --- | --- | --- | --- |
 | B3 | A member still has a copy the day after it was due, and that day's reminders have already gone out | Reminders go out again that day | Exactly one reminder to them has been accepted for delivery that day | system |
 
-### Renewing
+### Renewing a loan moves its due date 14 days later, for reminders too
 
 | ID | Given | When | Then | Verified |
 | --- | --- | --- | --- | --- |
