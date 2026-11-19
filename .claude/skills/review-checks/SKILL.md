@@ -1,6 +1,6 @@
 ---
 name: review-checks
-description: Use when a built change's tests need checking against its scenarios before it goes up for review. Give it the subject, such as "loans", then the scenario IDs.
+description: Use when a built change's tests need checking against its scenarios before it goes up for review. Give it the subject, such as "loans-api", then the scenario IDs.
 argument-hint: <subject> <scenario IDs>
 ---
 

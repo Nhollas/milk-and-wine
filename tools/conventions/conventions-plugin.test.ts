@@ -10,6 +10,7 @@ RuleTester.it = test;
 
 const repo = mkdtempSync(join(tmpdir(), "conventions-"));
 mkdirSync(join(repo, "src", "loans"), { recursive: true });
+mkdirSync(join(repo, "src", "apps", "loans-api"), { recursive: true });
 afterAll(() => {
   rmSync(repo, { recursive: true, force: true });
 });
@@ -57,12 +58,14 @@ ruleTester.run("test-placement", plugin.rules["test-placement"], {
     { code: "", filename: at("tests/system/borrow-a-book.system.test.ts") },
     { code: "", filename: at("src/clock.test.ts") },
     { code: "", filename: at("src/reminders/reminders.failures.test.ts") },
+    { code: "", filename: at("src/apps/loans-api/loans-api.integration.test.ts") },
   ],
   invalid: [
     { code: "", filename: at("tests/unit/loans.test.ts"), errors: 1 },
     { code: "", filename: at("src/reminders/loans.test.ts"), errors: 1 },
     { code: "", filename: at("tests/integration/borrow-a-book.system.test.ts"), errors: 1 },
     { code: "", filename: at("src/loans/borrow-a-book.system.test.ts"), errors: 1 },
+    { code: "", filename: at("tests/integration/loans-api.integration.test.ts"), errors: 1 },
   ],
 });
 

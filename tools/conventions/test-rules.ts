@@ -1,4 +1,4 @@
-import { existsSync } from "node:fs";
+import { existsSync, readdirSync } from "node:fs";
 import { join, posix } from "node:path";
 import { levelOfTestFile } from "../specs/specs.ts";
 import { exportedNamesOf, importedNameOf, repoPathOf, type Rule } from "./rule-context.ts";
@@ -143,9 +143,21 @@ function expectedTestFolderOf(fileName: string, root: string): string | undefine
   const subject = fileName.split(".")[0];
   if (level === undefined || subject === undefined) return undefined;
   const codeFolder = ["src", "tools"]
-    .map((top) => `${top}/${subject}`)
-    .find((folder) => existsSync(join(root, folder)));
+    .map((top) => folderNamed(subject, top, root))
+    .find((folder) => folder !== undefined);
   return codeFolder ?? (level === "unit" ? undefined : `tests/${level}`);
+}
+
+// A subject's code folder can sit at any depth, such as src/apps/loans-api.
+function folderNamed(name: string, folder: string, root: string): string | undefined {
+  if (!existsSync(join(root, folder))) return undefined;
+  for (const entry of readdirSync(join(root, folder), { withFileTypes: true })) {
+    if (!entry.isDirectory() || entry.name === "node_modules") continue;
+    const path = `${folder}/${entry.name}`;
+    const found = entry.name === name ? path : folderNamed(name, path, root);
+    if (found !== undefined) return found;
+  }
+  return undefined;
 }
 
 function isTestHelper(path: string): boolean {

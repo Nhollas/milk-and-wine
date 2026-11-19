@@ -1,4 +1,4 @@
-import type { Clock } from "../../src/clock.ts";
+import type { Clock } from "@milk-and-wine/platform/clock";
 
 export function testClock() {
   let now = new Date("2026-03-02T10:00:00Z");

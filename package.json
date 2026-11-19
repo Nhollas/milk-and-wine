@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "prepare": "husky",
-    "start:loans": "node src/loans/main.ts",
-    "start:reminders": "node src/reminders/main.ts",
+    "start:loans-api": "pnpm --filter @milk-and-wine/loans-api start",
+    "start:reminders-job": "pnpm --filter @milk-and-wine/reminders-job start",
     "lint": "oxlint",
     "format": "oxfmt",
     "format:check": "oxfmt --check",
@@ -21,8 +21,11 @@
     "eval:gate": "node evals/intent-judge/gate.ts"
   },
   "dependencies": {
-    "@hono/node-server": "2.1.1",
-    "hono": "4.13.7",
+    "@milk-and-wine/catalogue-client": "workspace:*",
+    "@milk-and-wine/loans-api": "workspace:*",
+    "@milk-and-wine/notifications-client": "workspace:*",
+    "@milk-and-wine/platform": "workspace:*",
+    "@milk-and-wine/reminders-job": "workspace:*",
     "zod": "4.6.1"
   },
   "devDependencies": {

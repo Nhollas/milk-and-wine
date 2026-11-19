@@ -1,7 +1,4 @@
-import type {
-  NotificationsClient,
-  OverdueReminder,
-} from "../../src/reminders/notifications-client.ts";
+import type { NotificationsClient, OverdueReminder } from "@milk-and-wine/notifications-client";
 
 export function fakeNotificationsClient() {
   const asked: OverdueReminder[] = [];

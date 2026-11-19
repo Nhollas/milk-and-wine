@@ -1,0 +1,16 @@
+{
+  "name": "@milk-and-wine/reminders-job",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./send-overdue-reminders": "./send-overdue-reminders.ts"
+  },
+  "scripts": {
+    "start": "node main.ts"
+  },
+  "dependencies": {
+    "@milk-and-wine/notifications-client": "workspace:*",
+    "@milk-and-wine/platform": "workspace:*",
+    "zod": "4.6.1"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "name": "@milk-and-wine/notifications-client",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./notifications-client.ts"
+  },
+  "dependencies": {}
+}

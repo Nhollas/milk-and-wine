@@ -1,3 +1,6 @@
+packages:
+  - src/apps/*
+  - src/packages/*
 saveExact: true
 allowBuilds:
   node: true

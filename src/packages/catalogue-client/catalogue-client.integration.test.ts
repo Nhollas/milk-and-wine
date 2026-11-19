@@ -5,8 +5,8 @@ import {
   CATALOGUE_URL,
   COPY_PATH,
   copyResponse,
-} from "../../tests/support/catalogue-api.handlers.ts";
-import { httpInterceptor } from "../../tests/support/http-interceptor.ts";
+} from "../../../tests/support/catalogue-api.handlers.ts";
+import { httpInterceptor } from "../../../tests/support/http-interceptor.ts";
 
 const catalogueClient = createCatalogueClient(CATALOGUE_URL);
 

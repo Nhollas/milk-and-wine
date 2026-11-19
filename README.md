@@ -23,9 +23,9 @@ pnpm check
 ## Running the app
 
 ```bash
-DATABASE_PATH=loans.db CATALOGUE_URL=https://catalogue.example pnpm start:loans
+DATABASE_PATH=loans.db CATALOGUE_URL=https://catalogue.example pnpm start:loans-api
 ```
 
 ```bash
-DATABASE_PATH=loans.db NOTIFY_URL=https://notifications.example pnpm start:reminders
+DATABASE_PATH=loans.db NOTIFY_URL=https://notifications.example pnpm start:reminders-job
 ```

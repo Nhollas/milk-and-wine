@@ -1,9 +1,9 @@
 import { serve } from "@hono/node-server";
 import { z } from "zod";
-import { createCatalogueClient } from "../catalogue/catalogue-client.ts";
-import { systemClock } from "../clock.ts";
-import { openDatabase } from "../database.ts";
-import { logger } from "../logger.ts";
+import { createCatalogueClient } from "@milk-and-wine/catalogue-client";
+import { systemClock } from "@milk-and-wine/platform/clock";
+import { openDatabase } from "@milk-and-wine/platform/database";
+import { logger } from "@milk-and-wine/platform/logger";
 import { createLoansApp } from "./loans-app.ts";
 
 const env = z

@@ -1,0 +1,11 @@
+{
+  "name": "@milk-and-wine/platform",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./clock": "./clock.ts",
+    "./database": "./database.ts",
+    "./logger": "./logger.ts"
+  },
+  "dependencies": {}
+}

@@ -6,5 +6,9 @@
     "allowUnreachableCode": true
   },
   "include": ["../../src/**/*.ts"],
-  "exclude": ["../../src/**/*.test.ts", "../../src/**/*.fixtures.ts"]
+  "exclude": [
+    "../../src/**/*.test.ts",
+    "../../src/**/*.fixtures.ts",
+    "../../src/**/node_modules/**"
+  ]
 }

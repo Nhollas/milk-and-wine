@@ -4,7 +4,7 @@
     "mutants": [
       {
         "breaks": "Asks the Notifications API",
-        "file": "src/reminders/send-overdue-reminders.ts",
+        "file": "src/apps/reminders-job/send-overdue-reminders.ts",
         "find": ["    const delivery = await notificationsClient.sendOverdueReminder(reminder);"],
         "replace": [
           "    const dryRun = true;",
@@ -15,7 +15,7 @@
       },
       {
         "breaks": "to notify the loan's member",
-        "file": "src/reminders/send-overdue-reminders.ts",
+        "file": "src/apps/reminders-job/send-overdue-reminders.ts",
         "find": ["    const delivery = await notificationsClient.sendOverdueReminder(reminder);"],
         "replace": [
           "    const delivery = await notificationsClient.sendOverdueReminder({",
@@ -26,25 +26,25 @@
       },
       {
         "breaks": "records a reminder",
-        "file": "src/reminders/send-overdue-reminders.ts",
+        "file": "src/apps/reminders-job/send-overdue-reminders.ts",
         "find": ["    store.recordSent(reminder.loanId, today);"],
         "replace": []
       },
       {
         "breaks": "for today",
-        "file": "src/reminders/send-overdue-reminders.ts",
+        "file": "src/apps/reminders-job/send-overdue-reminders.ts",
         "find": ["    store.recordSent(reminder.loanId, today);"],
         "replace": ["    store.recordSent(reminder.loanId, reminder.dueOn);"]
       },
       {
         "breaks": "(UTC)",
-        "file": "src/reminders/send-overdue-reminders.ts",
+        "file": "src/apps/reminders-job/send-overdue-reminders.ts",
         "find": ["  const today = utcDate(clock());"],
         "replace": ["  const today = clock().toLocaleDateString(\"sv-SE\");"]
       },
       {
         "breaks": "it has no reminder recorded today (an earlier day's reminder blocks)",
-        "file": "src/reminders/reminder-store.ts",
+        "file": "src/apps/reminders-job/reminder-store.ts",
         "find": [
           "             AND NOT EXISTS (SELECT 1 FROM reminders WHERE reminders.loan_id = loans.loan_id AND sent_on = ?)"
         ],
@@ -54,7 +54,7 @@
       },
       {
         "breaks": "for today (UTC)",
-        "file": "src/reminders/send-overdue-reminders.ts",
+        "file": "src/apps/reminders-job/send-overdue-reminders.ts",
         "find": ["    store.recordSent(reminder.loanId, today);"],
         "replace": ["    store.recordSent(reminder.loanId, clock().toLocaleDateString(\"sv-SE\"));"]
       }
@@ -65,7 +65,7 @@
     "mutants": [
       {
         "breaks": "Sends nothing for that loan (already has a reminder recorded today)",
-        "file": "src/reminders/reminder-store.ts",
+        "file": "src/apps/reminders-job/reminder-store.ts",
         "find": [
           "             AND NOT EXISTS (SELECT 1 FROM reminders WHERE reminders.loan_id = loans.loan_id AND sent_on = ?)"
         ],
@@ -75,7 +75,7 @@
       },
       {
         "breaks": "Sends nothing for that loan (another loan's reminder today blocks this one)",
-        "file": "src/reminders/reminder-store.ts",
+        "file": "src/apps/reminders-job/reminder-store.ts",
         "find": [
           "             AND NOT EXISTS (SELECT 1 FROM reminders WHERE reminders.loan_id = loans.loan_id AND sent_on = ?)"
         ],
@@ -88,13 +88,13 @@
     "mutants": [
       {
         "breaks": "Records nothing for that loan",
-        "file": "src/reminders/send-overdue-reminders.ts",
+        "file": "src/apps/reminders-job/send-overdue-reminders.ts",
         "find": ["      continue;"],
         "replace": ["      store.recordSent(reminder.loanId, today);", "      continue;"]
       },
       {
         "breaks": "doesn't ask again for that loan in this run",
-        "file": "src/reminders/send-overdue-reminders.ts",
+        "file": "src/apps/reminders-job/send-overdue-reminders.ts",
         "find": ["    const delivery = await notificationsClient.sendOverdueReminder(reminder);"],
         "replace": [
           "    let delivery = await notificationsClient.sendOverdueReminder(reminder);",
@@ -108,31 +108,31 @@
     "mutants": [
       {
         "breaks": "Logs `reminders.finished`",
-        "file": "src/reminders/send-overdue-reminders.ts",
+        "file": "src/apps/reminders-job/send-overdue-reminders.ts",
         "find": ["  logger.info(\"reminders.finished\", { ...counts });"],
         "replace": ["  logger.info(\"reminders.done\", { ...counts });"]
       },
       {
         "breaks": "at `info`",
-        "file": "src/reminders/send-overdue-reminders.ts",
+        "file": "src/apps/reminders-job/send-overdue-reminders.ts",
         "find": ["  logger.info(\"reminders.finished\", { ...counts });"],
         "replace": ["  logger.warn(\"reminders.finished\", { ...counts });"]
       },
       {
         "breaks": "with `accepted` count",
-        "file": "src/reminders/send-overdue-reminders.ts",
+        "file": "src/apps/reminders-job/send-overdue-reminders.ts",
         "find": ["    counts.accepted++;"],
         "replace": []
       },
       {
         "breaks": "with `failed` count",
-        "file": "src/reminders/send-overdue-reminders.ts",
+        "file": "src/apps/reminders-job/send-overdue-reminders.ts",
         "find": ["      counts.failed++;"],
         "replace": []
       },
       {
         "breaks": "The job has handled every overdue loan (none overdue)",
-        "file": "src/reminders/send-overdue-reminders.ts",
+        "file": "src/apps/reminders-job/send-overdue-reminders.ts",
         "find": ["  for (const reminder of store.remindersDue(today)) {"],
         "replace": [
           "  if (store.remindersDue(today).length === 0) return counts;",
@@ -141,7 +141,7 @@
       },
       {
         "breaks": "The job has handled every overdue loan (logs after each reminder too)",
-        "file": "src/reminders/send-overdue-reminders.ts",
+        "file": "src/apps/reminders-job/send-overdue-reminders.ts",
         "find": ["    counts.accepted++;"],
         "replace": [
           "    counts.accepted++;",
@@ -155,25 +155,25 @@
     "mutants": [
       {
         "breaks": "`POST`",
-        "file": "src/reminders/notifications-client.ts",
+        "file": "src/packages/notifications-client/notifications-client.ts",
         "find": ["        method: \"POST\","],
         "replace": ["        method: \"PUT\","]
       },
       {
         "breaks": "`{NOTIFY_URL}/notifications`",
-        "file": "src/reminders/notifications-client.ts",
+        "file": "src/packages/notifications-client/notifications-client.ts",
         "find": ["      const response = await fetch(`${baseUrl}/notifications`, {"],
         "replace": ["      const response = await fetch(`${baseUrl}/notification`, {"]
       },
       {
         "breaks": "with JSON",
-        "file": "src/reminders/notifications-client.ts",
+        "file": "src/packages/notifications-client/notifications-client.ts",
         "find": ["        headers: { \"content-type\": \"application/json\" },"],
         "replace": ["        headers: { \"content-type\": \"text/plain\" },"]
       },
       {
         "breaks": "\"memberId\"",
-        "file": "src/reminders/notifications-client.ts",
+        "file": "src/packages/notifications-client/notifications-client.ts",
         "find": [
           "        body: JSON.stringify({ memberId, template: \"loan-overdue\", data: { loanId, dueOn } }),"
         ],
@@ -183,7 +183,7 @@
       },
       {
         "breaks": "\"template\": \"loan-overdue\"",
-        "file": "src/reminders/notifications-client.ts",
+        "file": "src/packages/notifications-client/notifications-client.ts",
         "find": [
           "        body: JSON.stringify({ memberId, template: \"loan-overdue\", data: { loanId, dueOn } }),"
         ],
@@ -193,7 +193,7 @@
       },
       {
         "breaks": "\"data\": { \"loanId\" }",
-        "file": "src/reminders/notifications-client.ts",
+        "file": "src/packages/notifications-client/notifications-client.ts",
         "find": [
           "        body: JSON.stringify({ memberId, template: \"loan-overdue\", data: { loanId, dueOn } }),"
         ],
@@ -203,7 +203,7 @@
       },
       {
         "breaks": "\"data\": { \"dueOn\" }",
-        "file": "src/reminders/notifications-client.ts",
+        "file": "src/packages/notifications-client/notifications-client.ts",
         "find": [
           "        body: JSON.stringify({ memberId, template: \"loan-overdue\", data: { loanId, dueOn } }),"
         ],
@@ -213,19 +213,19 @@
       },
       {
         "breaks": "any `2xx` counts as accepted",
-        "file": "src/reminders/notifications-client.ts",
+        "file": "src/packages/notifications-client/notifications-client.ts",
         "find": ["      if (!response.ok)"],
         "replace": ["      if (response.status !== 200)"]
       },
       {
         "breaks": "any `2xx` counts as accepted (only 200, 202 and 204)",
-        "file": "src/reminders/notifications-client.ts",
+        "file": "src/packages/notifications-client/notifications-client.ts",
         "find": ["      if (!response.ok)"],
         "replace": ["      if (![200, 202, 204].includes(response.status))"]
       },
       {
         "breaks": "`{NOTIFY_URL}/notifications` (drops NOTIFY_URL's path)",
-        "file": "src/reminders/notifications-client.ts",
+        "file": "src/packages/notifications-client/notifications-client.ts",
         "find": ["      const response = await fetch(`${baseUrl}/notifications`, {"],
         "replace": ["      const response = await fetch(new URL(\"/notifications\", baseUrl), {"]
       }
@@ -236,7 +236,7 @@
     "mutants": [
       {
         "breaks": "Sends nothing for that loan (is returned)",
-        "file": "src/reminders/reminder-store.ts",
+        "file": "src/apps/reminders-job/reminder-store.ts",
         "find": ["           WHERE returned_on IS NULL AND due_on < ?"],
         "replace": ["           WHERE due_on < ?"]
       }
@@ -247,7 +247,7 @@
     "mutants": [
       {
         "breaks": "Sends nothing for that loan (isn't overdue)",
-        "file": "src/reminders/reminder-store.ts",
+        "file": "src/apps/reminders-job/reminder-store.ts",
         "find": ["           WHERE returned_on IS NULL AND due_on < ?"],
         "replace": ["           WHERE returned_on IS NULL AND due_on <= ?"]
       }
@@ -258,7 +258,7 @@
     "mutants": [
       {
         "breaks": "logs `reminder.failed`",
-        "file": "src/reminders/send-overdue-reminders.ts",
+        "file": "src/apps/reminders-job/send-overdue-reminders.ts",
         "find": [
           "      logger.warn(\"reminder.failed\", { loanId: reminder.loanId, error: delivery.reason });"
         ],
@@ -268,7 +268,7 @@
       },
       {
         "breaks": "at `warn`",
-        "file": "src/reminders/send-overdue-reminders.ts",
+        "file": "src/apps/reminders-job/send-overdue-reminders.ts",
         "find": [
           "      logger.warn(\"reminder.failed\", { loanId: reminder.loanId, error: delivery.reason });"
         ],
@@ -278,7 +278,7 @@
       },
       {
         "breaks": "with `loanId`",
-        "file": "src/reminders/send-overdue-reminders.ts",
+        "file": "src/apps/reminders-job/send-overdue-reminders.ts",
         "find": [
           "      logger.warn(\"reminder.failed\", { loanId: reminder.loanId, error: delivery.reason });"
         ],
@@ -288,7 +288,7 @@
       },
       {
         "breaks": "the failure's `error`",
-        "file": "src/reminders/send-overdue-reminders.ts",
+        "file": "src/apps/reminders-job/send-overdue-reminders.ts",
         "find": [
           "      logger.warn(\"reminder.failed\", { loanId: reminder.loanId, error: delivery.reason });"
         ],
@@ -303,7 +303,7 @@
     "mutants": [
       {
         "breaks": "carries on with the other loans",
-        "file": "src/reminders/send-overdue-reminders.ts",
+        "file": "src/apps/reminders-job/send-overdue-reminders.ts",
         "find": ["      continue;"],
         "replace": ["      break;"]
       }
@@ -314,13 +314,13 @@
     "mutants": [
       {
         "breaks": "any other answer ... as failed",
-        "file": "src/reminders/notifications-client.ts",
+        "file": "src/packages/notifications-client/notifications-client.ts",
         "find": ["      if (!response.ok)"],
         "replace": ["      if (response.status >= 500)"]
       },
       {
         "breaks": "with a reason naming the status",
-        "file": "src/reminders/notifications-client.ts",
+        "file": "src/packages/notifications-client/notifications-client.ts",
         "find": [
           "        return { kind: \"failed\", reason: `Notifications API answered ${response.status}` };"
         ],
@@ -330,13 +330,13 @@
       },
       {
         "breaks": "any other answer ... as failed (a 3xx is accepted)",
-        "file": "src/reminders/notifications-client.ts",
+        "file": "src/packages/notifications-client/notifications-client.ts",
         "find": ["      if (!response.ok)"],
         "replace": ["      if (response.status >= 400)"]
       },
       {
         "breaks": "any other answer ... as failed (a 5xx is accepted)",
-        "file": "src/reminders/notifications-client.ts",
+        "file": "src/packages/notifications-client/notifications-client.ts",
         "find": ["      if (!response.ok)"],
         "replace": ["      if (response.status >= 400 && response.status < 500)"]
       }
@@ -347,13 +347,13 @@
     "mutants": [
       {
         "breaks": "a failed connection as failed",
-        "file": "src/reminders/notifications-client.ts",
+        "file": "src/packages/notifications-client/notifications-client.ts",
         "find": ["      }).catch(() => undefined);"],
         "replace": ["      });"]
       },
       {
         "breaks": "or saying the API was unreachable",
-        "file": "src/reminders/notifications-client.ts",
+        "file": "src/packages/notifications-client/notifications-client.ts",
         "find": [
           "      if (!response) return { kind: \"failed\", reason: \"Notifications API unreachable\" };"
         ],

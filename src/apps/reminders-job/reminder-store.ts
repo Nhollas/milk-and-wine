@@ -1,6 +1,6 @@
 import type { DatabaseSync } from "node:sqlite";
 import { z } from "zod";
-import type { OverdueReminder } from "./notifications-client.ts";
+import type { OverdueReminder } from "@milk-and-wine/notifications-client";
 
 const overdueRecord = z
   .object({ loan_id: z.string(), member_id: z.string(), due_on: z.iso.date() })

@@ -1,8 +1,8 @@
 import { test as base } from "vitest";
-import { openDatabase } from "../../src/database.ts";
-import { createLogger, type LogEntry } from "../../src/logger.ts";
-import { createLoansApp } from "../../src/loans/loans-app.ts";
-import { sendOverdueReminders } from "../../src/reminders/send-overdue-reminders.ts";
+import { openDatabase } from "@milk-and-wine/platform/database";
+import { createLogger, type LogEntry } from "@milk-and-wine/platform/logger";
+import { createLoansApp } from "@milk-and-wine/loans-api/loans-app";
+import { sendOverdueReminders } from "@milk-and-wine/reminders-job/send-overdue-reminders";
 import { fakeCatalogueClient } from "./fake-catalogue-client.ts";
 import { fakeNotificationsClient } from "./fake-notifications-client.ts";
 import { testClock } from "./test-clock.ts";

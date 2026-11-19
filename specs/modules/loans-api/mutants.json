@@ -4,19 +4,19 @@
     "mutants": [
       {
         "breaks": "Invalid requests respond 422 instead of 400",
-        "file": "src/loans/loans-app.ts",
+        "file": "src/apps/loans-api/loans-app.ts",
         "find": ["    if (!parsed.success) return c.json({ error: \"invalid-request\" }, 400);"],
         "replace": ["    if (!parsed.success) return c.json({ error: \"invalid-request\" }, 422);"]
       },
       {
         "breaks": "Invalid requests respond with a different error body",
-        "file": "src/loans/loans-app.ts",
+        "file": "src/apps/loans-api/loans-app.ts",
         "find": ["    if (!parsed.success) return c.json({ error: \"invalid-request\" }, 400);"],
         "replace": ["    if (!parsed.success) return c.json({ error: \"bad-request\" }, 400);"]
       },
       {
         "breaks": "Invalid requests still ask the catalogue before being refused",
-        "file": "src/loans/loans-app.ts",
+        "file": "src/apps/loans-api/loans-app.ts",
         "find": ["    if (!parsed.success) return c.json({ error: \"invalid-request\" }, 400);"],
         "replace": [
           "    if (!parsed.success) {",
@@ -32,7 +32,7 @@
     "mutants": [
       {
         "breaks": "An empty memberId is accepted",
-        "file": "src/loans/loans-app.ts",
+        "file": "src/apps/loans-api/loans-app.ts",
         "find": ["  memberId: z.string().min(1),"],
         "replace": ["  memberId: z.string(),"]
       }
@@ -43,7 +43,7 @@
     "mutants": [
       {
         "breaks": "An empty copyId is accepted",
-        "file": "src/loans/loans-app.ts",
+        "file": "src/apps/loans-api/loans-app.ts",
         "find": ["  copyId: z.string().min(1),"],
         "replace": ["  copyId: z.string(),"]
       }
@@ -54,13 +54,13 @@
     "mutants": [
       {
         "breaks": "Responds 200 instead of 201",
-        "file": "src/loans/loans-app.ts",
+        "file": "src/apps/loans-api/loans-app.ts",
         "find": ["      201,"],
         "replace": ["      200,"]
       },
       {
         "breaks": "Response omits the loanId",
-        "file": "src/loans/loans-app.ts",
+        "file": "src/apps/loans-api/loans-app.ts",
         "find": [
           "      { loanId: loan.loanId, memberId, copyId, lentOn: loan.lentOn, dueOn: loan.dueOn },"
         ],
@@ -68,7 +68,7 @@
       },
       {
         "breaks": "Response omits the memberId",
-        "file": "src/loans/loans-app.ts",
+        "file": "src/apps/loans-api/loans-app.ts",
         "find": [
           "      { loanId: loan.loanId, memberId, copyId, lentOn: loan.lentOn, dueOn: loan.dueOn },"
         ],
@@ -78,7 +78,7 @@
       },
       {
         "breaks": "Response omits the copyId",
-        "file": "src/loans/loans-app.ts",
+        "file": "src/apps/loans-api/loans-app.ts",
         "find": [
           "      { loanId: loan.loanId, memberId, copyId, lentOn: loan.lentOn, dueOn: loan.dueOn },"
         ],
@@ -88,13 +88,13 @@
       },
       {
         "breaks": "lentOn is the day before today",
-        "file": "src/loans/loans-app.ts",
+        "file": "src/apps/loans-api/loans-app.ts",
         "find": ["    const lentOn = utcDate(clock());"],
         "replace": ["    const lentOn = addDays(utcDate(clock()), -1);"]
       },
       {
         "breaks": "dueOn is 7 days later instead of 14",
-        "file": "src/loans/loans-app.ts",
+        "file": "src/apps/loans-api/loans-app.ts",
         "find": ["const LOAN_DAYS = 14;"],
         "replace": ["const LOAN_DAYS = 7;"]
       }
@@ -105,7 +105,7 @@
     "mutants": [
       {
         "breaks": "A copy on loan is refused with 422 instead of 409",
-        "file": "src/loans/loans-app.ts",
+        "file": "src/apps/loans-api/loans-app.ts",
         "find": [
           "    if (store.hasCurrentLoan(copyId)) return c.json({ error: \"copy-on-loan\" }, 409);"
         ],
@@ -115,7 +115,7 @@
       },
       {
         "breaks": "A copy on loan is refused with a different error body",
-        "file": "src/loans/loans-app.ts",
+        "file": "src/apps/loans-api/loans-app.ts",
         "find": [
           "    if (store.hasCurrentLoan(copyId)) return c.json({ error: \"copy-on-loan\" }, 409);"
         ],
@@ -125,7 +125,7 @@
       },
       {
         "breaks": "The catalogue is asked before the copy's current loan is checked",
-        "file": "src/loans/loans-app.ts",
+        "file": "src/apps/loans-api/loans-app.ts",
         "find": [
           "    if (store.hasCurrentLoan(copyId)) return c.json({ error: \"copy-on-loan\" }, 409);"
         ],
@@ -141,7 +141,7 @@
     "mutants": [
       {
         "breaks": "The request that loses the race responds 201 though no loan was stored",
-        "file": "src/loans/loans-app.ts",
+        "file": "src/apps/loans-api/loans-app.ts",
         "find": [
           "    if (store.insert(loan).kind === \"copy-on-loan\") return c.json({ error: \"copy-on-loan\" }, 409);"
         ],
@@ -149,7 +149,7 @@
       },
       {
         "breaks": "The request that loses the race responds 422 instead of 409",
-        "file": "src/loans/loans-app.ts",
+        "file": "src/apps/loans-api/loans-app.ts",
         "find": [
           "    if (store.insert(loan).kind === \"copy-on-loan\") return c.json({ error: \"copy-on-loan\" }, 409);"
         ],
@@ -159,7 +159,7 @@
       },
       {
         "breaks": "The request that loses the race responds with a different error body",
-        "file": "src/loans/loans-app.ts",
+        "file": "src/apps/loans-api/loans-app.ts",
         "find": [
           "    if (store.insert(loan).kind === \"copy-on-loan\") return c.json({ error: \"copy-on-loan\" }, 409);"
         ],
@@ -174,7 +174,7 @@
     "mutants": [
       {
         "breaks": "A withdrawn copy is refused with 409 instead of 422",
-        "file": "src/loans/loans-app.ts",
+        "file": "src/apps/loans-api/loans-app.ts",
         "find": [
           "    if (!lookup.copy.available) return c.json({ error: \"copy-withdrawn\" }, 422);"
         ],
@@ -184,7 +184,7 @@
       },
       {
         "breaks": "A withdrawn copy is refused with a different error body",
-        "file": "src/loans/loans-app.ts",
+        "file": "src/apps/loans-api/loans-app.ts",
         "find": [
           "    if (!lookup.copy.available) return c.json({ error: \"copy-withdrawn\" }, 422);"
         ],
@@ -194,7 +194,7 @@
       },
       {
         "breaks": "A withdrawn copy is lent anyway",
-        "file": "src/loans/loans-app.ts",
+        "file": "src/apps/loans-api/loans-app.ts",
         "find": [
           "    if (!lookup.copy.available) return c.json({ error: \"copy-withdrawn\" }, 422);"
         ],
@@ -207,7 +207,7 @@
     "mutants": [
       {
         "breaks": "An unknown copy is refused with 422 instead of 404",
-        "file": "src/loans/loans-app.ts",
+        "file": "src/apps/loans-api/loans-app.ts",
         "find": [
           "    if (lookup.kind === \"not-found\") return c.json({ error: \"copy-not-found\" }, 404);"
         ],
@@ -217,7 +217,7 @@
       },
       {
         "breaks": "An unknown copy is refused with a different error body",
-        "file": "src/loans/loans-app.ts",
+        "file": "src/apps/loans-api/loans-app.ts",
         "find": [
           "    if (lookup.kind === \"not-found\") return c.json({ error: \"copy-not-found\" }, 404);"
         ],
@@ -227,7 +227,7 @@
       },
       {
         "breaks": "An unknown copy is lent anyway",
-        "file": "src/loans/loans-app.ts",
+        "file": "src/apps/loans-api/loans-app.ts",
         "find": [
           "    if (lookup.kind === \"not-found\") return c.json({ error: \"copy-not-found\" }, 404);",
           "    if (!lookup.copy.available) return c.json({ error: \"copy-withdrawn\" }, 422);"
@@ -244,7 +244,7 @@
     "mutants": [
       {
         "breaks": "An unavailable catalogue is refused with 500 instead of 503",
-        "file": "src/loans/loans-app.ts",
+        "file": "src/apps/loans-api/loans-app.ts",
         "find": [
           "    if (lookup.kind === \"failed\") return c.json({ error: \"catalogue-unavailable\" }, 503);"
         ],
@@ -254,7 +254,7 @@
       },
       {
         "breaks": "An unavailable catalogue is refused with a different error body",
-        "file": "src/loans/loans-app.ts",
+        "file": "src/apps/loans-api/loans-app.ts",
         "find": [
           "    if (lookup.kind === \"failed\") return c.json({ error: \"catalogue-unavailable\" }, 503);"
         ],
@@ -264,7 +264,7 @@
       },
       {
         "breaks": "When the catalogue is unavailable the copy is not checked and the loan is created",
-        "file": "src/loans/loans-app.ts",
+        "file": "src/apps/loans-api/loans-app.ts",
         "find": [
           "    if (lookup.kind === \"failed\") return c.json({ error: \"catalogue-unavailable\" }, 503);",
           "    if (lookup.kind === \"not-found\") return c.json({ error: \"copy-not-found\" }, 404);",
@@ -282,31 +282,31 @@
     "mutants": [
       {
         "breaks": "Return responds 201 instead of 200",
-        "file": "src/loans/loans-app.ts",
+        "file": "src/apps/loans-api/loans-app.ts",
         "find": ["    return c.json({ ...loan, returnedOn }, 200);"],
         "replace": ["    return c.json({ ...loan, returnedOn }, 201);"]
       },
       {
         "breaks": "Return response lacks the returnedOn date",
-        "file": "src/loans/loans-app.ts",
+        "file": "src/apps/loans-api/loans-app.ts",
         "find": ["    return c.json({ ...loan, returnedOn }, 200);"],
         "replace": ["    return c.json({ ...loan }, 200);"]
       },
       {
         "breaks": "Return response gives the lent date as returnedOn instead of today",
-        "file": "src/loans/loans-app.ts",
+        "file": "src/apps/loans-api/loans-app.ts",
         "find": ["    return c.json({ ...loan, returnedOn }, 200);"],
         "replace": ["    return c.json({ ...loan, returnedOn: loan.lentOn }, 200);"]
       },
       {
         "breaks": "Return response lacks the loan's fields",
-        "file": "src/loans/loans-app.ts",
+        "file": "src/apps/loans-api/loans-app.ts",
         "find": ["    return c.json({ ...loan, returnedOn }, 200);"],
         "replace": ["    return c.json({ loanId: loan.loanId, returnedOn }, 200);"]
       },
       {
         "breaks": "The return is not recorded, so the copy cannot be lent again",
-        "file": "src/loans/loans-app.ts",
+        "file": "src/apps/loans-api/loans-app.ts",
         "find": ["    store.markReturned(loan.loanId, returnedOn);"],
         "replace": ["    void store;"]
       }
@@ -317,13 +317,13 @@
     "mutants": [
       {
         "breaks": "An unknown loan responds 409 instead of 404",
-        "file": "src/loans/loans-app.ts",
+        "file": "src/apps/loans-api/loans-app.ts",
         "find": ["    if (!loan) return c.json({ error: \"loan-not-found\" }, 404);"],
         "replace": ["    if (!loan) return c.json({ error: \"loan-not-found\" }, 409);"]
       },
       {
         "breaks": "An unknown loan responds with a different error body",
-        "file": "src/loans/loans-app.ts",
+        "file": "src/apps/loans-api/loans-app.ts",
         "find": ["    if (!loan) return c.json({ error: \"loan-not-found\" }, 404);"],
         "replace": ["    if (!loan) return c.json({ error: \"not-found\" }, 404);"]
       }
@@ -334,7 +334,7 @@
     "mutants": [
       {
         "breaks": "A returned loan responds 404 instead of 409",
-        "file": "src/loans/loans-app.ts",
+        "file": "src/apps/loans-api/loans-app.ts",
         "find": [
           "    if (loan.returnedOn !== null) return c.json({ error: \"already-returned\" }, 409);"
         ],
@@ -344,7 +344,7 @@
       },
       {
         "breaks": "A returned loan responds with a different error body",
-        "file": "src/loans/loans-app.ts",
+        "file": "src/apps/loans-api/loans-app.ts",
         "find": [
           "    if (loan.returnedOn !== null) return c.json({ error: \"already-returned\" }, 409);"
         ],
@@ -354,7 +354,7 @@
       },
       {
         "breaks": "A second return overwrites the original returnedOn date",
-        "file": "src/loans/loans-app.ts",
+        "file": "src/apps/loans-api/loans-app.ts",
         "find": [
           "    if (loan.returnedOn !== null) return c.json({ error: \"already-returned\" }, 409);"
         ],
@@ -372,19 +372,19 @@
     "mutants": [
       {
         "breaks": "Health responds with a different status value",
-        "file": "src/loans/loans-app.ts",
+        "file": "src/apps/loans-api/loans-app.ts",
         "find": ["  app.get(\"/health\", (c) => c.json({ status: \"ok\" }));"],
         "replace": ["  app.get(\"/health\", (c) => c.json({ status: \"healthy\" }));"]
       },
       {
         "breaks": "Health responds 204-style non-200 status",
-        "file": "src/loans/loans-app.ts",
+        "file": "src/apps/loans-api/loans-app.ts",
         "find": ["  app.get(\"/health\", (c) => c.json({ status: \"ok\" }));"],
         "replace": ["  app.get(\"/health\", (c) => c.json({ status: \"ok\" }, 202));"]
       },
       {
         "breaks": "Health touches the database",
-        "file": "src/loans/loans-app.ts",
+        "file": "src/apps/loans-api/loans-app.ts",
         "find": ["  app.get(\"/health\", (c) => c.json({ status: \"ok\" }));"],
         "replace": [
           "  app.get(\"/health\", (c) => {",
@@ -395,7 +395,7 @@
       },
       {
         "breaks": "Health touches the catalogue",
-        "file": "src/loans/loans-app.ts",
+        "file": "src/apps/loans-api/loans-app.ts",
         "find": ["  app.get(\"/health\", (c) => c.json({ status: \"ok\" }));"],
         "replace": [
           "  app.get(\"/health\", async (c) => {",

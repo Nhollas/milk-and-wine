@@ -1,0 +1,11 @@
+{
+  "name": "@milk-and-wine/catalogue-client",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./catalogue-client.ts"
+  },
+  "dependencies": {
+    "zod": "4.6.1"
+  }
+}

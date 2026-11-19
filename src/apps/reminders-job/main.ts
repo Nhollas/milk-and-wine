@@ -1,8 +1,8 @@
 import { z } from "zod";
-import { systemClock } from "../clock.ts";
-import { openDatabase } from "../database.ts";
-import { logger } from "../logger.ts";
-import { createNotificationsClient } from "./notifications-client.ts";
+import { systemClock } from "@milk-and-wine/platform/clock";
+import { openDatabase } from "@milk-and-wine/platform/database";
+import { logger } from "@milk-and-wine/platform/logger";
+import { createNotificationsClient } from "@milk-and-wine/notifications-client";
 import { sendOverdueReminders } from "./send-overdue-reminders.ts";
 
 const env = z

@@ -1,7 +1,7 @@
 import type { DatabaseSync } from "node:sqlite";
-import { type Clock, utcDate } from "../clock.ts";
-import type { Logger } from "../logger.ts";
-import type { NotificationsClient } from "./notifications-client.ts";
+import { type Clock, utcDate } from "@milk-and-wine/platform/clock";
+import type { Logger } from "@milk-and-wine/platform/logger";
+import type { NotificationsClient } from "@milk-and-wine/notifications-client";
 import { createReminderStore } from "./reminder-store.ts";
 
 export type SendOverdueRemindersOptions = {

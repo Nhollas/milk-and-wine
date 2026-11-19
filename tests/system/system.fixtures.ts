@@ -1,10 +1,10 @@
 import { test as base } from "vitest";
-import { createCatalogueClient } from "../../src/catalogue/catalogue-client.ts";
-import { openDatabase } from "../../src/database.ts";
-import { createLogger } from "../../src/logger.ts";
-import { createLoansApp } from "../../src/loans/loans-app.ts";
-import { createNotificationsClient } from "../../src/reminders/notifications-client.ts";
-import { sendOverdueReminders } from "../../src/reminders/send-overdue-reminders.ts";
+import { createCatalogueClient } from "@milk-and-wine/catalogue-client";
+import { openDatabase } from "@milk-and-wine/platform/database";
+import { createLogger } from "@milk-and-wine/platform/logger";
+import { createLoansApp } from "@milk-and-wine/loans-api/loans-app";
+import { createNotificationsClient } from "@milk-and-wine/notifications-client";
+import { sendOverdueReminders } from "@milk-and-wine/reminders-job/send-overdue-reminders";
 import { CATALOGUE_URL } from "../support/catalogue-api.handlers.ts";
 import { NOTIFY_URL } from "../support/notifications-api.handlers.ts";
 import { testClock } from "../support/test-clock.ts";

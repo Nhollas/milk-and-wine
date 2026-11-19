@@ -1,14 +1,24 @@
 {
   "$schema": "./node_modules/knip/schema.json",
-  "entry": [
-    "tools/spec-mutants/replay-config.ts",
-    ".claude/agents/mutant-writer/guard.ts",
-    ".claude/agents/mutant-writer/check-before-stop.ts",
-    ".claude/agents/intent-judge/guard.ts",
-    "evals/intent-judge/grade.ts",
-    ".claude/skills/to-tickets/scripts/draw-slice-map.ts"
-  ],
-  "project": ["src/**/*.ts", "tests/**/*.ts", "tools/**/*.ts", ".claude/**/*.ts", "evals/**/*.ts"],
-  "ignore": ["evals/*/judge-*/**"],
+  "workspaces": {
+    ".": {
+      "entry": [
+        "tools/spec-mutants/replay-config.ts",
+        ".claude/agents/mutant-writer/guard.ts",
+        ".claude/agents/mutant-writer/check-before-stop.ts",
+        ".claude/agents/intent-judge/guard.ts",
+        "evals/intent-judge/grade.ts",
+        ".claude/skills/to-tickets/scripts/draw-slice-map.ts"
+      ],
+      "project": ["tests/**/*.ts", "tools/**/*.ts", ".claude/**/*.ts", "evals/**/*.ts"],
+      "ignore": ["evals/*/judge-*/**"]
+    },
+    "src/apps/*": {
+      "project": ["**/*.ts"]
+    },
+    "src/packages/*": {
+      "project": ["**/*.ts"]
+    }
+  },
   "ignoreBinaries": ["harbor"]
 }

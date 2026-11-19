@@ -5,7 +5,7 @@ A member borrows a copy of a book, is reminded if it's overdue, and brings it ba
 | Scope |  |
 | --- | --- |
 | **Owns** | The member's experience across lending, reminding, renewing and returning. |
-| **Depends on** | [Loans](../../modules/loans/spec.md), [catalogue client](../../modules/catalogue/spec.md), [reminders](../../modules/reminders/spec.md). |
+| **Depends on** | [Loans](../../modules/loans-api/spec.md), [catalogue client](../../modules/catalogue-client/spec.md), [reminders](../../modules/reminders-job/spec.md). |
 | **Excluded** | Finding a book, and reserving a copy that is on loan. |
 
 ## Behaviour

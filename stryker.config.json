@@ -3,7 +3,7 @@
   "testRunner": "vitest",
   "coverageAnalysis": "perTest",
   "disableBail": true,
-  "mutate": ["src/**/*.ts", "!src/**/*.test.ts", "!src/**/main.ts"],
+  "mutate": ["src/**/*.ts", "!src/**/*.test.ts", "!src/**/main.ts", "!src/**/node_modules/**"],
   "reporters": ["clear-text", "html", "json"],
   "htmlReporter": {
     "fileName": "reports/mutation/mutation.html"

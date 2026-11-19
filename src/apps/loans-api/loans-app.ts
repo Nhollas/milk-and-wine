@@ -2,8 +2,8 @@ import { randomUUID } from "node:crypto";
 import type { DatabaseSync } from "node:sqlite";
 import { Hono } from "hono";
 import { z } from "zod";
-import type { CatalogueClient } from "../catalogue/catalogue-client.ts";
-import { addDays, type Clock, utcDate } from "../clock.ts";
+import type { CatalogueClient } from "@milk-and-wine/catalogue-client";
+import { addDays, type Clock, utcDate } from "@milk-and-wine/platform/clock";
 import { createLoanStore, type Loan } from "./loan-store.ts";
 
 const LOAN_DAYS = 14;

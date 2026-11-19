@@ -14,5 +14,5 @@
     ".claude/**/*.ts",
     "evals/**/*.ts"
   ],
-  "exclude": ["node_modules", "evals/*/judge-*/**"]
+  "exclude": ["**/node_modules", "evals/*/judge-*/**"]
 }

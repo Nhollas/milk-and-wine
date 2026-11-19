@@ -1,4 +1,4 @@
-import type { CatalogueClient } from "../../src/catalogue/catalogue-client.ts";
+import type { CatalogueClient } from "@milk-and-wine/catalogue-client";
 
 type CopyState = "available" | "withdrawn";
 
