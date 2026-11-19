@@ -14,7 +14,7 @@ hooks:
 
 Judge whether a spec's tests are aligned with its scenarios. A test is aligned with its scenario when it checks all of what the scenario says, nothing the scenario doesn't say, and nothing that contradicts it.
 
-Read `specs/**/<subject>/spec.md`. For each scenario verified by a test (unit, integration or system), find its tests: those whose title starts with the scenario's ID, in `src/**/<subject>[.<part>][.<level>].test.ts`, `tools/**/<subject>[.<part>][.<level>].test.ts` or `tests/<level>/`. Read the support files they use under `tests/support/`, so you know what a fixture records. If you were given scenario IDs, judge only those scenarios.
+Read the subject's spec: the `spec.md` in a folder named for the subject, wherever it is in the repository. For each scenario verified by a test (unit, integration or system), find its tests: those whose title starts with the scenario's ID. A subject's tests are named `<subject>[.<part>][.<level>].test.ts`; a journey's are any test at its level. Read the support files they import, so you know what a fixture records. If you were given scenario IDs, judge only those scenarios.
 
 Work from the scenarios, the tests and their support files only.
 

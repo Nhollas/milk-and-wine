@@ -22,6 +22,16 @@ environment:
       source: ../../../../.claude/agents/intent-judge
       target: /app/.claude/agents/intent-judge
       read_only: true
+    # What the judge's guard uses to tell a spec, test or support file from the code under test:
+    # the patterns in settings.json, and the code that matches them.
+    - type: bind
+      source: ../../../../.claude/settings.json
+      target: /app/.claude/settings.json
+      read_only: true
+    - type: bind
+      source: ../../../../tools/file-roles
+      target: /app/tools/file-roles
+      read_only: true
     # What each task's tests/test.sh grades a trial with.
     - type: bind
       source: ../../grade.ts

@@ -1,0 +1,7 @@
+{
+  "env": {
+    "SPEC_FILES": "**/spec.md",
+    "TEST_FILES": "**/*.test.ts",
+    "TEST_SUPPORT_FILES": "{tests/**,**/*.fixtures.ts}"
+  }
+}
