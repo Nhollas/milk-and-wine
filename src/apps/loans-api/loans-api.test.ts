@@ -1,6 +1,6 @@
 import { expect } from "vitest";
-import { postJson } from "../../../tests/support/json-requests.ts";
-import { test } from "../../../tests/support/unit.fixtures.ts";
+import { postJson } from "../../tests/support/json-requests.ts";
+import { test } from "../../tests/support/unit.fixtures.ts";
 
 test("B10: refuses a body that isn't JSON, asking the catalogue nothing", async ({
   app,

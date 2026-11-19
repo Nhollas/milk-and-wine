@@ -1,6 +1,6 @@
 import { expect } from "vitest";
-import { postJson } from "../../../tests/support/json-requests.ts";
-import { test } from "../../../tests/support/unit.fixtures.ts";
+import { postJson } from "../../tests/support/json-requests.ts";
+import { test } from "../../tests/support/unit.fixtures.ts";
 
 test("B1: asks for a reminder for each overdue loan and records it for today", async ({
   app,

@@ -9,11 +9,11 @@ hooks:
     - matcher: ".*"
       hooks:
         - type: command
-          command: 'node "$CLAUDE_PROJECT_DIR/.claude/agents/mutant-writer/guard.ts"'
+          command: 'node "$CLAUDE_PROJECT_DIR/.claude/agents/mutant-writer/pre-tool-use.ts"'
   Stop:
     - hooks:
         - type: command
-          command: 'node "$CLAUDE_PROJECT_DIR/.claude/agents/mutant-writer/check-before-stop.ts"'
+          command: 'node "$CLAUDE_PROJECT_DIR/.claude/agents/mutant-writer/stop.ts"'
           timeout: 600
 ---
 

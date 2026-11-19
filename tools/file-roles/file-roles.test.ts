@@ -1,11 +1,11 @@
 import { expect, test } from "vitest";
-import { repoWithFiles } from "../../tests/support/repo-with-files.ts";
+import { repoWithFiles } from "../repo-with-files.ts";
 import { readFileRoles, repoPathOf, roleOf, type FileRoles } from "./file-roles.ts";
 
 const ROLES: FileRoles = {
   specs: "**/spec.md",
   tests: "**/*.test.ts",
-  testSupport: "{tests/**,**/*.fixtures.ts}",
+  testSupport: "{src/tests/**,**/*.fixtures.ts}",
 };
 
 test.each([
@@ -13,8 +13,8 @@ test.each([
   { path: "apps/loans-api/spec.md", role: "spec" },
   { path: "specs/modules/loans/mutants.json", role: "mutants" },
   { path: "src/loans/loans.test.ts", role: "test" },
-  { path: "tests/system/borrow-a-book.system.test.ts", role: "test" },
-  { path: "tests/support/fake-catalogue-client.ts", role: "test-support" },
+  { path: "src/tests/system/borrow-a-book.system.test.ts", role: "test" },
+  { path: "src/tests/support/fake-catalogue-client.ts", role: "test-support" },
   { path: "src/loans/loans.fixtures.ts", role: "test-support" },
   { path: "src/loans/loans-app.ts", role: "code" },
   { path: "README.md", role: "code" },

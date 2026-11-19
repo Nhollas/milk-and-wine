@@ -1,6 +1,6 @@
 import { configDefaults, defineConfig, type TestUserConfig } from "vitest/config";
 
-const testFolders = ["src", "tests", "tools", ".claude", "evals"];
+const testFolders = ["src", "tools", ".claude", "evals"];
 
 // Fixtures and tasks are laid out like this repository, but their tests run only through the evals.
 const examples = ["evals/*/fixtures/**", "evals/*/judge-*/**"];
@@ -15,7 +15,7 @@ function testsAt(level: Level) {
 }
 
 const interceptedHttp = {
-  setupFiles: ["tests/support/http-interceptor.setup.ts"],
+  setupFiles: ["src/tests/support/http-interceptor.setup.ts"],
   testTimeout: 10_000,
 } satisfies TestUserConfig;
 

@@ -1,11 +1,8 @@
 import { http, HttpResponse } from "msw";
 import { expect, test } from "vitest";
 import { createNotificationsClient } from "@milk-and-wine/notifications-client";
-import {
-  NOTIFICATIONS_PATH,
-  NOTIFY_URL,
-} from "../../../tests/support/notifications-api.handlers.ts";
-import { httpInterceptor } from "../../../tests/support/http-interceptor.ts";
+import { NOTIFICATIONS_PATH, NOTIFY_URL } from "../../tests/support/notifications-api.handlers.ts";
+import { httpInterceptor } from "../../tests/support/http-interceptor.ts";
 
 const notificationsClient = createNotificationsClient(NOTIFY_URL);
 const reminder = { memberId: "member-1", loanId: "loan-1", dueOn: "2026-03-16" };

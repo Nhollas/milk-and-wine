@@ -9,7 +9,7 @@ hooks:
     - matcher: ".*"
       hooks:
         - type: command
-          command: 'node "$CLAUDE_PROJECT_DIR/.claude/agents/intent-judge/guard.ts"'
+          command: 'node "$CLAUDE_PROJECT_DIR/.claude/agents/intent-judge/pre-tool-use.ts"'
 ---
 
 Judge whether a spec's tests are aligned with its scenarios. A test is aligned with its scenario when it checks all of what the scenario says, nothing the scenario doesn't say, and nothing that contradicts it.

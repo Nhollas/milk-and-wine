@@ -1,6 +1,6 @@
 import { expect } from "vitest";
-import { postJson } from "../../../tests/support/json-requests.ts";
-import { test } from "../../../tests/support/unit.fixtures.ts";
+import { postJson } from "../../tests/support/json-requests.ts";
+import { test } from "../../tests/support/unit.fixtures.ts";
 
 test("B3: records nothing for a failed reminder and doesn't ask again", async ({
   app,

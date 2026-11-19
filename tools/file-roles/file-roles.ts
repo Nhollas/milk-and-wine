@@ -1,7 +1,7 @@
 import { existsSync, readdirSync } from "node:fs";
 import { isAbsolute, join, matchesGlob, posix, relative, resolve, sep } from "node:path";
 
-// Set in env in .claude/settings.json, each to one glob, such as "{tests/**,**/*.fixtures.ts}".
+// Set in env in .claude/settings.json, each to one glob, such as "{src/tests/**,**/*.fixtures.ts}".
 const PATTERN_VARIABLES = {
   specs: "SPEC_FILES",
   tests: "TEST_FILES",

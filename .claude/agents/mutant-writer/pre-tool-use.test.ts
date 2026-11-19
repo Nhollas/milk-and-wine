@@ -1,6 +1,6 @@
 import { expect, test } from "vitest";
-import { repoWithFiles } from "../../../tests/support/repo-with-files.ts";
-import { blockReasonOf } from "./guard.ts";
+import { repoWithFiles } from "../../../tools/repo-with-files.ts";
+import { blockReasonOf } from "./pre-tool-use.ts";
 
 const ENV = {
   SPEC_FILES: "**/spec.md",

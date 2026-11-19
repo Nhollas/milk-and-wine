@@ -12,7 +12,7 @@ export const testPlacement: Rule = {
         if (expectedFolder !== undefined && posix.dirname(path) !== expectedFolder) {
           context.report({
             node,
-            message: `This test belongs in ${expectedFolder}/. A subject's tests sit beside its code; journeys have none, so theirs go in tests/<level>/.`,
+            message: `This test belongs in ${expectedFolder}/. A subject's tests sit beside its code; journeys have none, so theirs go in src/tests/<level>/.`,
           });
         }
       },
@@ -136,7 +136,7 @@ export const testImports: Rule = {
   },
 };
 
-const SHARED_HELPERS = "tests/support";
+const SHARED_HELPERS = "src/tests/support";
 
 function expectedTestFolderOf(fileName: string, root: string): string | undefined {
   const level = levelOfTestFile(fileName);
@@ -145,7 +145,7 @@ function expectedTestFolderOf(fileName: string, root: string): string | undefine
   const codeFolder = ["src", "tools"]
     .map((top) => folderNamed(subject, top, root))
     .find((folder) => folder !== undefined);
-  return codeFolder ?? (level === "unit" ? undefined : `tests/${level}`);
+  return codeFolder ?? (level === "unit" ? undefined : `src/tests/${level}`);
 }
 
 // A subject's code folder can sit at any depth, such as src/apps/loans-api.
@@ -165,6 +165,6 @@ function isTestHelper(path: string): boolean {
   return (
     /\.(?:fixtures|handlers|setup)\.ts$/u.test(fileName) ||
     fileName.startsWith("fake-") ||
-    (path.startsWith("tests/") && !fileName.endsWith(".test.ts"))
+    (path.startsWith("src/tests/") && !fileName.endsWith(".test.ts"))
   );
 }
